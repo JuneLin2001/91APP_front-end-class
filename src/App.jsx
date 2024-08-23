@@ -1,11 +1,14 @@
 import "./App.css";
 import GitHubLogin from "./utils/GitHubLogin";
+import { AuthContextProvider } from "./context/authContext";
 
 function App() {
   return (
     <>
-      <h1>Github Issues</h1>
-      <GitHubLogin />
+      <AuthContextProvider>
+        <h1>Github Issues</h1>
+        <GitHubLogin />
+      </AuthContextProvider>
     </>
   );
 }
