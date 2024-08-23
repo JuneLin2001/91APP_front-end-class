@@ -15,7 +15,6 @@ export const AuthContextProvider = ({ children }) => {
   const [isLogin, setIsLogin] = useState(false);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState({});
-  const [githubToken, setGithubToken] = useState("");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -39,7 +38,6 @@ export const AuthContextProvider = ({ children }) => {
       .then((result) => {
         const credential = GithubAuthProvider.credentialFromResult(result);
         const token = credential.accessToken;
-        setGithubToken(token);
         const user = result.user;
         setUser(user);
         setIsLogin(true);
@@ -59,7 +57,6 @@ export const AuthContextProvider = ({ children }) => {
       .then(() => {
         setIsLogin(false);
         setUser({});
-        setGithubToken("");
         console.log("Logout successful");
       })
       .catch((error) => {
