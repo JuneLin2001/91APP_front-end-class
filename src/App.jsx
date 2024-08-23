@@ -1,5 +1,4 @@
 import { Routes, Route } from "react-router-dom";
-import LoginPage from "./LoginPage.jsx";
 import IssuePage from "./IssuePage.jsx";
 import GitHubLogin from "./utils/GitHubLogin";
 import { AuthContextProvider } from "./context/authContext";
