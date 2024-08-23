@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { auth, provider } from "../../firebaseConfig";
-import { signInWithPopup, GithubAuthProvider, onAuthStateChanged } from "firebase/auth";
+import { signInWithPopup, GithubAuthProvider, onAuthStateChanged, signOut } from "firebase/auth";
 
 const GitHubLogin = () => {
   const [user, setUser] = useState(null);
@@ -35,12 +35,23 @@ const GitHubLogin = () => {
       });
   };
 
+  const githubLogout = () => {
+    signOut(auth)
+      .then(() => {
+        console.log("Logout successful");
+      })
+      .catch((error) => {
+        console.error("Error during logout:", error);
+      });
+  };
+
   return (
     <>
       <button onClick={githubLogin}>Login with GitHub</button>
       {user ? (
         <div>
           <h2>Welcome, {user.displayName}</h2>
+          <button onClick={githubLogout}>Logout</button>
         </div>
       ) : (
         <div>No, 404</div>
