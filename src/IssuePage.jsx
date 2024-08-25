@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import api from "./utils/api";
 
 const IssuePage = () => {
   const [apiResult, setApiResult] = useState([]);
@@ -11,28 +12,26 @@ const IssuePage = () => {
   const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
-    fetch(
-      "https://api.github.com/repos/JuneLin2001/91APP_front-end-class/issues"
-    )
-      .then((response) => response.json())
-      .then((responseJson) => {
-        setApiResult(responseJson);
+    const fetchData = async () => {
+      try {
+        const [issuesData, labelsData] = await Promise.all([
+          api.getAllIssue("JuneLin2001", "91APP_front-end-class"), //TODO:帳號跟repo要從context取
+          api.getAllLabelFromIssue("JuneLin2001", "91APP_front-end-class"),
+        ]);
+
+        setApiResult(issuesData);
 
         const uniqueAuthors = [
-          ...new Set(responseJson.map((issue) => issue.user.login)),
+          ...new Set(issuesData.map((issue) => issue.user.login)),
         ];
         setAuthors(uniqueAuthors);
-      })
-      .catch((error) => console.error(error));
+        setLabels(labelsData);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      }
+    };
 
-    fetch(
-      "https://api.github.com/repos/JuneLin2001/91APP_front-end-class/labels"
-    )
-      .then((response) => response.json())
-      .then((responseJson) => {
-        setLabels(responseJson);
-      })
-      .catch((error) => console.error(error));
+    fetchData();
   }, []);
 
   const handleAuthorChange = (e) => {
@@ -49,18 +48,21 @@ const IssuePage = () => {
     setSearchValue(e.target.value);
   };
 
-  const handleSearchClick = (e) => {
+  const handleSearchClick = async (e) => {
     e.preventDefault();
     setIsSearching(true);
 
-    fetch(
-      `https://api.github.com/search/issues?q=repo:JuneLin2001/91APP_front-end-class ${searchValue}`
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setSearchResult(data.items);
-      })
-      .catch((error) => console.error(error));
+    try {
+      const searchResults = await api.getSearchIssues(
+        //TODO:帳號跟repo要從context取
+        "JuneLin2001",
+        "91APP_front-end-class",
+        searchValue
+      );
+      setSearchResult(searchResults);
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+    }
   };
 
   const filteredIssues = (issues) =>
@@ -71,7 +73,7 @@ const IssuePage = () => {
           (selectedLabel === "all" ||
             issue.labels.some((label) => label.name === selectedLabel))
       )
-      .filter((issue) => !issue.pull_request); // 排除 pull requests
+      .filter((issue) => !issue.pull_request);
 
   const issuesToDisplay = isSearching
     ? searchResult
