@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "./utils/api";
+import { ActionList, Box, Text, Link } from "@primer/react";
 
 const IssuePage = () => {
   const [apiResult, setApiResult] = useState([]);
@@ -111,7 +112,7 @@ const IssuePage = () => {
         ></input>
         <button onClick={handleSearchClick}>搜尋</button>
       </form>
-      <ul>
+      {/* <ul>
         {issuesToDisplay.map(
           (issue) =>
             !issue.pull_request && (
@@ -125,7 +126,50 @@ const IssuePage = () => {
               </li>
             )
         )}
-      </ul>
+      </ul> */}
+
+      <Box p={3}>
+        <ActionList>
+          {issuesToDisplay.map((issue) => (
+            <ActionList.Item key={issue.id}>
+              <Box display="flex" alignItems="center">
+                <Box>
+                  <Text fontWeight="bold">
+                    <Link href={issue.html_url} target="_blank">
+                      {issue.title}
+                    </Link>
+                  </Text>
+                </Box>
+                {issue.labels.map((label) => {
+                  const isWhite = label.color === "ffffff";
+                  return (
+                    <Box
+                      as="span"
+                      key={label.id}
+                      bg={`#${label.color}`}
+                      color={isWhite ? "black" : "white"}
+                      borderRadius={100}
+                      ml={1}
+                      px={2}
+                      py={1}
+                      border={isWhite ? "1px solid" : 0}
+                      borderColor={isWhite ? "gray" : "transparent"}
+                    >
+                      {label.name}
+                    </Box>
+                  );
+                })}
+              </Box>
+              <Box mt={1}>
+                <Text color="fg.muted">
+                  opened on {new Date(issue.created_at).toLocaleDateString()} by{" "}
+                  {issue.user.login}
+                </Text>
+              </Box>
+            </ActionList.Item>
+          ))}
+        </ActionList>
+      </Box>
     </div>
   );
 };
