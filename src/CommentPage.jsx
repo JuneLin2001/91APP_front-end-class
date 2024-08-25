@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
+import api from './utils/api';
 
 function CommentPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [text, setText] = useState('');
 
-  const owner = 'JuneLin2001';
-  const repo = '91APP_front-end-class';
+  const owner = 'rebeccaS47';
+  const repo = 'Wordle';
   const issue_number = 1;
 
   useEffect(() => {
@@ -36,6 +38,12 @@ function CommentPage() {
   if (error) return <div>錯誤: {error}</div>;
   if (!data) return <div>無數據</div>;
 
+  const handleCreateComment = async () => {
+    const newComment = await api.createComment(owner, repo, issue_number, text);
+    setData((prevData) => [...prevData, newComment]);
+    setText('');
+  };
+
   return (
     <>
       <div>
@@ -44,6 +52,18 @@ function CommentPage() {
             <p>{comment.body}</p>
           </div>
         ))}
+      </div>
+
+      <div>
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Add your comment here..."
+          rows="4"
+          cols="50"
+        />
+        <br />
+        <button onClick={handleCreateComment}>Comment</button>
       </div>
     </>
   );
