@@ -135,6 +135,12 @@ const IssuePage = () => {
               key={issue.id}
               style={{
                 border: "1px solid gray",
+                cursor: "default",
+              }}
+              sx={{
+                ":hover": {
+                  backgroundColor: "#f6f8fa",
+                },
               }}
             >
               <Box display="flex" alignItems="center">
