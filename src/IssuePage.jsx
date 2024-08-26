@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "./utils/api";
-import { ActionList, Box, Text, Link } from "@primer/react";
+import { ActionList, Box, Text, Link, RelativeTime } from "@primer/react";
 
 const IssuePage = () => {
   const [apiResult, setApiResult] = useState([]);
@@ -162,8 +162,9 @@ const IssuePage = () => {
               </Box>
               <Box mt={1}>
                 <Text color="fg.muted">
-                  opened on {new Date(issue.created_at).toLocaleDateString()} by{" "}
-                  {issue.user.login}
+                  {`opened on `}
+                  <RelativeTime date={new Date(issue.updated_at)} />
+                  {` by ${issue.user.login}`}
                 </Text>
               </Box>
             </ActionList.Item>
