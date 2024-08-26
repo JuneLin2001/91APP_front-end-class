@@ -2,7 +2,6 @@ import { useState } from "react";
 
 import { Box, Button, TabNav, Textarea, Text, IconButton, ActionList, ActionMenu } from "@primer/react";
 import {
-  FileIcon,
   MarkdownIcon,
   BoldIcon,
   ItalicIcon,
@@ -13,6 +12,8 @@ import {
   MentionIcon,
   CodeIcon,
   IssueClosedIcon,
+  HeadingIcon,
+  PaperclipIcon,
 } from "@primer/octicons-react";
 
 const CommentBox = () => {
@@ -32,7 +33,7 @@ const CommentBox = () => {
           Preview
         </TabNav.Link>
         <Box>
-          <IconButton icon={FileIcon} aria-label="Attach files" mr={2} />
+          <IconButton icon={HeadingIcon} aria-label="Attach files" mr={2} />
           <IconButton icon={BoldIcon} aria-label="Bold" mr={2} />
           <IconButton icon={ItalicIcon} aria-label="Italic" mr={2} />
           <IconButton icon={CodeIcon} aria-label="Code" mr={2} />
@@ -40,6 +41,7 @@ const CommentBox = () => {
           <IconButton icon={ListUnorderedIcon} aria-label="Unordered list" mr={2} />
           <IconButton icon={ListOrderedIcon} aria-label="Ordered list" mr={2} />
           <IconButton icon={QuoteIcon} aria-label="Quote" mr={2} />
+          <IconButton icon={PaperclipIcon} aria-label="Data files attachment" mr={2} />
           <IconButton icon={MentionIcon} aria-label="Mention" mr={2} />
         </Box>
       </TabNav>
@@ -78,6 +80,8 @@ const CommentBox = () => {
               sx={{
                 backgroundColor: "success.fg",
                 color: "fg.done",
+                mr: 3,
+                pr: 5,
               }}
               mr={1}
               size={16}
