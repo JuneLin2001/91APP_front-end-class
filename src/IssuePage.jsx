@@ -140,7 +140,7 @@ const IssuePage = () => {
               <Box display="flex" alignItems="center">
                 <Text>
                   <Link
-                    to={`/comments/${issue.number}`}
+                    to={`/comment/${issue.number}`}
                     style={{
                       color: "black",
                       fontWeight: "bold",
