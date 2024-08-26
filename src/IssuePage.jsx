@@ -3,7 +3,8 @@ import api from "./utils/api";
 import { ActionList, Box, Text, RelativeTime, Select } from "@primer/react";
 import { Link } from "react-router-dom";
 import { Center } from "./style/Center.styled";
-
+import { useParams } from "react-router-dom";
+import { AuthContext } from "./context/authContext";
 
 const IssuePage = () => {
   const [apiResult, setApiResult] = useState([]);
@@ -30,7 +31,9 @@ const IssuePage = () => {
 
           setApiResult(issuesData);
 
-          const uniqueAuthors = [...new Set(issuesData.map((issue) => issue.user.login))];
+          const uniqueAuthors = [
+            ...new Set(issuesData.map((issue) => issue.user.login)),
+          ];
           setAuthors(uniqueAuthors);
           setLabels(labelsData);
         } catch (error) {
@@ -71,7 +74,6 @@ const IssuePage = () => {
         (issue) => !issue.pull_request
       );
       setSearchResult(filteredResults);
-
     } catch (error) {
       console.error("Failed to fetch data:", error);
     }
@@ -82,11 +84,14 @@ const IssuePage = () => {
       .filter(
         (issue) =>
           (selectedAuthor === "all" || issue.user.login === selectedAuthor) &&
-          (selectedLabel === "all" || issue.labels.some((label) => label.name === selectedLabel))
+          (selectedLabel === "all" ||
+            issue.labels.some((label) => label.name === selectedLabel))
       )
       .filter((issue) => !issue.pull_request);
 
-  const issuesToDisplay = isSearching ? searchResult : filteredIssues(apiResult);
+  const issuesToDisplay = isSearching
+    ? searchResult
+    : filteredIssues(apiResult);
 
   return (
     <Center>
