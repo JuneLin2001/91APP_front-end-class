@@ -20,6 +20,45 @@ const api = {
     const data = await response.json();
     return data;
   },
+
+  async getAllIssue(username, repo) {
+    const response = await fetch(
+      `${this.hostname}/repos/${username}/${repo}/issues`
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch data");
+    }
+
+    const data = await response.json();
+    return data;
+  },
+
+  async getAllLabelFromIssue(username, repo) {
+    const response = await fetch(
+      `${this.hostname}/repos/${username}/${repo}/labels`
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch data");
+    }
+
+    const data = await response.json();
+    return data;
+  },
+
+  async getSearchIssues(username, repo, q) {
+    const response = await fetch(
+      `${this.hostname}/search/issues?q=repo:${username}/${repo} ${q}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to search issues");
+    }
+
+    const data = await response.json();
+    console.log(data);
+    return data.items;
+  },
 };
 
 export default api;
