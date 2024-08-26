@@ -1,4 +1,9 @@
-import { onAuthStateChanged, signInWithPopup, GithubAuthProvider, signOut } from "firebase/auth";
+import {
+  onAuthStateChanged,
+  signInWithPopup,
+  GithubAuthProvider,
+  signOut,
+} from "firebase/auth";
 import { useState, createContext, useCallback, useEffect } from "react";
 import { auth } from "../../firebaseConfig";
 
@@ -15,7 +20,9 @@ export const AuthContextProvider = ({ children }) => {
   const [isLogin, setIsLogin] = useState(false);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState({});
-  const [CRUDtoken, setCRUDtoken] = useState(localStorage.getItem("CRUDtoken") || "");
+  const [CRUDtoken, setCRUDtoken] = useState(
+    localStorage.getItem("CRUDtoken") || ""
+  );
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -55,8 +62,8 @@ export const AuthContextProvider = ({ children }) => {
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        const email = error.email;
-        const credential = GithubAuthProvider.credentialFromError(error);
+        // const email = error.email;
+        // const credential = GithubAuthProvider.credentialFromError(error);
         console.error("Error during GitHub login:", errorCode, errorMessage);
       });
   }, []);
@@ -77,7 +84,9 @@ export const AuthContextProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isLogin, loading, user, CRUDtoken, githubLogin, githubLogout }}>
+    <AuthContext.Provider
+      value={{ isLogin, loading, user, CRUDtoken, githubLogin, githubLogout }}
+    >
       {children}
     </AuthContext.Provider>
   );
