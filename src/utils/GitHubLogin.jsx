@@ -10,19 +10,21 @@ const GitHubLogin = () => {
 
   useEffect(() => {
     const getRepoList = async () => {
-      const username = user.reloadUserInfo?.screenName;
+      if (user && user.reloadUserInfo && user.reloadUserInfo.screenName) {
+        const username = user.reloadUserInfo.screenName;
 
-      try {
-        const repoData = await api.getRepo(username);
-        setRepoList(repoData);
-      } catch (error) {
-        console.error("Failed to fetch data:", error);
+        try {
+          const repoData = await api.getRepo(username);
+          setRepoList(repoData);
+        } catch (error) {
+          console.error("Failed to fetch data:", error);
+        }
       }
     };
-    if (user.reloadUserInfo?.screenName) {
+    if (user && user.reloadUserInfo && user.reloadUserInfo.screenName) {
       getRepoList();
     }
-  }, [user.reloadUserInfo?.screenName, user.accessToken]);
+  }, [user]);
 
   console.log("repoList:", repoList);
   const columns = [
@@ -58,7 +60,7 @@ const GitHubLogin = () => {
 
   return (
     <>
-      {user ? (
+      {user && user.reloadUserInfo && user.reloadUserInfo.screenName ? (
         <>
           <div>
             <h2>Welcome, {user.displayName}</h2>
