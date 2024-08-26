@@ -10,7 +10,7 @@ function App() {
       <AuthContextProvider>
         <Routes>
           <Route path="/login" element={<GitHubLogin />} />
-          <Route path="/issue" element={<IssuePage />} />
+          <Route path="/:repoName/issue" element={<IssuePage />} />
           <Route path="/comment" element={<CommentPage />} />
         </Routes>
       </AuthContextProvider>
