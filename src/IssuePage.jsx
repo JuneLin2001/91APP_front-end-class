@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import api from "./utils/api";
-import { ActionList, Box, Text, RelativeTime } from "@primer/react";
+import { ActionList, Box, Text, RelativeTime, Select } from "@primer/react";
 import { Link } from "react-router-dom";
+import { Center } from "./style/Center.styled";
 
 const IssuePage = () => {
   const [apiResult, setApiResult] = useState([]);
@@ -61,7 +62,10 @@ const IssuePage = () => {
         "91APP_front-end-class",
         searchValue
       );
-      setSearchResult(searchResults);
+      const filteredResults = searchResults.filter(
+        (issue) => !issue.pull_request
+      );
+      setSearchResult(filteredResults);
     } catch (error) {
       console.error("Failed to fetch data:", error);
     }
@@ -82,65 +86,61 @@ const IssuePage = () => {
     : filteredIssues(apiResult);
 
   return (
-    <div>
-      <h1>Issue Page</h1>
+    <Center>
+      <Box>
+        <label htmlFor="author-select">篩選作者:</label>
+        <Select id="author-select" onChange={handleAuthorChange}>
+          <option value="all">all</option>
+          {authors.map((author) => (
+            <option key={author} value={author}>
+              {author}
+            </option>
+          ))}
+        </Select>
+      </Box>
+      <Box>
+        <label htmlFor="label-select">篩選標籤:</label>
+        <Select id="label-select" onChange={handleLabelChange}>
+          <option value="all">all</option>
+          {labels.map((label) => (
+            <option key={label.id} value={label.name}>
+              {label.name}
+            </option>
+          ))}
+        </Select>
+      </Box>
+      <Box>
+        <form>
+          <input
+            placeholder="is:issue is:open"
+            value={searchValue}
+            onChange={handleSearchChange}
+          ></input>
+          <button onClick={handleSearchClick}>搜尋</button>
+        </form>
+      </Box>
 
-      <label htmlFor="author-select">篩選作者:</label>
-      <select id="author-select" onChange={handleAuthorChange}>
-        <option value="all">all</option>
-        {authors.map((author) => (
-          <option key={author} value={author}>
-            {author}
-          </option>
-        ))}
-      </select>
-
-      <label htmlFor="label-select">篩選標籤:</label>
-      <select id="label-select" onChange={handleLabelChange}>
-        <option value="all">all</option>
-        {labels.map((label) => (
-          <option key={label.id} value={label.name}>
-            {label.name}
-          </option>
-        ))}
-      </select>
-
-      <form>
-        <input
-          placeholder="is:issue is:open"
-          value={searchValue}
-          onChange={handleSearchChange}
-        ></input>
-        <button onClick={handleSearchClick}>搜尋</button>
-      </form>
-      {/* <ul>
-        {issuesToDisplay.map(
-          (issue) =>
-            !issue.pull_request && (
-              <li key={issue.id}>
-                <a href={issue.html_url}>{issue.title}</a>
-                <p>創建時間: {new Date(issue.created_at).toLocaleString()}</p>
-                <p>發布者: {issue.user.login}</p>
-                {issue.labels.map((label) => (
-                  <p key={label.id}>{label.name}</p>
-                ))}
-              </li>
-            )
-        )}
-      </ul> */}
-
-      <Box p={3}>
+      <Box border={"1px solid"} borderColor={"red"} width={"75%"}>
         <ActionList>
           {issuesToDisplay.map((issue) => (
-            <ActionList.Item key={issue.id}>
+            <ActionList.Item
+              key={issue.id}
+              style={{
+                border: "1px solid gray",
+              }}
+            >
               <Box display="flex" alignItems="center">
-                <Box>
-                  <Text fontWeight="bold">
-                    <Link to={`/comments/${issue.number}`}>
-                      {issue.title} {issue.title}
-                    </Link>
-                  </Text>
-                </Box>
+                <Text>
+                  <Link
+                    to={`/comments/${issue.number}`}
+                    style={{
+                      color: "black",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {issue.title}
+                  </Link>
+                </Text>
                 {issue.labels.map((label) => {
                   const isWhite = label.color === "ffffff";
                   return (
@@ -152,7 +152,9 @@ const IssuePage = () => {
                       borderRadius={100}
                       ml={1}
                       px={2}
-                      py={1}
+                      py={0.75}
+                      fontSize={10}
+                      fontWeight="bold"
                       border={isWhite ? "1px solid" : 0}
                       borderColor={isWhite ? "gray" : "transparent"}
                     >
@@ -162,7 +164,8 @@ const IssuePage = () => {
                 })}
               </Box>
               <Box mt={1}>
-                <Text color="fg.muted">
+                <Text color="fg.muted" fontSize={10}>
+                  {`#${issue.number} `}
                   {`opened on `}
                   <RelativeTime date={new Date(issue.updated_at)} />
                   {` by ${issue.user.login}`}
@@ -172,7 +175,7 @@ const IssuePage = () => {
           ))}
         </ActionList>
       </Box>
-    </div>
+    </Center>
   );
 };
 
