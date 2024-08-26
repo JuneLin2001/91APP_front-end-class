@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import api from "./utils/api";
 import { ActionList, Box, Text, Link } from "@primer/react";
+import { useParams } from "react-router-dom";
+import { AuthContext } from "./context/authContext";
 
 const IssuePage = () => {
   const [apiResult, setApiResult] = useState([]);
@@ -11,29 +13,33 @@ const IssuePage = () => {
   const [searchValue, setSearchValue] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const { repoName } = useParams();
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const [issuesData, labelsData] = await Promise.all([
-          api.getAllIssue("JuneLin2001", "91APP_front-end-class"), //TODO:帳號跟repo要從context取
-          api.getAllLabelFromIssue("JuneLin2001", "91APP_front-end-class"),
-        ]);
+      if (user && user.reloadUserInfo && user.reloadUserInfo.screenName) {
+        console.log("repoName:", repoName);
+        console.log("user:", user.reloadUserInfo.screenName);
+        try {
+          const [issuesData, labelsData] = await Promise.all([
+            api.getAllIssue(user.reloadUserInfo.screenName, repoName),
+            api.getAllLabelFromIssue(user.reloadUserInfo.screenName, repoName),
+          ]);
 
-        setApiResult(issuesData);
+          setApiResult(issuesData);
 
-        const uniqueAuthors = [
-          ...new Set(issuesData.map((issue) => issue.user.login)),
-        ];
-        setAuthors(uniqueAuthors);
-        setLabels(labelsData);
-      } catch (error) {
-        console.error("Failed to fetch data:", error);
+          const uniqueAuthors = [...new Set(issuesData.map((issue) => issue.user.login))];
+          setAuthors(uniqueAuthors);
+          setLabels(labelsData);
+        } catch (error) {
+          console.error("Failed to fetch data:", error);
+        }
       }
     };
 
     fetchData();
-  }, []);
+  }, [user, repoName]);
 
   const handleAuthorChange = (e) => {
     setIsSearching(false);
@@ -54,12 +60,7 @@ const IssuePage = () => {
     setIsSearching(true);
 
     try {
-      const searchResults = await api.getSearchIssues(
-        //TODO:帳號跟repo要從context取
-        "JuneLin2001",
-        "91APP_front-end-class",
-        searchValue
-      );
+      const searchResults = await api.getSearchIssues(user.reloadUserInfo.screenName, repoName, searchValue);
       setSearchResult(searchResults);
     } catch (error) {
       console.error("Failed to fetch data:", error);
@@ -71,14 +72,11 @@ const IssuePage = () => {
       .filter(
         (issue) =>
           (selectedAuthor === "all" || issue.user.login === selectedAuthor) &&
-          (selectedLabel === "all" ||
-            issue.labels.some((label) => label.name === selectedLabel))
+          (selectedLabel === "all" || issue.labels.some((label) => label.name === selectedLabel))
       )
       .filter((issue) => !issue.pull_request);
 
-  const issuesToDisplay = isSearching
-    ? searchResult
-    : filteredIssues(apiResult);
+  const issuesToDisplay = isSearching ? searchResult : filteredIssues(apiResult);
 
   return (
     <div>
@@ -105,11 +103,7 @@ const IssuePage = () => {
       </select>
 
       <form>
-        <input
-          placeholder="is:issue is:open"
-          value={searchValue}
-          onChange={handleSearchChange}
-        ></input>
+        <input placeholder="is:issue is:open" value={searchValue} onChange={handleSearchChange}></input>
         <button onClick={handleSearchClick}>搜尋</button>
       </form>
       {/* <ul>
@@ -162,8 +156,7 @@ const IssuePage = () => {
               </Box>
               <Box mt={1}>
                 <Text color="fg.muted">
-                  opened on {new Date(issue.created_at).toLocaleDateString()} by{" "}
-                  {issue.user.login}
+                  opened on {new Date(issue.created_at).toLocaleDateString()} by {issue.user.login}
                 </Text>
               </Box>
             </ActionList.Item>

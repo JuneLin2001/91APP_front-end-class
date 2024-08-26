@@ -3,6 +3,7 @@ import { AuthContext } from "../context/authContext";
 import api from "./api";
 import { Avatar, Label, RelativeTime } from "@primer/react";
 import { DataTable } from "@primer/react/experimental";
+import { Link } from "@primer/react";
 
 const GitHubLogin = () => {
   const { user, githubLogin, githubLogout } = useContext(AuthContext);
@@ -32,16 +33,23 @@ const GitHubLogin = () => {
       header: "Repository Name",
       field: "name",
       rowHeader: true,
-    },
-    {
-      header: "Topics",
-      field: "topics",
       renderCell: (row) => {
-        return row.topics.map((topic, index) => {
-          return <Label key={index}>{topic}</Label>;
-        });
+        return (
+          <Link href={`/${row.name}/issue`} key={row.name}>
+            {row.name}
+          </Link>
+        );
       },
     },
+    // {
+    //   header: "Topics",
+    //   field: "topics",
+    //   renderCell: (row) => {
+    //     return row.topics.map((topic, index) => {
+    //       return <Label key={index}>{topic}</Label>;
+    //     });
+    //   },
+    // },
     {
       header: "Private",
       field: "private",
