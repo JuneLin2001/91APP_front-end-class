@@ -11,8 +11,8 @@ import {
   ThemeProvider,
   RelativeTime,
 } from "@primer/react";
-
 import { KebabHorizontalIcon } from "@primer/octicons-react";
+import api from "./utils/api";
 function CommentPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -26,15 +26,13 @@ function CommentPage() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch(
-          `https://api.github.com/repos/${owner}/${repo}/issues/${issue_number}/comments`
+        const commentsData = await api.getIssueComments(
+          owner,
+          repo,
+          issue_number
         );
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const result = await response.json();
-        console.log("fetch到的資料", result);
-        setData(result);
+        console.log("fetch到的資料", commentsData);
+        setData(commentsData);
       } catch (e) {
         setError(e.message);
       } finally {
