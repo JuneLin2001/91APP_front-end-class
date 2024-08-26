@@ -60,9 +60,9 @@ const api = {
     return data.items;
   },
 
-  async getIssueComments(owner, repo, issue_number) {
+  async getIssueComments(owner, repo, issue_number, timestamp) {
     const response = await fetch(
-      `${this.hostname}/repos/${owner}/${repo}/issues/${issue_number}/comments`
+      `${this.hostname}/repos/${owner}/${repo}/issues/${issue_number}/comments?t=${timestamp}`
     );
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

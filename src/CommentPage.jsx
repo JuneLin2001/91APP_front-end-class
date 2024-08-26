@@ -23,6 +23,7 @@ function CommentPage() {
   const issue_number = 1;
 
   useEffect(() => {
+<<<<<<< HEAD
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -40,9 +41,29 @@ function CommentPage() {
       }
     };
 
+=======
+>>>>>>> 72eb6b9 (fix: fetchData add timestamp not from cache)
     fetchData();
   }, []);
 
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const timestamp = new Date().getTime();
+      const commentsData = await api.getIssueComments(
+        owner,
+        repo,
+        issue_number,
+        timestamp
+      );
+      console.log("fetch到的資料", commentsData);
+      setData(commentsData);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
   if (loading) return <div>載入中...</div>;
   if (error) return <div>錯誤: {error}</div>;
   if (!data) return <div>無數據</div>;
