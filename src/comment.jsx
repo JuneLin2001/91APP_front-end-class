@@ -71,39 +71,6 @@ const CommentBox = () => {
         </Text>
       </Box>
 
-      <Box mt={3} display="flex" justifyContent="space-between" alignItems="center">
-        <ActionMenu>
-          <ActionMenu.Button aria-label="Close issue">
-            <IssueClosedIcon
-              sx={{
-                backgroundColor: "success.fg",
-                color: "fg.done",
-              }}
-              mr={1}
-              size={16}
-            />
-            Close issue
-          </ActionMenu.Button>
-          <Button aria-label="Close issue" variant="invisible" sx={{ display: "flex", alignItems: "center", mr: 2 }}>
-            <div>
-              <IssueClosedIcon color="fg.success" sx={{ m: 2 }} />
-            </div>
-            Close issue
-            {/* Close issue */}
-          </Button>
-          <ActionMenu.Overlay>
-            <ActionList>
-              <ActionList.Item>
-                <IssueClosedIcon className="color-fg-done" size={16} />
-                Close and cent
-              </ActionList.Item>
-            </ActionList>
-          </ActionMenu.Overlay>
-        </ActionMenu>
-
-        <Button variant="primary">Comment</Button>
-      </Box>
-
       <Box mt={3} display="flex" justifyContent="flex-end" alignItems="center">
         <ActionMenu>
           <ActionMenu.Button aria-label="Close issue" sx={{ display: "flex", alignItems: "center", mr: 2 }}>

@@ -59,6 +59,18 @@ const api = {
     console.log(data);
     return data.items;
   },
+
+  async getIssueComments(owner, repo, issue_number) {
+    const response = await fetch(
+      `${this.hostname}/repos/${owner}/${repo}/issues/${issue_number}/comments`
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  },
 };
 
 export default api;
