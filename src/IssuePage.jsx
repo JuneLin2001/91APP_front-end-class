@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "./utils/api";
-import { ActionList, Box, Text, Link, RelativeTime } from "@primer/react";
+import { ActionList, Box, Text, RelativeTime } from "@primer/react";
+import { Link } from "react-router-dom";
 
 const IssuePage = () => {
   const [apiResult, setApiResult] = useState([]);
@@ -135,8 +136,8 @@ const IssuePage = () => {
               <Box display="flex" alignItems="center">
                 <Box>
                   <Text fontWeight="bold">
-                    <Link href={issue.html_url} target="_blank">
-                      {issue.title}
+                    <Link to={`/comments/${issue.number}`}>
+                      {issue.title} {issue.title}
                     </Link>
                   </Text>
                 </Box>

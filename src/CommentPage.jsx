@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 function CommentPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { issue_number } = useParams(); // 從 URL 取得 issue_number
 
-  const owner = 'JuneLin2001';
-  const repo = '91APP_front-end-class';
-  const issue_number = 1;
+  const owner = "JuneLin2001";
+  const repo = "91APP_front-end-class";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -20,7 +21,7 @@ function CommentPage() {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const result = await response.json();
-        console.log('fetch到的資料', result);
+        console.log("fetch到的資料", result);
         setData(result);
       } catch (e) {
         setError(e.message);
@@ -30,7 +31,7 @@ function CommentPage() {
     };
 
     fetchData();
-  }, []);
+  }, [issue_number]);
 
   if (loading) return <div>載入中...</div>;
   if (error) return <div>錯誤: {error}</div>;
