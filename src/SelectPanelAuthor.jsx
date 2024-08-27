@@ -9,12 +9,20 @@ const SelectPanelAuthor = ({ authors = [], onSelect }) => {
 
   const filteredItems = [
     { text: "all", id: "all" },
-    ...authors.map((author) => ({ text: author, id: author })),
+    ...authors.map((author) => ({
+      key: author,
+      text: author,
+      onAction: () => console.log(`Option ${author} selected`),
+    })),
   ].filter((item) => item.text.toLowerCase().startsWith(filter.toLowerCase()));
 
   const handleSelectedChange = (selected) => {
     setSelected(selected);
-    onSelect(selected); // 調用傳遞的回調函數
+    if (onSelect) {
+      console.log(selected);
+      console.log(selected.text);
+      onSelect(selected.text);
+    }
   };
 
   return (

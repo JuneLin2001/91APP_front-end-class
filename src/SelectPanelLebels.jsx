@@ -2,8 +2,8 @@ import { useState, useRef } from "react";
 import { TriangleDownIcon } from "@primer/octicons-react";
 import { SelectPanel, Button } from "@primer/react";
 
-export const LabelSelectPanel = ({ labels = [] }) => {
-  const [selected, setSelected] = useState(labels.slice(0, 2));
+export const LabelSelectPanel = ({ labels = [], onSelect }) => {
+  const [selected, setSelected] = useState([]); // 初始選擇為空陣列
   const [filter, setFilter] = useState("");
   const [open, setOpen] = useState(false);
   const buttonRef = useRef(null);
@@ -19,17 +19,23 @@ export const LabelSelectPanel = ({ labels = [] }) => {
       color: `#${label.color}`,
     }));
 
-  const handleSelectedChange = (item) => {
-    setSelected((prevSelected) => {
-      if (prevSelected.some((selectedItem) => selectedItem.id === item.id)) {
-        return prevSelected.filter(
-          (selectedItem) => selectedItem.key !== item.id
-        );
+  const handleSelectedChange = (selectedItems) => {
+    // 取得選擇的項目名稱
+    const selectedNames = selectedItems.map((item) => item.text);
+
+    const newSelection = selectedNames.reduce((acc, name) => {
+      if (acc.includes(name)) {
+        return acc.filter((item) => item !== name);
       } else {
-        return [...prevSelected, item];
+        return [...acc, name];
       }
-    });
-    console.log(selected);
+    }, []);
+
+    setSelected(newSelection);
+
+    if (onSelect) {
+      onSelect(newSelection);
+    }
   };
 
   return (
@@ -54,7 +60,7 @@ export const LabelSelectPanel = ({ labels = [] }) => {
         open={open}
         onOpenChange={setOpen}
         items={filteredItems}
-        selected={selected}
+        selected={filteredItems.filter((item) => selected.includes(item.text))}
         onSelectedChange={handleSelectedChange}
         onFilterChange={setFilter}
         showItemDividers={true}

@@ -5,7 +5,6 @@ import {
   Box,
   Text,
   RelativeTime,
-  Select,
   TextInput,
   Header,
   Checkbox,
@@ -98,18 +97,54 @@ const IssuePage = () => {
     updateUrlParams(newParams);
   };
 
-  const handleAuthorChange = (e) => {
-    const selectedAuthor = e.target.value;
-    console.log("Selected author:", e.target.value);
+  const handleAuthorChange = (selectedAuthor) => {
+    console.log("Selected author:", selectedAuthor);
     setSelectedAuthor(selectedAuthor);
     handleFilterChange("author", selectedAuthor);
   };
 
-  const handleLabelChange = (e) => {
-    const selectedLabel = e.target.value;
-    console.log("Selected label:", e.target.value);
-    setSelectedLabel(selectedLabel);
-    handleFilterChange("label", selectedLabel);
+  const handleLabelChange = (label) => {
+    setSelectedLabel((prevSelected) => {
+      const normalizeLabelString = (labelString) => {
+        return labelString
+          .split("+") // 使用 "+" 符號分隔
+          .map((part) => part.trim())
+          .filter(Boolean)
+          .join("+");
+      };
+
+      console.log("Previous Selected:", prevSelected);
+
+      let selectedLabels =
+        prevSelected === "all"
+          ? []
+          : normalizeLabelString(prevSelected).split("+");
+
+      console.log("Normalized Labels:", selectedLabels);
+
+      const labelsSet = new Set(selectedLabels);
+
+      console.log("Labels Set (before change):", Array.from(labelsSet));
+
+      if (labelsSet.has(label)) {
+        labelsSet.delete(label);
+      } else {
+        labelsSet.add(label);
+      }
+
+      console.log("Labels Set (after change):", Array.from(labelsSet));
+
+      const result = Array.from(labelsSet).join("+");
+
+      console.log("Result String:", result);
+
+      const finalResult = result.length ? result : "all";
+
+      console.log("Final Result:", finalResult);
+
+      handleFilterChange("label", finalResult);
+      return finalResult;
+    });
   };
 
   const handleSearchChange = (e) => {
@@ -237,8 +272,7 @@ const IssuePage = () => {
               mr: 4,
             }}
           >
-            {/* <label htmlFor="author-select">篩選作者:</label> */}
-            <Select
+            {/* <Select
               id="author-select"
               value={selectedAuthor}
               onChange={handleAuthorChange}
@@ -254,16 +288,15 @@ const IssuePage = () => {
                   {author}
                 </option>
               ))}
-            </Select>
+            </Select> */}
             <SelectPanelAuthor
               authors={authors}
-              onChange={handleAuthorChange}
+              onSelect={handleAuthorChange}
             />
             {/*TODO:改成透明背景 */}
           </Box>
           <Box>
-            {/* <label htmlFor="label-select">篩選標籤:</label> */}
-            <Select
+            {/* <Select
               id="label-select"
               value={selectedLabel}
               onChange={handleLabelChange}
@@ -274,8 +307,8 @@ const IssuePage = () => {
                   {label.name}
                 </option>
               ))}
-            </Select>
-            <LabelSelectPanel labels={labels} />
+            </Select> */}
+            <LabelSelectPanel labels={labels} onSelect={handleLabelChange} />
             {/*TODO:改成透明背景 */}
           </Box>
         </Header>
