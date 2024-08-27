@@ -89,91 +89,83 @@ function CommentPage() {
     <ThemeProvider>
       <Timeline>
         {data.map((comment) => (
-          <>
-            <Timeline.Item key={comment.id} display="flex" mb={3}>
-              <Avatar
-                size={40}
-                src={comment.user.avatar_url}
-                alt="User Avatar"
-              />
-              <Timeline.Body
-                ml={6}
-                flex={1}
-                borderWidth={1}
-                borderStyle="solid"
-                borderColor="border.default"
-                borderRadius={2}
-                bg="canvas.subtle"
-                p={3}
-              >
-                <Box>
-                  <Text>{comment.user.login} commented </Text>
-                  <RelativeTime date={new Date(comment.updated_at)} />
-                  <Label>{comment.author_association}</Label>
-                  <Label>Author</Label>
-                  <ActionMenu>
-                    <ActionMenu.Anchor>
-                      <IconButton
-                        icon={KebabHorizontalIcon}
-                        unsafeDisableTooltip={false}
-                        variant="invisible"
-                      />
-                    </ActionMenu.Anchor>
-                    <ActionMenu.Overlay width="medium">
-                      <ActionList>
-                        <ActionList.Item>Copy link</ActionList.Item>
-                        <ActionList.Item>Quote reply</ActionList.Item>
-                        <ActionList.Item>
-                          Reference in new issue
-                        </ActionList.Item>
-                        <ActionList.Divider />
-                        <ActionList.Item
-                          onSelect={() => setEditingCommentId(comment.id)}
-                        >
-                          Edit
-                        </ActionList.Item>
-                        <ActionList.Item>Hide</ActionList.Item>
-                        <ActionList.Item
-                          variant="danger"
-                          onClick={() => handleDelete(comment.id)}
-                        >
-                          Delete
-                        </ActionList.Item>
-                        <ActionList.Divider />
-                        <ActionList.Item>Report content</ActionList.Item>
-                      </ActionList>
-                    </ActionMenu.Overlay>
-                  </ActionMenu>
-                </Box>
-                <Box>
-                  {editingCommentId === comment.id ? (
-                    <>
-                      <CommentBox
-                        initialValue={comment.body}
-                        onTextareaChange={handleTextareaChange}
-                      />
-                      <Button
+          <Timeline.Item key={comment.id} display="flex" mb={3}>
+            <Avatar size={40} src={comment.user.avatar_url} alt="User Avatar" />
+            <Timeline.Body
+              ml={6}
+              flex={1}
+              borderWidth={1}
+              borderStyle="solid"
+              borderColor="border.default"
+              borderRadius={2}
+              bg="canvas.subtle"
+              p={3}
+            >
+              <Box>
+                <Text>{comment.user.login} commented </Text>
+                <RelativeTime date={new Date(comment.updated_at)} />
+                <Label>{comment.author_association}</Label>
+                <Label>Author</Label>
+                <ActionMenu>
+                  <ActionMenu.Anchor>
+                    <IconButton
+                      icon={KebabHorizontalIcon}
+                      unsafeDisableTooltip={false}
+                      variant="invisible"
+                    />
+                  </ActionMenu.Anchor>
+                  <ActionMenu.Overlay width="medium">
+                    <ActionList>
+                      <ActionList.Item>Copy link</ActionList.Item>
+                      <ActionList.Item>Quote reply</ActionList.Item>
+                      <ActionList.Item>Reference in new issue</ActionList.Item>
+                      <ActionList.Divider />
+                      <ActionList.Item
+                        onSelect={() => setEditingCommentId(comment.id)}
+                      >
+                        Edit
+                      </ActionList.Item>
+                      <ActionList.Item>Hide</ActionList.Item>
+                      <ActionList.Item
                         variant="danger"
-                        onClick={() => setEditingCommentId(null)}
+                        onClick={() => handleDelete(comment.id)}
                       >
-                        Cancel
-                      </Button>
-                      <Button
-                        variant="primary"
-                        onClick={() =>
-                          handleUpdate(comment.id, currentTextareaValue)
-                        }
-                      >
-                        Update comment
-                      </Button>
-                    </>
-                  ) : (
-                    <Text>{comment.body}</Text>
-                  )}
-                </Box>
-              </Timeline.Body>
-            </Timeline.Item>
-          </>
+                        Delete
+                      </ActionList.Item>
+                      <ActionList.Divider />
+                      <ActionList.Item>Report content</ActionList.Item>
+                    </ActionList>
+                  </ActionMenu.Overlay>
+                </ActionMenu>
+              </Box>
+              <Box>
+                {editingCommentId === comment.id ? (
+                  <>
+                    <CommentBox
+                      initialValue={comment.body}
+                      onTextareaChange={handleTextareaChange}
+                    />
+                    <Button
+                      variant="danger"
+                      onClick={() => setEditingCommentId(null)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="primary"
+                      onClick={() =>
+                        handleUpdate(comment.id, currentTextareaValue)
+                      }
+                    >
+                      Update comment
+                    </Button>
+                  </>
+                ) : (
+                  <Text>{comment.body}</Text>
+                )}
+              </Box>
+            </Timeline.Body>
+          </Timeline.Item>
         ))}
         <Timeline.Break />
       </Timeline>
