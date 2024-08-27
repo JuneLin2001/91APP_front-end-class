@@ -46,18 +46,25 @@ const api = {
     return data;
   },
 
-  async getSearchIssues(username, repo, q) {
-    const response = await fetch(
-      `${this.hostname}/search/issues?q=repo:${username}/${repo} ${q}`
-    );
+  async getSearchIssues(username, repo) {
+    const searchParams = new URLSearchParams(window.location.search);
+    const q = searchParams.get("q");
 
-    if (!response.ok) {
-      throw new Error("Failed to search issues");
+    if (q) {
+      const response = await fetch(
+        `${
+          this.hostname
+        }/search/issues?q=repo:${username}/${repo} ${encodeURIComponent(q)}`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to search issues");
+      }
+
+      const data = await response.json();
+      console.log(data);
+      return data.items;
     }
-
-    const data = await response.json();
-    console.log(data);
-    return data.items;
   },
 };
 

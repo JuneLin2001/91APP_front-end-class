@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Center } from "./style/Center.styled";
 import { useParams } from "react-router-dom";
 import { AuthContext } from "./context/authContext";
+import { LabelSelectPanel } from "./SelectPanelAuthor";
 
 const IssuePage = () => {
   const [apiResult, setApiResult] = useState([]);
@@ -20,13 +21,19 @@ const IssuePage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      const searchParams = new URLSearchParams(window.location.search);
+      const q = searchParams.get("q") || ""; // 默認值為空字符串
+
       if (user && user.reloadUserInfo && user.reloadUserInfo.screenName) {
-        console.log("repoName:", repoName);
-        console.log("user:", user.reloadUserInfo.screenName);
+        const { screenName } = user.reloadUserInfo;
+
         try {
+          // 根據是否有查詢參數 q 決定是否進行搜尋
           const [issuesData, labelsData] = await Promise.all([
-            api.getAllIssue(user.reloadUserInfo.screenName, repoName),
-            api.getAllLabelFromIssue(user.reloadUserInfo.screenName, repoName),
+            q
+              ? api.getSearchIssues(screenName, repoName, q)
+              : api.getAllIssue(screenName, repoName),
+            api.getAllLabelFromIssue(screenName, repoName),
           ]);
 
           setApiResult(issuesData);
@@ -64,6 +71,14 @@ const IssuePage = () => {
     setIsSearching(true);
 
     try {
+      const params = new URLSearchParams(window.location.search);
+      params.set("q", searchValue);
+      // params.set("label", selectedLabel);
+      // params.set("author", selectedAuthor);
+
+      const newUrl = `${window.location.pathname}?${params.toString()}`;
+      window.history.pushState({}, "", newUrl);
+
       const searchResults = await api.getSearchIssues(
         //TODO:帳號跟repo要從context取
         "JuneLin2001",
@@ -93,10 +108,14 @@ const IssuePage = () => {
     ? searchResult
     : filteredIssues(apiResult);
 
+  // console.log(labels);
+  // console.log(authors);
+
   return (
     <Center>
       <Box>
         <label htmlFor="author-select">篩選作者:</label>
+        {/*TODO: 改成SelectPanel  */}
         <Select id="author-select" onChange={handleAuthorChange}>
           <option value="all">all</option>
           {authors.map((author) => (
@@ -108,6 +127,7 @@ const IssuePage = () => {
       </Box>
       <Box>
         <label htmlFor="label-select">篩選標籤:</label>
+        {/*TODO: 改成SelectPanel With Footer (Multi Select)*/}
         <Select id="label-select" onChange={handleLabelChange}>
           <option value="all">all</option>
           {labels.map((label) => (
@@ -116,6 +136,7 @@ const IssuePage = () => {
             </option>
           ))}
         </Select>
+        <LabelSelectPanel labels={labels} />
       </Box>
       <Box>
         <form>

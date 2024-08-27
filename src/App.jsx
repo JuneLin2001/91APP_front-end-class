@@ -3,17 +3,20 @@ import IssuePage from "./IssuePage.jsx";
 import GitHubLogin from "./utils/GitHubLogin";
 import CommentPage from "./CommentPage.jsx";
 import { AuthContextProvider } from "./context/authContext";
+import { ThemeProvider } from "@primer/react";
 
 function App() {
   return (
     <>
-      <AuthContextProvider>
-        <Routes>
-          <Route path="/login" element={<GitHubLogin />} />
-          <Route path="/:repoName/issue" element={<IssuePage />} />
-          <Route path="/comment/:issue_number" element={<CommentPage />} />
-        </Routes>
-      </AuthContextProvider>
+      <ThemeProvider>
+        <AuthContextProvider>
+          <Routes>
+            <Route path="/login" element={<GitHubLogin />} />
+            <Route path="/:repoName/issue" element={<IssuePage />} />
+            <Route path="/comment/:issue_number" element={<CommentPage />} />
+          </Routes>
+        </AuthContextProvider>
+      </ThemeProvider>
     </>
   );
 }
