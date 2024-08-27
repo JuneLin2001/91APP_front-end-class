@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import {
   Box,
   Timeline,
@@ -13,36 +14,21 @@ import {
 } from "@primer/react";
 import { KebabHorizontalIcon } from "@primer/octicons-react";
 import api from "./utils/api";
+import CommentBox from "./comment";
+import { AuthContext } from "./context/authContext";
+import { useContext } from "react";
+
 function CommentPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { issueNumber } = useParams();
+  const { CRUDtoken } = useContext(AuthContext);
 
   const owner = "rebeccaS47";
   const repo = "Wordle";
-  const issue_number = 1;
 
   useEffect(() => {
-<<<<<<< HEAD
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const commentsData = await api.getIssueComments(
-          owner,
-          repo,
-          issue_number
-        );
-        console.log("fetch到的資料", commentsData);
-        setData(commentsData);
-      } catch (e) {
-        setError(e.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-=======
->>>>>>> 72eb6b9 (fix: fetchData add timestamp not from cache)
     fetchData();
   }, []);
 
@@ -53,7 +39,7 @@ function CommentPage() {
       const commentsData = await api.getIssueComments(
         owner,
         repo,
-        issue_number,
+        issueNumber,
         timestamp
       );
       console.log("fetch到的資料", commentsData);
@@ -71,7 +57,6 @@ function CommentPage() {
   return (
     <ThemeProvider>
       <CommentBox />
-      <CommentBox2 />
     </ThemeProvider>
   );
 }
