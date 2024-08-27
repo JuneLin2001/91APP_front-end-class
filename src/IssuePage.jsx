@@ -22,7 +22,7 @@ const IssuePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       const searchParams = new URLSearchParams(window.location.search);
-      const q = searchParams.get("q") || ""; // 默認值為空字符串
+      const q = searchParams.get("q") || "";
       const authorFilter = searchParams.get("author") || "all";
       const labelFilter = searchParams.get("label") || "all";
 
@@ -57,26 +57,55 @@ const IssuePage = () => {
 
   const updateUrlParams = (params) => {
     const url = new URL(window.location.href);
-    Object.keys(params).forEach((key) => {
-      if (params[key] === "all") {
-        url.searchParams.delete(key);
-      } else {
-        url.searchParams.set(key, params[key]);
-      }
-    });
-    window.history.pushState({}, "", url);
+
+    let searchQuery = params.q || "";
+    const existingQueryParts = new URLSearchParams(searchQuery);
+
+    existingQueryParts.delete("author");
+    existingQueryParts.delete("label");
+
+    if (params.author && params.author !== "all") {
+      existingQueryParts.set("author", params.author);
+    }
+    if (params.label && params.label !== "all") {
+      existingQueryParts.set("label", params.label);
+    }
+
+    searchQuery = existingQueryParts.toString();
+    url.searchParams.set("q", searchQuery);
+
+    if (params.author === "all") url.searchParams.delete("author");
+    if (params.label === "all") url.searchParams.delete("label");
+
+    window.history.replaceState({}, "", url);
+  };
+
+  const handleFilterChange = (type, value) => {
+    setIsSearching(false);
+
+    const params = new URLSearchParams(window.location.search);
+    const currentQuery = params.get("q") || "";
+
+    const newParams = {
+      q: currentQuery,
+      author:
+        type === "author" ? (value === "all" ? "" : value) : selectedAuthor,
+      label: type === "label" ? (value === "all" ? "" : value) : selectedLabel,
+    };
+
+    updateUrlParams(newParams);
   };
 
   const handleAuthorChange = (e) => {
-    const newAuthor = e.target.value;
-    setSelectedAuthor(newAuthor);
-    updateUrlParams({ author: newAuthor });
+    const selectedAuthor = e.target.value;
+    setSelectedAuthor(selectedAuthor);
+    handleFilterChange("author", selectedAuthor);
   };
 
   const handleLabelChange = (e) => {
-    const newLabel = e.target.value;
-    setSelectedLabel(newLabel);
-    updateUrlParams({ label: newLabel });
+    const selectedLabel = e.target.value;
+    setSelectedLabel(selectedLabel);
+    handleFilterChange("label", selectedLabel);
   };
 
   const handleSearchChange = (e) => {
@@ -88,19 +117,18 @@ const IssuePage = () => {
     setIsSearching(true);
 
     try {
-      const params = new URLSearchParams(window.location.search);
-      params.set("q", searchValue);
-
       updateUrlParams({
         q: searchValue,
-        author: selectedAuthor,
-        label: selectedLabel,
+        author: selectedAuthor === "all" ? "" : selectedAuthor,
+        label: selectedLabel === "all" ? "" : selectedLabel,
       });
 
       const searchResults = await api.getSearchIssues(
         user.reloadUserInfo.screenName,
         repoName,
-        searchValue
+        searchValue,
+        selectedAuthor,
+        selectedLabel
       );
       const filteredResults = searchResults.filter(
         (issue) => !issue.pull_request
