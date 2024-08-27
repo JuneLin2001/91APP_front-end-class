@@ -31,12 +31,14 @@ const IssuePage = () => {
 
         try {
           const [issuesData, labelsData] = await Promise.all([
-            q
-              ? api.getSearchIssues(screenName, repoName, q, authorFilter)
-              : api.getAllIssue(screenName, repoName),
-            labelFilter
-              ? api.getLabelsWithFilter(screenName, repoName, q, labelFilter)
-              : api.getAllLabelFromIssue(screenName, repoName),
+            api.getSearchIssues(
+              screenName,
+              repoName,
+              q,
+              authorFilter,
+              labelFilter
+            ),
+            api.getLabelsWithFilter(screenName, repoName, q, labelFilter),
           ]);
 
           setApiResult(issuesData);
@@ -57,27 +59,14 @@ const IssuePage = () => {
 
   const updateUrlParams = (params) => {
     const url = new URL(window.location.href);
-
-    let searchQuery = params.q || "";
-    const existingQueryParts = new URLSearchParams(searchQuery);
-
-    existingQueryParts.delete("author");
-    existingQueryParts.delete("label");
-
-    if (params.author && params.author !== "all") {
-      existingQueryParts.set("author", params.author);
-    }
-    if (params.label && params.label !== "all") {
-      existingQueryParts.set("label", params.label);
-    }
-
-    searchQuery = existingQueryParts.toString();
-    url.searchParams.set("q", searchQuery);
-
-    if (params.author === "all") url.searchParams.delete("author");
-    if (params.label === "all") url.searchParams.delete("label");
-
-    window.history.replaceState({}, "", url);
+    Object.keys(params).forEach((key) => {
+      if (params[key] === "all" || params[key] === "") {
+        url.searchParams.delete(key);
+      } else {
+        url.searchParams.set(key, params[key]);
+      }
+    });
+    window.history.pushState({}, "", url);
   };
 
   const handleFilterChange = (type, value) => {
@@ -130,28 +119,44 @@ const IssuePage = () => {
         selectedAuthor,
         selectedLabel
       );
-      const filteredResults = searchResults.filter(
-        (issue) => !issue.pull_request
-      );
-      setSearchResult(filteredResults);
+      setSearchResult(searchResults);
     } catch (error) {
       console.error("Failed to fetch data:", error);
     }
   };
 
   const filteredIssues = (issues) =>
-    issues
-      .filter(
-        (issue) =>
-          (selectedAuthor === "all" || issue.user.login === selectedAuthor) &&
-          (selectedLabel === "all" ||
-            issue.labels.some((label) => label.name === selectedLabel))
-      )
-      .filter((issue) => !issue.pull_request);
+    issues.filter(
+      (issue) =>
+        (selectedAuthor === "all" || issue.user.login === selectedAuthor) &&
+        (selectedLabel === "all" ||
+          issue.labels.some((label) => label.name === selectedLabel))
+    );
 
   const issuesToDisplay = isSearching
     ? searchResult
     : filteredIssues(apiResult);
+
+  const getPlaceholder = () => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const q = searchParams.get("q") || "";
+    const authorFilter = searchParams.get("author") || "all";
+    const labelFilter = searchParams.get("label") || "all";
+
+    const parts = ["is:issue", "is:open"];
+
+    if (authorFilter !== "all") {
+      parts.push(`author:${encodeURIComponent(authorFilter)}`);
+    }
+    if (labelFilter !== "all") {
+      parts.push(`label:${encodeURIComponent(labelFilter)}`);
+    }
+    if (q) {
+      parts.push(q);
+    }
+
+    return parts.join(" ");
+  };
 
   return (
     <Center>
@@ -188,7 +193,7 @@ const IssuePage = () => {
       <Box>
         <form>
           <input
-            placeholder="is:issue is:open"
+            placeholder={getPlaceholder()}
             value={searchValue}
             onChange={handleSearchChange}
           />

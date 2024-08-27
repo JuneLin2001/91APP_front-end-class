@@ -44,7 +44,6 @@ const api = {
     }
 
     const labels = await response.json();
-    // 根據 filter 進行篩選
     return labels.filter((label) => label.name.includes(filter));
   },
 
@@ -60,15 +59,26 @@ const api = {
     return data;
   },
 
-  async getSearchIssues(username, repo) {
+  async getSearchIssues(username, repo, q, authorFilter, labelFilter) {
     const searchParams = new URLSearchParams(window.location.search);
-    const q = searchParams.get("q");
+    const query = searchParams.get("q") || "";
 
-    if (q) {
+    const searchQuery = [
+      `repo:${username}/${repo}`,
+      `is:issue`,
+      `is:open`,
+      authorFilter !== "all"
+        ? `author:${encodeURIComponent(authorFilter)}`
+        : "",
+      labelFilter !== "all" ? `label:${encodeURIComponent(labelFilter)}` : "",
+      query,
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+    if (searchQuery) {
       const response = await fetch(
-        `${
-          this.hostname
-        }/search/issues?q=repo:${username}/${repo} ${encodeURIComponent(q)}`
+        `${this.hostname}/search/issues?q=${encodeURIComponent(searchQuery)}`
       );
 
       if (!response.ok) {
