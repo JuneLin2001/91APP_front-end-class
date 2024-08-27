@@ -18,7 +18,7 @@ import api from "./utils/api";
 import CommentBox from "./comment";
 import { AuthContext } from "./context/authContext";
 import { useContext } from "react";
-
+import IssueDiscussion2 from "./TimelineComment";
 function CommentPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -145,6 +145,7 @@ function CommentPage() {
         <Timeline.Break />
       </Timeline>
       <CommentBox />
+      <IssueDiscussion2 />
     </ThemeProvider>
   );
 }

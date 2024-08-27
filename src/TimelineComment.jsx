@@ -132,7 +132,7 @@ const CommentItem = ({ user, role, time, content, isEdited, isDeleted, editedBy 
   );
 };
 
-const IssueDiscussion2 = () => (
+const TimelineComment = () => (
   <Timeline>
     <CommentItem
       user={{ name: "JuneLin2001", avatarUrl: "https://github.com/JuneLin2001.png" }}
@@ -164,4 +164,4 @@ const IssueDiscussion2 = () => (
   </Timeline>
 );
 
-export default IssueDiscussion2;
+export default TimelineComment;
