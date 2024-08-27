@@ -34,6 +34,20 @@ const api = {
     return data;
   },
 
+  async getLabelsWithFilter(username, repo, filter) {
+    const response = await fetch(
+      `${this.hostname}/repos/${username}/${repo}/labels`
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch labels");
+    }
+
+    const labels = await response.json();
+    // 根據 filter 進行篩選
+    return labels.filter((label) => label.name.includes(filter));
+  },
+
   async getAllLabelFromIssue(username, repo) {
     const response = await fetch(
       `${this.hostname}/repos/${username}/${repo}/labels`
