@@ -22,9 +22,7 @@ const api = {
   },
 
   async getAllIssue(username, repo) {
-    const response = await fetch(
-      `${this.hostname}/repos/${username}/${repo}/issues`
-    );
+    const response = await fetch(`${this.hostname}/repos/${username}/${repo}/issues`);
 
     if (!response.ok) {
       throw new Error("Failed to fetch data");
@@ -35,9 +33,7 @@ const api = {
   },
 
   async getAllLabelFromIssue(username, repo) {
-    const response = await fetch(
-      `${this.hostname}/repos/${username}/${repo}/labels`
-    );
+    const response = await fetch(`${this.hostname}/repos/${username}/${repo}/labels`);
     if (!response.ok) {
       throw new Error("Failed to fetch data");
     }
@@ -47,9 +43,7 @@ const api = {
   },
 
   async getSearchIssues(username, repo, q) {
-    const response = await fetch(
-      `${this.hostname}/search/issues?q=repo:${username}/${repo} ${q}`
-    );
+    const response = await fetch(`${this.hostname}/search/issues?q=repo:${username}/${repo} ${q}`);
 
     if (!response.ok) {
       throw new Error("Failed to search issues");
@@ -60,9 +54,9 @@ const api = {
     return data.items;
   },
 
-  async getIssueComments(owner, repo, issue_number) {
+  async getIssueComments(owner, repo, issueNumber, timestamp) {
     const response = await fetch(
-      `${this.hostname}/repos/${owner}/${repo}/issues/${issue_number}/comments`
+      `${this.hostname}/repos/${owner}/${repo}/issues/${issueNumber}/comments?t=${timestamp}`
     );
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -70,6 +64,36 @@ const api = {
 
     const data = await response.json();
     return data;
+  },
+
+  async deleteComment(owner, repo, commentId, token) {
+    const response = await fetch(`${this.hostname}/repos/${owner}/${repo}/issues/comments/${commentId}`, {
+      headers: {
+        "X-GitHub-Api-Version": "2022-11-28",
+        Accept: "application/vnd.github+json",
+        Authorization: `Bearer ${token}`,
+      },
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+  },
+
+  async updateComment(owner, repo, commentId, newContent, token) {
+    const response = await fetch(`${this.hostname}/repos/${owner}/${repo}/issues/comments/${commentId}`, {
+      headers: {
+        "X-GitHub-Api-Version": "2022-11-28",
+        Accept: "application/vnd.github+json",
+        Authorization: `Bearer ${token}`,
+      },
+      method: "PATCH",
+      body: JSON.stringify({ body: newContent }),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
   },
 };
 

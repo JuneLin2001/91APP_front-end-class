@@ -1,9 +1,8 @@
 import { useState } from "react";
 
-import { Box, Button, TabNav, Textarea, Text, IconButton, ActionList, ActionMenu } from "@primer/react";
+import { Box, TabNav, Textarea, Text, IconButton } from "@primer/react";
 import {
   FileIcon,
-  MarkdownIcon,
   BoldIcon,
   ItalicIcon,
   LinkIcon,
@@ -12,15 +11,21 @@ import {
   QuoteIcon,
   MentionIcon,
   CodeIcon,
-  IssueClosedIcon,
 } from "@primer/octicons-react";
+import PropType from "prop-types";
 
-const CommentBox = () => {
-  const [inputValue, setInputValue] = useState("");
+const CommentBox = ({ initialValue, onTextareaChange }) => {
+  const [inputValue, setInputValue] = useState(initialValue || "");
   const [isPreview, setIsPreview] = useState(false);
 
   const handleTabClick = (tab) => {
     setIsPreview(tab === "Preview");
+  };
+
+  const handleInputChange = (event) => {
+    const newValue = event.target.value;
+    setInputValue(newValue);
+    onTextareaChange(newValue);
   };
   return (
     <Box borderWidth={1} borderStyle="solid" borderColor="border.default" borderRadius={2} p={3} bg="canvas.default">
@@ -49,7 +54,8 @@ const CommentBox = () => {
           <Textarea
             placeholder="Add your comment here..."
             aria-label="Comment"
-            onChange={(e) => setInputValue(e.target.value)}
+            value={inputValue}
+            onChange={handleInputChange}
             sx={{ width: "100%", height: "100%", resize: "none" }}
           />
         ) : (
@@ -64,39 +70,13 @@ const CommentBox = () => {
           </Box>
         )}
       </Box>
-
-      <Box mt={2} display="flex" justifyContent="space-between" alignItems="center">
-        <Text>
-          <MarkdownIcon /> Markdown is supported
-        </Text>
-      </Box>
-
-      <Box mt={3} display="flex" justifyContent="flex-end" alignItems="center">
-        <ActionMenu>
-          <ActionMenu.Button aria-label="Close issue" sx={{ display: "flex", alignItems: "center", mr: 2 }}>
-            <IssueClosedIcon
-              sx={{
-                backgroundColor: "success.fg",
-                color: "fg.done",
-              }}
-              mr={1}
-              size={16}
-            />
-            Close issue
-          </ActionMenu.Button>
-          <ActionMenu.Overlay>
-            <ActionList>
-              <ActionList.Item>
-                <IssueClosedIcon className="color-fg-done" size={16} />
-                Close and cent
-              </ActionList.Item>
-            </ActionList>
-          </ActionMenu.Overlay>
-        </ActionMenu>
-        <Button variant="primary">Comment</Button>
-      </Box>
     </Box>
   );
+};
+
+CommentBox.propTypes = {
+  initialValue: PropType.string,
+  onTextareaChange: PropType.func,
 };
 
 export default CommentBox;
