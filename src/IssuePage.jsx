@@ -329,7 +329,6 @@ const IssuePage = () => {
                       to={`/comment/${issue.number}`}
                       style={{
                         color: "black",
-                        fontWeight: "bold",
                         fontSize: "16px",
                       }}
                     >

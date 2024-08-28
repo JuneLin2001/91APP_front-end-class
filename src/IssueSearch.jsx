@@ -100,7 +100,6 @@ const IssueSearch = ({ handleSearchClick, labelNum }) => {
                 borderTopRightRadius: "0px",
                 borderBottomRightRadius: "0px",
                 borderRight: "none",
-                fontWeight: "bold",
               }}
             >
               Filter
@@ -197,22 +196,14 @@ const IssueSearch = ({ handleSearchClick, labelNum }) => {
           </Box>
         </Box>
         <ButtonGroup>
-          <Button
-            leadingVisual={TagIcon}
-            count={labelNum}
-            sx={{ fontWeight: "bold" }}
-          >
+          <Button leadingVisual={TagIcon} count={labelNum}>
             Labels{" "}
           </Button>
-          <Button
-            leadingVisual={MilestoneIcon}
-            count={0}
-            sx={{ fontWeight: "bold" }}
-          >
+          <Button leadingVisual={MilestoneIcon} count={0}>
             Milestones{" "}
           </Button>
         </ButtonGroup>
-        <Button variant="primary" ml={3} sx={{ fontWeight: "bold" }}>
+        <Button variant="primary" ml={3}>
           New Issue
         </Button>
       </Box>
