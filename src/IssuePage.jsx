@@ -13,6 +13,8 @@ import {
   SegmentedControl,
   Button,
   ButtonGroup,
+  Select,
+  Caret,
 } from "@primer/react";
 import {
   SearchIcon,
@@ -28,6 +30,7 @@ import { Link } from "react-router-dom";
 import { Center } from "./style/Center.styled";
 import { useParams } from "react-router-dom";
 import { AuthContext } from "./context/authContext";
+import IssueSearch from "./IssueSearch";
 import SelectPanelLabel from "./SelectPanelLebels.jsx";
 import SelectPanelAuthor from "./SelectPanelAuthor.jsx";
 
