@@ -224,7 +224,7 @@ const IssuePage = () => {
             }}
           >
             <Checkbox sx={{ mr: 2, ml: 0 }} />
-            <SegmentedControl aria-label="File view">
+            <SegmentedControl aria-label="File view" variant="invisible">
               {" "}
               {/*TODO:改成透明背景 */}
               <SegmentedControl.Button
@@ -240,13 +240,47 @@ const IssuePage = () => {
               >
                 Open
               </SegmentedControl.Button>
-              <SegmentedControl.Button
+              <SegmentedControl.Button //選中的關鍵字是aria-current
                 aria-label={"Raw"}
                 leadingIcon={CheckIcon}
                 sx={{
                   color: "#636c76",
                   bg: "#f6f8fa",
                   outline: "none",
+                  '[data-component="trailingAction"]': {
+                    display: "none",
+                  },
+                  border: "none",
+                  backgroundColor: "transparent",
+                  boxShadow: "none",
+                  "&:hover": {
+                    backgroundColor: "transparent",
+                    boxShadow: "none",
+                  },
+                  "&:focus": {
+                    backgroundColor: "transparent",
+                    boxShadow: "none",
+                  },
+                  "&:active": {
+                    backgroundColor: "transparent",
+                    boxShadow: "none",
+                  },
+                  "&:hover:not([disabled]):not([data-inactive])": {
+                    backgroundColor: "transparent",
+                    boxShadow: "none",
+                  },
+                  "& svg": {
+                    color: "currentColor",
+                    "&:hover": {
+                      color: "var(--bgColor-accent-emphasis)",
+                    },
+                    "&:focus": {
+                      color: "var(--bgColor-accent-emphasis)",
+                    },
+                  },
+                  "&[aria-expanded='true']": {
+                    backgroundColor: "transparent",
+                  },
                 }}
                 onClick={() => setStateFilter("closed")}
               >
@@ -299,20 +333,6 @@ const IssuePage = () => {
                   {"Sort"}
                 </Button>
               </ButtonGroup>
-            </Box>
-            <Box>
-              {/* <Select
-              id="label-select"
-              value={selectedLabel}
-              onChange={handleLabelChange}
-            >
-              <option value="all">all</option>
-              {labels.map((label) => (
-                <option key={label.id} value={label.name}>
-                  {label.name}
-                </option>
-              ))}
-            </Select> */}
             </Box>
           </Header>
           <CheckboxGroup>
@@ -367,6 +387,7 @@ const IssuePage = () => {
                         style={{
                           color: "black",
                           fontWeight: "bold",
+                          fontSize: "16px",
                         }}
                       >
                         {issue.title}
@@ -384,7 +405,7 @@ const IssuePage = () => {
                           ml={1}
                           px={2}
                           py={0.75}
-                          fontSize={10}
+                          fontSize={"12px"}
                           fontWeight="bold"
                           border={isWhite ? "1px solid" : 0}
                           borderColor={isWhite ? "gray" : "transparent"} //加個hover顯示文字，如aria-label="XXX"
@@ -410,11 +431,23 @@ const IssuePage = () => {
                     )}
                   </Box>
                   <Box mt={1} ml={7}>
-                    <Text color="fg.muted" fontSize={10}>
+                    <Text color="fg.muted" fontSize={"12px"}>
                       {`#${issue.number} `}
-                      {`opened on `}
-                      <RelativeTime date={new Date(issue.updated_at)} />
-                      {` by ${issue.user.login}`}
+                      {stateFilter === "open" ? (
+                        <>
+                          {`opened on `}
+                          <RelativeTime
+                            date={new Date(issue.created_at)}
+                          />{" "}
+                          {` by ${issue.user.login}`}
+                        </>
+                      ) : (
+                        <>
+                          {` by ${issue.user.login}`}
+                          {`was closed `}
+                          <RelativeTime date={new Date(issue.closed_at)} />{" "}
+                        </>
+                      )}
                     </Text>
                   </Box>
                 </ActionList.Item>
