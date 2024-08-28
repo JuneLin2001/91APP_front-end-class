@@ -46,47 +46,6 @@ const IssuePage = () => {
   const { repoName } = useParams();
   const { user } = useContext(AuthContext);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const searchParams = new URLSearchParams(window.location.search);
-  //     const q = searchParams.get("q") || "";
-  //     const authorFilter = "all";
-  //     const labelFilter = "all";
-  //     // FIXME:``需要反斜線
-  //     if (user && user.reloadUserInfo && user.reloadUserInfo.screenName) {
-  //       const { screenName } = user.reloadUserInfo;
-
-  //       try {
-  //         const [issuesData, labelsData, allIssuesData] = await Promise.all([
-  //           api.getSearchIssues(
-  //             screenName,
-  //             repoName,
-  //             q,
-  //             authorFilter,
-  //             labelFilter,
-  //             stateFilter
-  //           ),
-  //           api.getAllLabels(screenName, repoName),
-  //           api.getAllIssues(screenName, repoName),
-  //         ]);
-
-  //         setApiResult(issuesData);
-  //         setAllIssues(allIssuesData);
-
-  //         const uniqueAuthors = [
-  //           ...new Set(issuesData.map((issue) => issue.user.login)),
-  //         ];
-  //         setAuthors(uniqueAuthors);
-  //         setLabels(labelsData);
-  //       } catch (error) {
-  //         console.error("Failed to fetch data:", error);
-  //       }
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [user, repoName, stateFilter]);
-
   useEffect(() => {
     const fetchData = async () => {
       const q = "";
@@ -127,9 +86,9 @@ const IssuePage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const q = ""; // 如果需要，可以將其設為動態值
-      const authorFilter = selectedAuthor || "all"; // 根據選擇的作者設置過濾器
-      const labelFilter = selectedLabel || "all"; // 根據選擇的標籤設置過濾器
+      const q = "";
+      const authorFilter = selectedAuthor || "all";
+      const labelFilter = selectedLabel || "all";
 
       if (user && user.reloadUserInfo && user.reloadUserInfo.screenName) {
         const { screenName } = user.reloadUserInfo;
@@ -184,21 +143,15 @@ const IssuePage = () => {
       : [];
     const currentAuthor = params.get("author") || "all";
 
-    // 根據 type 更新參數
+    const newLabels =
+      type === "label"
+        ? [...new Set([...(currentLabels || []), value])]
+        : currentLabels;
+
     const newParams = {
       q: currentQuery,
-      label:
-        type === "label"
-          ? value === "all"
-            ? "" // 如果 value 是 "all"，則清空所有標籤
-            : [...new Set([...currentLabels, value])].join(" ") // 添加新標籤並去除重複
-          : currentLabels.join(" "),
-      author:
-        type === "author"
-          ? value === "all"
-            ? "" // 如果 value 是 "all"，則清空作者過濾器
-            : value
-          : currentAuthor,
+      label: newLabels.join(" "),
+      author: currentAuthor,
     };
 
     updateUrlParams(newParams);
@@ -334,6 +287,7 @@ const IssuePage = () => {
           </Box>
         </IssueHeader>
         <CheckboxGroup>
+          <CheckboxGroup.Label />
           <ActionList sx={{ p: 0 }}>
             {issuesToDisplay.map((issue) => (
               <IssueCardContainer key={issue.id}>

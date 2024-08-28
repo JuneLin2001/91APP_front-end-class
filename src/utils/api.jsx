@@ -52,22 +52,17 @@ const api = {
     stateFilter
   ) {
     const searchParams = new URLSearchParams(window.location.search);
-    const query =
-      searchParams.get("q") ||
-      `repo:${username}/${repo} is:issue is:${stateFilter}`;
+    const query = q || `repo:${username}/${repo} is:issue is:${stateFilter}`;
 
     console.log("URL query parameter 'q':", searchParams.get("q"));
     console.log("Using query:", query);
 
     const formattedLabelFilter = labelFilter
-      .split(" ")
-      .map((label) => label.trim())
-      .filter((label) => label.startsWith("label:"))
-      .map((label) => {
-        const cleanedLabel = label.replace(/^label:"|"$/g, "");
-        return `label:${cleanedLabel}`;
-      })
-      .join(" ");
+      ? labelFilter
+          .match(/label:"[^"]+"|label:\S+/g)
+          ?.map((label) => label.trim())
+          .join(" ")
+      : "";
 
     console.log("Raw labelFilter:", labelFilter);
     console.log("Formatted labelFilter:", formattedLabelFilter);
