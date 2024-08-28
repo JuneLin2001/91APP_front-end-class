@@ -30,16 +30,16 @@ const SelectPanelAuthor = ({ authors = [], onSelect }) => {
       <SelectPanel
         title="Filter by label"
         renderAnchor={({
-          children,
           "aria-labelledby": ariaLabelledBy,
           ...anchorProps
         }) => (
           <Button
+            variant="invisible"
             trailingAction={TriangleDownIcon}
             aria-labelledby={` ${ariaLabelledBy}`}
             {...anchorProps}
           >
-            {children ?? "Select Labels"}
+            {"Author"}
           </Button>
         )}
         placeholderText="Filter Labels"
@@ -50,6 +50,7 @@ const SelectPanelAuthor = ({ authors = [], onSelect }) => {
         onSelectedChange={handleSelectedChange}
         onFilterChange={setFilter}
         showItemDividers={true}
+        ButtonOutline={{ border: "0px solid #000000" }}
         overlayProps={{
           width: "small",
           height: "auto",

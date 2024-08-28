@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { TriangleDownIcon } from "@primer/octicons-react";
 import { SelectPanel, Button } from "@primer/react";
 
-export const LabelSelectPanel = ({ labels = [], onSelect }) => {
+const LabelSelectPanel = ({ labels = [], onSelect }) => {
   const [selected, setSelected] = useState([]); // 初始選擇為空陣列
   const [filter, setFilter] = useState("");
   const [open, setOpen] = useState(false);
@@ -43,16 +43,16 @@ export const LabelSelectPanel = ({ labels = [], onSelect }) => {
       <SelectPanel
         title="Filter by label"
         renderAnchor={({
-          children,
           "aria-labelledby": ariaLabelledBy,
           ...anchorProps
         }) => (
           <Button
+            variant="invisible"
             trailingAction={TriangleDownIcon}
             aria-labelledby={ariaLabelledBy}
             {...anchorProps}
           >
-            {children ?? "Select Labels"}
+            {"Label"}
           </Button>
         )}
         anchorRef={buttonRef}
@@ -126,3 +126,5 @@ export const LabelSelectPanel = ({ labels = [], onSelect }) => {
     </>
   );
 };
+
+export default LabelSelectPanel;

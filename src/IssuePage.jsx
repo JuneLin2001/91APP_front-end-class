@@ -11,18 +11,23 @@ import {
   CheckboxGroup,
   IconButton,
   SegmentedControl,
+  Button,
+  ButtonGroup,
 } from "@primer/react";
 import {
   SearchIcon,
   IssueOpenedIcon,
   IssueClosedIcon,
   CheckIcon,
+  TriangleDownIcon,
+  // TagIcon,
+  // MilestoneIcon,
 } from "@primer/octicons-react";
 import { Link } from "react-router-dom";
 import { Center } from "./style/Center.styled";
 import { useParams } from "react-router-dom";
 import { AuthContext } from "./context/authContext";
-import { LabelSelectPanel } from "./SelectPanelLebels.jsx";
+import SelectPanelLabel from "./SelectPanelLebels.jsx";
 import SelectPanelAuthor from "./SelectPanelAuthor.jsx";
 
 const IssuePage = () => {
@@ -222,20 +227,36 @@ const IssuePage = () => {
 
   return (
     <Center>
-      <Box mb={2}>
-        <form>
-          <button onClick={handleSearchClick}>
-            <SearchIcon />
-          </button>
-          <TextInput
-            placeholder={getPlaceholder()}
-            value={searchValue}
-            onChange={handleSearchChange}
-            sx={{
-              width: "80vw",
-            }}
-          />
-        </form>
+      <Box display="inline-flex">
+        <Box mb={2}>
+          <form>
+            <button onClick={handleSearchClick}>
+              <SearchIcon />
+            </button>
+            <TextInput
+              placeholder={getPlaceholder()}
+              value={searchValue}
+              onChange={handleSearchChange}
+              sx={{
+                width: "50vw",
+              }}
+            />
+          </form>
+        </Box>
+        {/* <Button
+          leadingVisual={TagIcon}
+          count={labels.length}
+          sx={{ fontWeight: "bold" }}
+        >
+          Labels
+        </Button>
+        <Button
+          leadingVisual={MilestoneIcon}
+          count={0}
+          sx={{ fontWeight: "bold" }}
+        >
+          Milestone
+        </Button> */}
       </Box>
       <Box border={"1px solid"} /*borderColor={"red"}*/ width={"80vw"}>
         <Header
@@ -253,11 +274,12 @@ const IssuePage = () => {
             {/*TODO:改成透明背景 */}
             <SegmentedControl.Button
               defaultSelected
+              variant="invisible"
               aria-label={"Preview"}
               leadingIcon={IssueOpenedIcon}
               sx={{
                 color: "#636c76",
-                bg: "transparent",
+                bg: "#f6f8fa",
               }}
               onClick={() => setStateFilter("open")}
             >
@@ -268,7 +290,8 @@ const IssuePage = () => {
               leadingIcon={CheckIcon}
               sx={{
                 color: "#636c76",
-                bg: "transparent",
+                bg: "#f6f8fa",
+                outline: "none",
               }}
               onClick={() => setStateFilter("closed")}
             >
@@ -298,11 +321,26 @@ const IssuePage = () => {
                 </option>
               ))}
             </Select> */}
-            <SelectPanelAuthor
-              authors={authors}
-              onSelect={handleAuthorChange}
-            />
-            {/*TODO:改成透明背景 */}
+            <ButtonGroup>
+              <SelectPanelAuthor
+                authors={authors}
+                onSelect={handleAuthorChange}
+              />
+              <SelectPanelLabel labels={labels} onSelect={handleLabelChange} />
+
+              <Button variant="invisible" trailingAction={TriangleDownIcon}>
+                {"Projects"}
+              </Button>
+              <Button variant="invisible" trailingAction={TriangleDownIcon}>
+                {"Milestones"}
+              </Button>
+              <Button variant="invisible" trailingAction={TriangleDownIcon}>
+                {"Assignee"}
+              </Button>
+              <Button variant="invisible" trailingAction={TriangleDownIcon}>
+                {"Sort"}
+              </Button>
+            </ButtonGroup>
           </Box>
           <Box>
             {/* <Select
@@ -317,8 +355,6 @@ const IssuePage = () => {
                 </option>
               ))}
             </Select> */}
-            <LabelSelectPanel labels={labels} onSelect={handleLabelChange} />
-            {/*TODO:改成透明背景 */}
           </Box>
         </Header>
         <CheckboxGroup>
