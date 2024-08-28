@@ -46,22 +46,55 @@ const IssuePage = () => {
   const { repoName } = useParams();
   const { user } = useContext(AuthContext);
 
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const searchParams = new URLSearchParams(window.location.search);
+  //     const q = searchParams.get("q") || "";
+  //     const authorFilter = "all";
+  //     const labelFilter = "all";
+  //     // FIXME:``需要反斜線
+  //     if (user && user.reloadUserInfo && user.reloadUserInfo.screenName) {
+  //       const { screenName } = user.reloadUserInfo;
+
+  //       try {
+  //         const [issuesData, labelsData, allIssuesData] = await Promise.all([
+  //           api.getSearchIssues(
+  //             screenName,
+  //             repoName,
+  //             q,
+  //             authorFilter,
+  //             labelFilter,
+  //             stateFilter
+  //           ),
+  //           api.getAllLabels(screenName, repoName),
+  //           api.getAllIssues(screenName, repoName),
+  //         ]);
+
+  //         setApiResult(issuesData);
+  //         setAllIssues(allIssuesData);
+
+  //         const uniqueAuthors = [
+  //           ...new Set(issuesData.map((issue) => issue.user.login)),
+  //         ];
+  //         setAuthors(uniqueAuthors);
+  //         setLabels(labelsData);
+  //       } catch (error) {
+  //         console.error("Failed to fetch data:", error);
+  //       }
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, [user, repoName, stateFilter]);
+
   useEffect(() => {
     const fetchData = async () => {
-      const searchParams = new URLSearchParams(window.location.search);
-      const q = searchParams.get("q") || "";
-      const authorFilter = searchParams.get("author") || "all";
-      // const labelFilter = searchParams.get("label") || "all";
-      const labelFilter = `wontfix`; // FIXME:``需要反斜線
-      // const labelFilter = encodeURIComponent("bug");
+      // const searchParams = new URLSearchParams(window.location.search);
+      // const q = searchParams.get("q") || "";
+      const q = "";
+      const authorFilter = "all";
+      const labelFilter = "all";
 
-      // if (labelFilter !== "all") {
-      //   const labelMatches = labelFilter.match(/label:"[^"]+"/g) || [];
-      //   // const labels = labelMatches.map((label) =>
-      //   //   label.replace("label:", "").trim()
-      //   // );
-      //   console.log("Label陣列現在是" + labelMatches);
-      // }
       if (user && user.reloadUserInfo && user.reloadUserInfo.screenName) {
         const { screenName } = user.reloadUserInfo;
 
@@ -75,18 +108,18 @@ const IssuePage = () => {
               labelFilter,
               stateFilter
             ),
-            api.getLabelsWithFilter(screenName, repoName, q, labelFilter),
+            api.getAllLabels(screenName, repoName),
             api.getAllIssues(screenName, repoName),
           ]);
 
           setApiResult(issuesData);
-          setAllIssues(allIssuesData);
+          setLabels(labelsData); // 新增
+          setAllIssues(allIssuesData); // 新增
 
           const uniqueAuthors = [
             ...new Set(issuesData.map((issue) => issue.user.login)),
           ];
           setAuthors(uniqueAuthors);
-          setLabels(labelsData);
         } catch (error) {
           console.error("Failed to fetch data:", error);
         }
@@ -94,24 +127,25 @@ const IssuePage = () => {
     };
 
     fetchData();
-  }, [user, repoName, stateFilter]);
+  }, [repoName, stateFilter, user]); // 根據實際依賴項修改
 
   const updateUrlParams = (params) => {
     const url = new URL(window.location.href);
 
-    // 取得當前查詢字串
     const currentSearch = url.search;
 
-    // 移除所有以 `label:` 開頭的參數
-    url.search = currentSearch.replace(/([&?]label:[^&]*)/g, "");
+    url.search = currentSearch.replace(/([&?](label:[^&]*|author=[^&]*))/g, "");
 
-    // 構建新的查詢字串
-    if (params.label) {
-      const labelQuery = params.label.trim(); // 去除首尾空白
-      url.search = `${url.search}${url.search ? "&" : "?"}${labelQuery}`;
-    }
+    const newSearchParams = [];
+    if (params.q) newSearchParams.push(`q=${encodeURIComponent(params.q)}`);
+    if (params.label)
+      newSearchParams.push(`label=${encodeURIComponent(params.label)}`);
+    if (params.author)
+      newSearchParams.push(`author=${encodeURIComponent(params.author)}`);
 
-    // 更新 URL
+    url.search = `${url.search}${url.search ? "&" : "?"}${newSearchParams.join(
+      "&"
+    )}`;
     window.history.pushState({}, "", url);
   };
 
@@ -120,13 +154,12 @@ const IssuePage = () => {
 
     const params = new URLSearchParams(window.location.search);
     const currentQuery = params.get("q") || "";
-
-    // 獲取當前的標籤
     const currentLabels = params.get("label")
       ? params.get("label").split(" ")
       : [];
+    const currentAuthor = params.get("author") || "all";
 
-    // 更新標籤
+    // 根據 type 更新參數
     const newParams = {
       q: currentQuery,
       label:
@@ -135,6 +168,12 @@ const IssuePage = () => {
             ? "" // 如果 value 是 "all"，則清空所有標籤
             : [...new Set([...currentLabels, value])].join(" ") // 添加新標籤並去除重複
           : currentLabels.join(" "),
+      author:
+        type === "author"
+          ? value === "all"
+            ? "" // 如果 value 是 "all"，則清空作者過濾器
+            : value
+          : currentAuthor,
     };
 
     updateUrlParams(newParams);
@@ -143,18 +182,14 @@ const IssuePage = () => {
   const handleAuthorChange = (selectedAuthor) => {
     console.log("Selected author:", selectedAuthor);
     setSelectedAuthor(selectedAuthor);
-    //FIXME: handleFilterChange("author", selectedAuthor);
+    handleFilterChange("author", selectedAuthor);
   };
 
   const handleLabelChange = (labels) => {
-    setSelectedLabel(labels);
-    console.log("SelectedLabel: ", labels); //FIXME:現在是ARRAY，要轉換成反斜線包著的字串，並更新labelFilter
-
-    const formattedString = labels.map((label) => `label:${label}`).join(" ");
-    console.log("formattedString: ", formattedString); //現在是字串formattedString:  label:invalid label:question label:enhancement
+    const formattedString = labels.map((label) => `label:"${label}"`).join(" ");
+    console.log("formattedString: ", formattedString); // 現在是字串 formattedString:  label:"invalid" label:"question" label:"enhancement"
     handleFilterChange("label", formattedString);
     setSelectedLabel(formattedString);
-    return formattedString;
   };
 
   const handleSearchClick = async (e, searchValue) => {
@@ -162,26 +197,26 @@ const IssuePage = () => {
     setIsSearching(true);
     console.log("searchValue: ", searchValue);
 
-    // try {
-    //   updateUrlParams({
-    //     q: searchValue,
-    //     author: selectedAuthor === "all" ? "" : selectedAuthor,
-    //     label: selectedLabel === "all" ? "" : selectedLabel,
-    //   });
+    try {
+      updateUrlParams({
+        q: searchValue,
+        author: selectedAuthor === "all" ? "" : selectedAuthor,
+        label: selectedLabel === "all" ? "" : selectedLabel,
+      });
 
-    //   const searchResults = await api.getSearchIssues(
-    //     user.reloadUserInfo.screenName,
-    //     repoName,
-    //     searchValue,
-    //     selectedAuthor,
-    //     selectedLabel
-    //   );
-    //   setSearchResult(searchResults);
-    // } catch (error) {
-    //   console.error("Failed to fetch data:", error);
-    // } finally {
-    //   setIsSearching(false);
-    // }
+      const searchResults = await api.getSearchIssues(
+        user.reloadUserInfo.screenName,
+        repoName,
+        searchValue,
+        selectedAuthor,
+        selectedLabel
+      );
+      setSearchResult(searchResults);
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   const filteredIssues = (issues) =>
@@ -192,9 +227,8 @@ const IssuePage = () => {
           issue.labels.some((label) => label.name === selectedLabel))
     );
 
-  const issuesToDisplay = isSearching
-    ? searchResult
-    : filteredIssues(apiResult);
+  const issuesToDisplay = filteredIssues(apiResult);
+  // isSearching ? apiResult : filteredIssues(apiResult);
 
   const handleCheckboxChange = (issueId) => {
     console.log(`Checkbox for issue ${issueId} changed.`);

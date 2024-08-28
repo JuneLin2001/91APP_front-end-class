@@ -29,7 +29,7 @@ const api = {
     return data;
   },
 
-  async getLabelsWithFilter(username, repo, filter) {
+  async getAllLabels(username, repo) {
     const response = await fetch(
       `${this.hostname}/repos/${username}/${repo}/labels`
     );
@@ -39,7 +39,8 @@ const api = {
     }
 
     const labels = await response.json();
-    return labels.filter((label) => label.name.includes(filter));
+
+    return labels;
   },
 
   async getSearchIssues(
@@ -51,32 +52,59 @@ const api = {
     stateFilter
   ) {
     const searchParams = new URLSearchParams(window.location.search);
-    const query = searchParams.get("q") || "";
+    const query =
+      searchParams.get("q") ||
+      `repo:${username}/${repo} is:issue is:${stateFilter}`;
+
+    console.log("URL query parameter 'q':", searchParams.get("q"));
+    console.log("Using query:", query);
+
+    const formattedLabelFilter = labelFilter
+      .split(" ")
+      .map((label) => label.trim())
+      .filter((label) => label.startsWith("label:"))
+      .map((label) => {
+        const cleanedLabel = label.replace(/^label:"|"$/g, "");
+        return `label:${cleanedLabel}`;
+      })
+      .join(" ");
+
+    console.log("Raw labelFilter:", labelFilter);
+    console.log("Formatted labelFilter:", formattedLabelFilter);
 
     const searchQuery = [
-      `repo:${username}/${repo}`,
-      `is:issue`,
-      `is:${stateFilter}`,
-      authorFilter !== "all"
-        ? `author:${encodeURIComponent(authorFilter)}`
-        : "",
-      labelFilter !== "all" ? `label:${labelFilter}` : "",
       query,
+      formattedLabelFilter !== "" ? formattedLabelFilter : "",
+      authorFilter !== "all" ? `author:${authorFilter}` : "",
     ]
       .filter(Boolean)
       .join(" ");
 
+    console.log("Search query components:", {
+      query,
+      formattedLabelFilter,
+      authorFilter,
+      searchQuery,
+    });
+
     if (searchQuery) {
+      const encodedQuery = encodeURIComponent(searchQuery);
+      console.log("Encoded search query:", encodedQuery);
+
       const response = await fetch(
-        `${this.hostname}/search/issues?q=${searchQuery}`
+        `${this.hostname}/search/issues?q=${encodedQuery}`
       );
+
+      console.log("Response status:", response.status);
+      console.log("Response headers:", response.headers);
 
       if (!response.ok) {
         throw new Error("Failed to search issues");
       }
 
       const data = await response.json();
-      console.log(data);
+      console.log("Search results:", data.items);
+
       return data.items;
     }
   },
