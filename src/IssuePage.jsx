@@ -5,7 +5,6 @@ import {
   Box,
   Text,
   RelativeTime,
-  TextInput,
   Header,
   Checkbox,
   CheckboxGroup,
@@ -13,11 +12,8 @@ import {
   SegmentedControl,
   Button,
   ButtonGroup,
-  Select,
-  Caret,
 } from "@primer/react";
 import {
-  SearchIcon,
   IssueOpenedIcon,
   IssueClosedIcon,
   CheckIcon,
@@ -40,7 +36,7 @@ const IssuePage = () => {
   const [labels, setLabels] = useState([]);
   const [selectedAuthor, setSelectedAuthor] = useState("all");
   const [selectedLabel, setSelectedLabel] = useState("all");
-  const [searchValue, setSearchValue] = useState("");
+  // const [searchValue, setSearchValue] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [stateFilter, setStateFilter] = useState("open");
@@ -163,11 +159,11 @@ const IssuePage = () => {
     });
   };
 
-  const handleSearchChange = (e) => {
-    setSearchValue(e.target.value);
-  };
+  // const handleSearchChange = (e) => {
+  //   setSearchValue(e.target.value);
+  // };
 
-  const handleSearchClick = async (e) => {
+  const handleSearchClick = async (e, searchValue) => {
     e.preventDefault();
     setIsSearching(true);
 
@@ -188,6 +184,8 @@ const IssuePage = () => {
       setSearchResult(searchResults);
     } catch (error) {
       console.error("Failed to fetch data:", error);
+    } finally {
+      setIsSearching(false);
     }
   };
 
@@ -203,115 +201,65 @@ const IssuePage = () => {
     ? searchResult
     : filteredIssues(apiResult);
 
-  const getPlaceholder = () => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const q = searchParams.get("q") || "";
-    const authorFilter = searchParams.get("author") || "all";
-    const labelFilter = searchParams.get("label") || "all";
-
-    const parts = ["is:issue", "is:open"];
-
-    if (authorFilter !== "all") {
-      parts.push(`author:${authorFilter}`);
-    }
-    if (labelFilter !== "all") {
-      const decodedLabel = decodeURIComponent(labelFilter);
-      parts.push(`label:"${decodedLabel}"`);
-    }
-    if (q) {
-      parts.push(q);
-    }
-
-    return parts.join(" ");
-  };
-
   const handleCheckboxChange = (issueId) => {
     console.log(`Checkbox for issue ${issueId} changed.`);
   };
 
   return (
     <Center>
-      <Box display="inline-flex">
-        <Box mb={2}>
-          <form>
-            <button onClick={handleSearchClick}>
-              <SearchIcon />
-            </button>
-            <TextInput
-              placeholder={getPlaceholder()}
-              value={searchValue}
-              onChange={handleSearchChange}
-              sx={{
-                width: "50vw",
-              }}
-            />
-          </form>
-        </Box>
-        {/* <Button
-          leadingVisual={TagIcon}
-          count={labels.length}
-          sx={{ fontWeight: "bold" }}
+      <Box>
+        <IssueSearch handleSearchClick={handleSearchClick} />
+        <Box display="inline-flex"></Box>
+        <Box
+          border={"1px solid"}
+          borderColor={"#dee3e8"}
+          width={"80vw"}
+          borderRadius={"0.375rem"} //應該有個官方規範叫做borderRadius-medium
         >
-          Labels
-        </Button>
-        <Button
-          leadingVisual={MilestoneIcon}
-          count={0}
-          sx={{ fontWeight: "bold" }}
-        >
-          Milestone
-        </Button> */}
-      </Box>
-      <Box
-        border={"1px solid"}
-        borderColor={"#dee3e8"}
-        width={"80vw"}
-        borderRadius={"0.375rem"} //應該有個官方規範叫做borderRadius-medium
-      >
-        <Header
-          sx={{
-            bg: "#f6f8fa",
-            m: 0,
-            p: 2,
-          }}
-        >
-          <Checkbox sx={{ mr: 2, ml: 0 }} />
-          <SegmentedControl aria-label="File view">
-            {" "}
-            {/*TODO:改成透明背景 */}
-            <SegmentedControl.Button
-              defaultSelected
-              variant="invisible"
-              aria-label={"Preview"}
-              leadingIcon={IssueOpenedIcon}
-              sx={{
-                color: "#636c76",
-                bg: "#f6f8fa",
-              }}
-              onClick={() => setStateFilter("open")}
-            >
-              Open
-            </SegmentedControl.Button>
-            <SegmentedControl.Button
-              aria-label={"Raw"}
-              leadingIcon={CheckIcon}
-              sx={{
-                color: "#636c76",
-                bg: "#f6f8fa",
-                outline: "none",
-              }}
-              onClick={() => setStateFilter("closed")}
-            >
-              Closed
-            </SegmentedControl.Button>
-          </SegmentedControl>
-          <Box
+          <Header
             sx={{
-              ml: "auto",
-              mr: 4,
+              bg: "#f6f8fa",
+              m: 0,
+              p: 2,
             }}
           >
-            {/* <Select
+            <Checkbox sx={{ mr: 2, ml: 0 }} />
+            <SegmentedControl aria-label="File view">
+              {" "}
+              {/*TODO:改成透明背景 */}
+              <SegmentedControl.Button
+                defaultSelected
+                variant="invisible"
+                aria-label={"Preview"}
+                leadingIcon={IssueOpenedIcon}
+                sx={{
+                  color: "#636c76",
+                  bg: "#f6f8fa",
+                }}
+                onClick={() => setStateFilter("open")}
+              >
+                Open
+              </SegmentedControl.Button>
+              <SegmentedControl.Button
+                aria-label={"Raw"}
+                leadingIcon={CheckIcon}
+                sx={{
+                  color: "#636c76",
+                  bg: "#f6f8fa",
+                  outline: "none",
+                }}
+                onClick={() => setStateFilter("closed")}
+              >
+                Closed
+              </SegmentedControl.Button>
+            </SegmentedControl>
+            <Box
+              sx={{
+                ml: "auto",
+                mr: 4,
+              }}
+            >
+              {/* <Select
               id="author-select"
               value={selectedAuthor}
               onChange={handleAuthorChange}
@@ -328,29 +276,32 @@ const IssuePage = () => {
                 </option>
               ))}
             </Select> */}
-            <ButtonGroup>
-              <SelectPanelAuthor
-                authors={authors}
-                onSelect={handleAuthorChange}
-              />
-              <SelectPanelLabel labels={labels} onSelect={handleLabelChange} />
+              <ButtonGroup>
+                <SelectPanelAuthor
+                  authors={authors}
+                  onSelect={handleAuthorChange}
+                />
+                <SelectPanelLabel
+                  labels={labels}
+                  onSelect={handleLabelChange}
+                />
 
-              <Button variant="invisible" trailingAction={TriangleDownIcon}>
-                {"Projects"}
-              </Button>
-              <Button variant="invisible" trailingAction={TriangleDownIcon}>
-                {"Milestones"}
-              </Button>
-              <Button variant="invisible" trailingAction={TriangleDownIcon}>
-                {"Assignee"}
-              </Button>
-              <Button variant="invisible" trailingAction={TriangleDownIcon}>
-                {"Sort"}
-              </Button>
-            </ButtonGroup>
-          </Box>
-          <Box>
-            {/* <Select
+                <Button variant="invisible" trailingAction={TriangleDownIcon}>
+                  {"Projects"}
+                </Button>
+                <Button variant="invisible" trailingAction={TriangleDownIcon}>
+                  {"Milestones"}
+                </Button>
+                <Button variant="invisible" trailingAction={TriangleDownIcon}>
+                  {"Assignee"}
+                </Button>
+                <Button variant="invisible" trailingAction={TriangleDownIcon}>
+                  {"Sort"}
+                </Button>
+              </ButtonGroup>
+            </Box>
+            <Box>
+              {/* <Select
               id="label-select"
               value={selectedLabel}
               onChange={handleLabelChange}
@@ -362,112 +313,115 @@ const IssuePage = () => {
                 </option>
               ))}
             </Select> */}
-          </Box>
-        </Header>
-        <CheckboxGroup>
-          <ActionList sx={{ p: 0 }}>
-            {issuesToDisplay.map((issue) => (
-              <ActionList.Item
-                key={issue.id}
-                style={{
-                  borderTop: "1px solid",
-                  // borderBottom: "1px solid",
-                  borderColor: "#dee3e8", //TODO:要改用官方文件的顏色
-                  cursor: "default",
-                  margin: 0,
-                  borderRadius: 0,
-                }}
-                sx={{
-                  ":hover": {
-                    backgroundColor: "#f6f8fa",
-                  },
-                }}
-              >
-                <Box display="flex" flexWrap="wrap" alignItems="center">
-                  <Checkbox
-                    onChange={() => handleCheckboxChange(issue.id)}
-                    style={{ marginRight: "4px" }}
-                  />
-                  <IconButton
-                    aria-label={
-                      stateFilter === "open" ? "Open issue" : "Closed issue"
-                    }
-                    variant="invisible"
-                    size="small"
-                    icon={
-                      stateFilter === "open" ? IssueOpenedIcon : IssueClosedIcon
-                    }
-                    unsafeDisableTooltip={false}
-                    sx={{
-                      color: stateFilter === "open" ? "green" : "purple", //TODO:要改用官方文件的顏色
-                      cursor: "default",
-                      ":hover": {
-                        borderColor: "transparent",
-                        bg: "transparent",
-                      },
-                    }}
-                  />
-
-                  <Text>
-                    <Link
-                      to={`/comment/${issue.number}`}
-                      style={{
-                        color: "black",
-                        fontWeight: "bold",
+            </Box>
+          </Header>
+          <CheckboxGroup>
+            <ActionList sx={{ p: 0 }}>
+              {issuesToDisplay.map((issue) => (
+                <ActionList.Item
+                  key={issue.id}
+                  style={{
+                    borderTop: "1px solid",
+                    // borderBottom: "1px solid",
+                    borderColor: "#dee3e8", //TODO:要改用官方文件的顏色
+                    cursor: "default",
+                    margin: 0,
+                    borderRadius: 0,
+                  }}
+                  sx={{
+                    ":hover": {
+                      backgroundColor: "#f6f8fa",
+                    },
+                  }}
+                >
+                  <Box display="flex" flexWrap="wrap" alignItems="center">
+                    <Checkbox
+                      onChange={() => handleCheckboxChange(issue.id)}
+                      style={{ marginRight: "4px" }}
+                    />
+                    <IconButton
+                      aria-label={
+                        stateFilter === "open" ? "Open issue" : "Closed issue"
+                      }
+                      variant="invisible"
+                      size="small"
+                      icon={
+                        stateFilter === "open"
+                          ? IssueOpenedIcon
+                          : IssueClosedIcon
+                      }
+                      unsafeDisableTooltip={false}
+                      sx={{
+                        color: stateFilter === "open" ? "green" : "purple", //TODO:要改用官方文件的顏色
+                        cursor: "default",
+                        ":hover": {
+                          borderColor: "transparent",
+                          bg: "transparent",
+                        },
                       }}
-                    >
-                      {issue.title}
-                    </Link>
-                  </Text>
-                  {issue.labels.map((label) => {
-                    const isWhite = label.color === "ffffff";
-                    return (
-                      <Box
-                        as="span"
-                        key={label.id}
-                        bg={`#${label.color}`}
-                        color={isWhite ? "black" : "white"}
-                        borderRadius={100}
-                        ml={1}
-                        px={2}
-                        py={0.75}
-                        fontSize={10}
-                        fontWeight="bold"
-                        border={isWhite ? "1px solid" : 0}
-                        borderColor={isWhite ? "gray" : "transparent"} //加個hover顯示文字，如aria-label="XXX"
-                      >
-                        {label.name}
-                      </Box>
-                    );
-                  })}
-                  {issue.comments > 0 && (
-                    <Box ml={"auto"}>
-                      <IconButton
-                        icon={CommentIcon}
-                        variant="invisible"
-                        unsafeDisableTooltip={false}
-                        sx={{
-                          ":hover": {
-                            color: "blue", // TODO: 替換為官方文件中的顏色
-                          },
+                    />
+
+                    <Text>
+                      <Link
+                        to={`/comment/${issue.number}`}
+                        style={{
+                          color: "black",
+                          fontWeight: "bold",
                         }}
-                      />
-                      {issue.comments}
-                    </Box>
-                  )}
-                </Box>
-                <Box mt={1} ml={7}>
-                  <Text color="fg.muted" fontSize={10}>
-                    {`#${issue.number} `}
-                    {`opened on `}
-                    <RelativeTime date={new Date(issue.updated_at)} />
-                    {` by ${issue.user.login}`}
-                  </Text>
-                </Box>
-              </ActionList.Item>
-            ))}
-          </ActionList>
-        </CheckboxGroup>
+                      >
+                        {issue.title}
+                      </Link>
+                    </Text>
+                    {issue.labels.map((label) => {
+                      const isWhite = label.color === "ffffff";
+                      return (
+                        <Box
+                          as="span"
+                          key={label.id}
+                          bg={`#${label.color}`}
+                          color={isWhite ? "black" : "white"}
+                          borderRadius={100}
+                          ml={1}
+                          px={2}
+                          py={0.75}
+                          fontSize={10}
+                          fontWeight="bold"
+                          border={isWhite ? "1px solid" : 0}
+                          borderColor={isWhite ? "gray" : "transparent"} //加個hover顯示文字，如aria-label="XXX"
+                        >
+                          {label.name}
+                        </Box>
+                      );
+                    })}
+                    {issue.comments > 0 && (
+                      <Box ml={"auto"}>
+                        <IconButton
+                          icon={CommentIcon}
+                          variant="invisible"
+                          unsafeDisableTooltip={false}
+                          sx={{
+                            ":hover": {
+                              color: "blue", // TODO: 替換為官方文件中的顏色
+                            },
+                          }}
+                        />
+                        {issue.comments}
+                      </Box>
+                    )}
+                  </Box>
+                  <Box mt={1} ml={7}>
+                    <Text color="fg.muted" fontSize={10}>
+                      {`#${issue.number} `}
+                      {`opened on `}
+                      <RelativeTime date={new Date(issue.updated_at)} />
+                      {` by ${issue.user.login}`}
+                    </Text>
+                  </Box>
+                </ActionList.Item>
+              ))}
+            </ActionList>
+          </CheckboxGroup>
+        </Box>
       </Box>
     </Center>
   );

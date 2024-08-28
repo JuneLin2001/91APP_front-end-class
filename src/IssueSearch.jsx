@@ -1,19 +1,50 @@
 import {
-  Details,
   TextInput,
   Button,
   Box,
   ActionMenu,
   ActionList,
-  Textarea,
   ButtonGroup,
   IconButton,
   Text,
 } from "@primer/react";
-import { XIcon, SearchIcon, LinkExternalIcon, TagIcon, MilestoneIcon } from "@primer/octicons-react";
-import React, { useState, useRef } from "react";
+import {
+  XIcon,
+  SearchIcon,
+  LinkExternalIcon,
+  TagIcon,
+  MilestoneIcon,
+} from "@primer/octicons-react";
+import React, { useState } from "react";
 
-const IssueSearch = () => {
+const IssueSearch = ({ handleSearchClick }) => {
+  const [searchValue, setSearchValue] = useState("");
+
+  const handleSearchChange = (e) => {
+    setSearchValue(e.target.value);
+  };
+
+  const getPlaceholder = () => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const q = searchParams.get("q") || "";
+    const authorFilter = searchParams.get("author") || "all";
+    const labelFilter = searchParams.get("label") || "all";
+
+    const parts = ["is:issue", "is:open"];
+
+    if (authorFilter !== "all") {
+      parts.push(`author:${authorFilter}`);
+    }
+    if (labelFilter !== "all") {
+      const decodedLabel = decodeURIComponent(labelFilter);
+      parts.push(`label:"${decodedLabel}"`);
+    }
+    if (q) {
+      parts.push(q);
+    }
+    return parts.join(" ");
+  };
+
   const options = [
     {
       name: "Fast forward",
@@ -36,6 +67,7 @@ const IssueSearch = () => {
   ];
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const selectedType = options[selectedIndex];
+  console.log("in filter that choose" + selectedType);
   return (
     <>
       <Box
@@ -46,7 +78,13 @@ const IssueSearch = () => {
           gap: "8px",
         }}
       >
-        <Box height="32px" width="100%" display="flex" justifyContent="flex-end" alignItems="center">
+        <Box
+          height="32px"
+          width="100%"
+          display="flex"
+          justifyContent="flex-end"
+          alignItems="center"
+        >
           <ActionMenu>
             <ActionMenu.Button
               aria-label="Close issue"
@@ -73,7 +111,11 @@ const IssueSearch = () => {
                 <Text as="h3" sx={{ fontSize: "12px" }}>
                   Filter Issues
                 </Text>
-                <IconButton icon={XIcon} variant="invisible" aria-label="Close" />
+                <IconButton
+                  icon={XIcon}
+                  variant="invisible"
+                  aria-label="Close"
+                />
               </Box>
               <ActionList selectionVariant="single" showDividers>
                 <ActionList.Group>
@@ -88,12 +130,18 @@ const IssueSearch = () => {
                     </ActionList.Item>
                   ))}
                 </ActionList.Group>
-                <ActionList.Item sx={{ display: "flex", alignItems: "center", padding: "8px" }}>
+                <ActionList.Item
+                  sx={{ display: "flex", alignItems: "center", padding: "8px" }}
+                >
                   <IconButton
                     icon={LinkExternalIcon}
                     variant="invisible"
                     name="link-external"
-                    sx={{ padding: 0, height: "100%", ":hover": { boxShadow: "none" } }}
+                    sx={{
+                      padding: 0,
+                      height: "100%",
+                      ":hover": { boxShadow: "none" },
+                    }}
                   />
                   <Text sx={{ fontSize: "12px" }}>External Link</Text>
                 </ActionList.Item>
@@ -119,24 +167,32 @@ const IssueSearch = () => {
               },
             }}
           >
-            <SearchIcon
-              sx={{
-                pointerEvents: "none",
-              }}
-            />
-            <TextInput
-              size="small"
-              placeholder="is:issue is:open "
-              sx={{
-                width: "inherit",
-                backgroundColor: "transparent",
-                border: "none",
-                paddingY: "1px",
-                "&:focus-within": {
-                  outline: "none",
-                },
-              }}
-            ></TextInput>
+            <form onSubmit={handleSearchClick}>
+              <SearchIcon
+                sx={{
+                  pointerEvents: "none",
+                }}
+              />
+              <TextInput
+                size="small"
+                placeholder={getPlaceholder()}
+                onChange={handleSearchChange}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    handleSearchClick(event, searchValue);
+                  }
+                }}
+                sx={{
+                  width: "inherit",
+                  backgroundColor: "transparent",
+                  border: "none",
+                  paddingY: "1px",
+                  "&:focus-within": {
+                    outline: "none",
+                  },
+                }}
+              ></TextInput>
+            </form>
           </Box>
         </Box>
         <ButtonGroup>
