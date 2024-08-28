@@ -60,6 +60,25 @@ const api = {
     return data.items;
   },
 
+  async getIssueBody(owner, repo, issueNumber, token) {
+    const response = await fetch(
+      `${this.hostname}/repos/${owner}/${repo}/issues/${issueNumber}`,
+      {
+        headers: {
+          "X-GitHub-Api-Version": "2022-11-28",
+          Accept: "application/vnd.github+json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  },
+
   async getIssueComments(owner, repo, issueNumber, timestamp) {
     const response = await fetch(
       `${this.hostname}/repos/${owner}/${repo}/issues/${issueNumber}/comments?t=${timestamp}`
@@ -105,6 +124,32 @@ const api = {
     );
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
+    }
+  },
+
+  async createComment(owner, repo, issueNumber, text, token) {
+    try {
+      const response = await fetch(
+        `${this.hostname}/repos/${owner}/${repo}/issues/${issueNumber}/comments`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            body: text,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to create comment");
+      }
+      const newComment = await response.json();
+      return newComment;
+    } catch (e) {
+      console.error("Error:", e);
     }
   },
 };
