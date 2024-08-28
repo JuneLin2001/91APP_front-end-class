@@ -15,15 +15,6 @@ import { useContext } from "react";
 import { CommentContext } from "./context/commentContext";
 import CommentBox from "./comment";
 
-const getHeaderColor = (role) => {
-  switch (role) {
-    case "Owner":
-      return "var(--bgColor-accent-muted)"; // Example color for Owner
-    default:
-      return "var(--control-bgColor-rest)"; // Default color
-  }
-};
-
 const TimelineComment = () => {
   const {
     commentData,
@@ -33,6 +24,7 @@ const TimelineComment = () => {
     handleUpdate,
     handleTextareaChange,
     setEditingCommentId,
+    getHeaderColor,
   } = useContext(CommentContext);
 
   return (

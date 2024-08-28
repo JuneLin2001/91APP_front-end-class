@@ -1,7 +1,7 @@
 import { useState, createContext, useEffect, useContext } from "react";
-import api from "../utils/api";
 import { useParams } from "react-router-dom";
 import { AuthContext } from "./authContext";
+import api from "../utils/api";
 
 export const CommentContext = createContext({
   issueData: {},
@@ -18,6 +18,7 @@ export const CommentContext = createContext({
   handleTextareaChange: () => {},
   handleCreateComment: () => {},
   setEditingCommentId: () => {},
+  getHeaderColor: () => {},
 });
 
 export const CommentContextProvider = ({ children }) => {
@@ -28,10 +29,8 @@ export const CommentContextProvider = ({ children }) => {
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [currentTextareaValue, setCurrentTextareaValue] = useState("");
   const { issueNumber } = useParams();
-
-  console.log(issueNumber);
-
   const { CRUDtoken } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   const owner = "JuneLin2001";
   const repo = "91APP_front-end-class";
@@ -125,6 +124,16 @@ export const CommentContextProvider = ({ children }) => {
     fetchData();
   };
 
+  const getHeaderColor = (userLogin) => {
+    if (
+      Object.keys(user).length !== 0 &&
+      user.reloadUserInfo.screenName === userLogin
+    ) {
+      return "var(--bgColor-accent-muted)";
+    }
+    return "var(--control-bgColor-rest)";
+  };
+
   return (
     <CommentContext.Provider
       value={{
@@ -139,6 +148,7 @@ export const CommentContextProvider = ({ children }) => {
         handleTextareaChange,
         handleCreateComment,
         setEditingCommentId,
+        getHeaderColor,
       }}
     >
       {children}
