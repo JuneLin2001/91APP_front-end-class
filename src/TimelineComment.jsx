@@ -11,7 +11,15 @@ const getHeaderColor = (role) => {
   }
 };
 
-const CommentItem = ({ user, role, time, content, isEdited, isDeleted, editedBy }) => {
+const CommentItem = ({
+  user,
+  role,
+  time,
+  content,
+  isEdited,
+  isDeleted,
+  editedBy,
+}) => {
   return (
     <>
       <Timeline.Item
@@ -23,11 +31,18 @@ const CommentItem = ({ user, role, time, content, isEdited, isDeleted, editedBy 
           },
         }}
       >
-        <Timeline.Badge sx={{ position: "absolute", left: "-30px", top: "10px" }}>
+        <Timeline.Badge
+          sx={{ position: "absolute", left: "-30px", top: "10px" }}
+        >
           <Avatar src={user.avatarUrl} alt={user.name} />
         </Timeline.Badge>
         <Timeline.Body sx={{ zIndex: 1, backgroundColor: "white" }}>
-          <Box borderWidth={1} borderStyle="solid" borderColor="border.default" borderRadius={2}>
+          <Box
+            borderWidth={1}
+            borderStyle="solid"
+            borderColor="border.default"
+            borderRadius={2}
+          >
             <Box
               px={3}
               py={2}
