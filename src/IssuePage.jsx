@@ -5,8 +5,6 @@ import {
   Box,
   Text,
   RelativeTime,
-  Header,
-  Checkbox,
   CheckboxGroup,
   IconButton,
   SegmentedControl,
@@ -19,11 +17,16 @@ import {
   CheckIcon,
   TriangleDownIcon,
   CommentIcon,
-  // TagIcon,
-  // MilestoneIcon,
 } from "@primer/octicons-react";
 import { Link } from "react-router-dom";
 import { Center } from "./style/Center.styled";
+import {
+  IssueHeader,
+  IssueCheckbox,
+  IssueLabelBox,
+  IssueOpenClosedButton,
+  IssueCardContainer,
+} from "./style/IssuePage.styled";
 import { useParams } from "react-router-dom";
 import { AuthContext } from "./context/authContext";
 import IssueSearch from "./IssueSearch";
@@ -32,11 +35,11 @@ import SelectPanelAuthor from "./SelectPanelAuthor.jsx";
 
 const IssuePage = () => {
   const [apiResult, setApiResult] = useState([]);
+  const [allIssues, setAllIssues] = useState([]);
   const [authors, setAuthors] = useState([]);
   const [labels, setLabels] = useState([]);
   const [selectedAuthor, setSelectedAuthor] = useState("all");
   const [selectedLabel, setSelectedLabel] = useState("all");
-  // const [searchValue, setSearchValue] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [stateFilter, setStateFilter] = useState("open");
@@ -54,7 +57,7 @@ const IssuePage = () => {
         const { screenName } = user.reloadUserInfo;
 
         try {
-          const [issuesData, labelsData] = await Promise.all([
+          const [issuesData, labelsData, allIssuesData] = await Promise.all([
             api.getSearchIssues(
               screenName,
               repoName,
@@ -64,9 +67,11 @@ const IssuePage = () => {
               stateFilter
             ),
             api.getLabelsWithFilter(screenName, repoName, q, labelFilter),
+            api.getAllIssues(screenName, repoName),
           ]);
 
           setApiResult(issuesData);
+          setAllIssues(allIssuesData);
 
           const uniqueAuthors = [
             ...new Set(issuesData.map((issue) => issue.user.login)),
@@ -119,7 +124,7 @@ const IssuePage = () => {
     setSelectedLabel((prevSelected) => {
       const normalizeLabelString = (labelString) => {
         return labelString
-          .split("+") // 使用 "+" 符號分隔
+          .split("+")
           .map((part) => part.trim())
           .filter(Boolean)
           .join("+");
@@ -158,10 +163,6 @@ const IssuePage = () => {
       return finalResult;
     });
   };
-
-  // const handleSearchChange = (e) => {
-  //   setSearchValue(e.target.value);
-  // };
 
   const handleSearchClick = async (e, searchValue) => {
     e.preventDefault();
@@ -207,254 +208,173 @@ const IssuePage = () => {
 
   return (
     <Center>
-      <Box>
-        <IssueSearch handleSearchClick={handleSearchClick} />
-        <Box display="inline-flex"></Box>
-        <Box
-          border={"1px solid"}
-          borderColor={"#dee3e8"}
-          width={"80vw"}
-          borderRadius={"0.375rem"} //應該有個官方規範叫做borderRadius-medium
-        >
-          <Header
+      <IssueSearch handleSearchClick={handleSearchClick} />
+      <Box display="flex"></Box>
+      <Box
+        border={"1px solid"}
+        borderColor={"#dee3e8"}
+        width={"100%"}
+        maxWidth={"1214px"} //TODO:要找官方文件
+        borderRadius={"0.375rem"} //應該有個官方規範叫做borderRadius-medium
+        margin={"auto"}
+      >
+        <IssueHeader>
+          <IssueCheckbox />
+          <SegmentedControl
+            aria-label="File view"
+            variant="invisible"
+            sx={{ bg: "#f6f8fa" }}
+          >
+            <IssueOpenClosedButton
+              defaultSelected
+              aria-label="Open Issues"
+              leadingVisual={IssueOpenedIcon}
+              sx={{
+                color: stateFilter === "open" ? "#000000" : "#84878b", //TODO:要改用官方文件的顏色
+                fontWeight: stateFilter === "open" ? "bold" : "normal",
+              }}
+              onClick={() => setStateFilter("open")}
+            >
+              {`${allIssues.length} `}Open
+            </IssueOpenClosedButton>
+            <IssueOpenClosedButton //選中的關鍵字是aria-current
+              aria-label={"Raw"}
+              leadingVisual={CheckIcon}
+              onClick={() => setStateFilter("closed")}
+              sx={{
+                color: stateFilter === "closed" ? "#000000" : "#84878b", //TODO:要改用官方文件的顏色
+                fontWeight: stateFilter === "closed" ? "bold" : "normal",
+              }}
+            >
+              {`1 `}Closed
+            </IssueOpenClosedButton>
+          </SegmentedControl>
+          <Box
             sx={{
-              bg: "#f6f8fa",
-              m: 0,
-              p: 2,
+              ml: "auto",
             }}
           >
-            <Checkbox sx={{ mr: 2, ml: 0 }} />
-            <SegmentedControl aria-label="File view" variant="invisible">
-              {" "}
-              {/*TODO:改成透明背景 */}
-              <SegmentedControl.Button
-                defaultSelected
+            <ButtonGroup>
+              <SelectPanelAuthor
+                authors={authors}
+                onSelect={handleAuthorChange}
+              />
+              <SelectPanelLabel labels={labels} onSelect={handleLabelChange} />
+
+              <Button
                 variant="invisible"
-                aria-label={"Preview"}
-                leadingIcon={IssueOpenedIcon}
-                sx={{
-                  color: "#636c76",
-                  bg: "#f6f8fa",
-                }}
-                onClick={() => setStateFilter("open")}
+                trailingAction={TriangleDownIcon}
+                sx={{ fontSize: "14px" }}
               >
-                Open
-              </SegmentedControl.Button>
-              <SegmentedControl.Button //選中的關鍵字是aria-current
-                aria-label={"Raw"}
-                leadingIcon={CheckIcon}
-                sx={{
-                  color: "#636c76",
-                  bg: "#f6f8fa",
-                  outline: "none",
-                  '[data-component="trailingAction"]': {
-                    display: "none",
-                  },
-                  border: "none",
-                  backgroundColor: "transparent",
-                  boxShadow: "none",
-                  "&:hover": {
-                    backgroundColor: "transparent",
-                    boxShadow: "none",
-                  },
-                  "&:focus": {
-                    backgroundColor: "transparent",
-                    boxShadow: "none",
-                  },
-                  "&:active": {
-                    backgroundColor: "transparent",
-                    boxShadow: "none",
-                  },
-                  "&:hover:not([disabled]):not([data-inactive])": {
-                    backgroundColor: "transparent",
-                    boxShadow: "none",
-                  },
-                  "& svg": {
-                    color: "currentColor",
-                    "&:hover": {
-                      color: "var(--bgColor-accent-emphasis)",
-                    },
-                    "&:focus": {
-                      color: "var(--bgColor-accent-emphasis)",
-                    },
-                  },
-                  "&[aria-expanded='true']": {
-                    backgroundColor: "transparent",
-                  },
-                }}
-                onClick={() => setStateFilter("closed")}
-              >
-                Closed
-              </SegmentedControl.Button>
-            </SegmentedControl>
-            <Box
-              sx={{
-                ml: "auto",
-                mr: 4,
-              }}
-            >
-              {/* <Select
-              id="author-select"
-              value={selectedAuthor}
-              onChange={handleAuthorChange}
-              sx={{
-                borderRadius: 0,
-                border: "0px solid #000000",
-                bg: "#f6f8fa",
-              }}
-            >
-              <option value="all">all</option>
-              {authors.map((author) => (
-                <option key={author} value={author}>
-                  {author}
-                </option>
-              ))}
-            </Select> */}
-              <ButtonGroup>
-                <SelectPanelAuthor
-                  authors={authors}
-                  onSelect={handleAuthorChange}
-                />
-                <SelectPanelLabel
-                  labels={labels}
-                  onSelect={handleLabelChange}
-                />
-
-                <Button variant="invisible" trailingAction={TriangleDownIcon}>
-                  {"Projects"}
-                </Button>
-                <Button variant="invisible" trailingAction={TriangleDownIcon}>
-                  {"Milestones"}
-                </Button>
-                <Button variant="invisible" trailingAction={TriangleDownIcon}>
-                  {"Assignee"}
-                </Button>
-                <Button variant="invisible" trailingAction={TriangleDownIcon}>
-                  {"Sort"}
-                </Button>
-              </ButtonGroup>
-            </Box>
-          </Header>
-          <CheckboxGroup>
-            <ActionList sx={{ p: 0 }}>
-              {issuesToDisplay.map((issue) => (
-                <ActionList.Item
-                  key={issue.id}
-                  style={{
-                    borderTop: "1px solid",
-                    // borderBottom: "1px solid",
-                    borderColor: "#dee3e8", //TODO:要改用官方文件的顏色
-                    cursor: "default",
-                    margin: 0,
-                    borderRadius: 0,
-                  }}
-                  sx={{
-                    ":hover": {
-                      backgroundColor: "#f6f8fa",
-                    },
-                  }}
-                >
-                  <Box display="flex" flexWrap="wrap" alignItems="center">
-                    <Checkbox
-                      onChange={() => handleCheckboxChange(issue.id)}
-                      style={{ marginRight: "4px" }}
-                    />
-                    <IconButton
-                      aria-label={
-                        stateFilter === "open" ? "Open issue" : "Closed issue"
-                      }
-                      variant="invisible"
-                      size="small"
-                      icon={
-                        stateFilter === "open"
-                          ? IssueOpenedIcon
-                          : IssueClosedIcon
-                      }
-                      unsafeDisableTooltip={false}
-                      sx={{
-                        color: stateFilter === "open" ? "green" : "purple", //TODO:要改用官方文件的顏色
-                        cursor: "default",
-                        ":hover": {
-                          borderColor: "transparent",
-                          bg: "transparent",
-                        },
+                {"Projects"}
+              </Button>
+              <Button variant="invisible" trailingAction={TriangleDownIcon}>
+                {"Milestones"}
+              </Button>
+              <Button variant="invisible" trailingAction={TriangleDownIcon}>
+                {"Assignee"}
+              </Button>
+              <Button variant="invisible" trailingAction={TriangleDownIcon}>
+                {"Sort"}
+              </Button>
+            </ButtonGroup>
+          </Box>
+        </IssueHeader>
+        <CheckboxGroup>
+          <ActionList sx={{ p: 0 }}>
+            {issuesToDisplay.map((issue) => (
+              <IssueCardContainer key={issue.id}>
+                <Box display="flex" alignItems="center">
+                  <IssueCheckbox
+                    onChange={() => handleCheckboxChange(issue.id)}
+                  />
+                  <IconButton
+                    aria-label={
+                      stateFilter === "open" ? "Open issue" : "Closed issue"
+                    }
+                    variant="invisible"
+                    size="small"
+                    icon={
+                      stateFilter === "open" ? IssueOpenedIcon : IssueClosedIcon
+                    }
+                    unsafeDisableTooltip={false}
+                    sx={{
+                      color: stateFilter === "open" ? "green" : "purple", //TODO:要改用官方文件的顏色
+                      cursor: "default",
+                      ":hover": {
+                        borderColor: "transparent",
+                        bg: "transparent",
+                      },
+                    }}
+                  />
+                  <Text>
+                    <Link
+                      to={`/comment/${issue.number}`}
+                      style={{
+                        color: "black",
+                        fontWeight: "bold",
+                        fontSize: "16px",
                       }}
-                    />
-
-                    <Text>
-                      <Link
-                        to={`/comment/${issue.number}`}
-                        style={{
-                          color: "black",
-                          fontWeight: "bold",
-                          fontSize: "16px",
-                        }}
+                    >
+                      {issue.title}
+                    </Link>
+                  </Text>
+                  {issue.labels.map((label) => {
+                    const isWhite = label.color === "ffffff";
+                    return (
+                      <IssueLabelBox
+                        key={label.id}
+                        bg={`#${label.color}`}
+                        color={isWhite ? "black" : "white"}
+                        border={isWhite ? "1px solid gray" : "0"}
+                        borderColor={isWhite ? "gray" : "transparent"}
+                        aria-label={label.description}
                       >
-                        {issue.title}
-                      </Link>
-                    </Text>
-                    {issue.labels.map((label) => {
-                      const isWhite = label.color === "ffffff";
-                      return (
-                        <Box
-                          as="span"
-                          key={label.id}
-                          bg={`#${label.color}`}
-                          color={isWhite ? "black" : "white"}
-                          borderRadius={100}
-                          ml={1}
-                          px={2}
-                          py={0.75}
-                          fontSize={"12px"}
-                          fontWeight="bold"
-                          border={isWhite ? "1px solid" : 0}
-                          borderColor={isWhite ? "gray" : "transparent"} //加個hover顯示文字，如aria-label="XXX"
-                        >
-                          {label.name}
-                        </Box>
-                      );
-                    })}
-                    {issue.comments > 0 && (
-                      <Box ml={"auto"}>
-                        <IconButton
-                          icon={CommentIcon}
-                          variant="invisible"
-                          unsafeDisableTooltip={false}
-                          sx={{
-                            ":hover": {
-                              color: "blue", // TODO: 替換為官方文件中的顏色
-                            },
-                          }}
-                        />
+                        {label.name}
+                      </IssueLabelBox>
+                    );
+                  })}
+                  {issue.comments > 0 && (
+                    <Box ml={"auto"} display={"flex"} alignItems={"center"}>
+                      <IconButton
+                        icon={CommentIcon}
+                        variant="invisible"
+                        unsafeDisableTooltip={false}
+                        sx={{
+                          ":hover": {
+                            color: "blue", // TODO: 替換為官方文件中的顏色
+                          },
+                        }}
+                      />
+                      <Text fontSize={"12px"} fontWeight={"bold"}>
                         {issue.comments}
-                      </Box>
+                      </Text>
+                    </Box>
+                  )}
+                </Box>
+
+                <Box ml={7}>
+                  <Text color="fg.muted" fontSize={"12px"}>
+                    {`#${issue.number} `}
+                    {stateFilter === "open" ? (
+                      <>
+                        {`opened on `}
+                        <RelativeTime date={new Date(issue.created_at)} />{" "}
+                        {` by ${issue.user.login}`}
+                      </>
+                    ) : (
+                      <>
+                        {` by ${issue.user.login}`}
+                        {`was closed `}
+                        <RelativeTime date={new Date(issue.closed_at)} />
+                      </>
                     )}
-                  </Box>
-                  <Box mt={1} ml={7}>
-                    <Text color="fg.muted" fontSize={"12px"}>
-                      {`#${issue.number} `}
-                      {stateFilter === "open" ? (
-                        <>
-                          {`opened on `}
-                          <RelativeTime
-                            date={new Date(issue.created_at)}
-                          />{" "}
-                          {` by ${issue.user.login}`}
-                        </>
-                      ) : (
-                        <>
-                          {` by ${issue.user.login}`}
-                          {`was closed `}
-                          <RelativeTime date={new Date(issue.closed_at)} />{" "}
-                        </>
-                      )}
-                    </Text>
-                  </Box>
-                </ActionList.Item>
-              ))}
-            </ActionList>
-          </CheckboxGroup>
-        </Box>
+                  </Text>
+                </Box>
+              </IssueCardContainer>
+            ))}
+          </ActionList>
+        </CheckboxGroup>
       </Box>
     </Center>
   );

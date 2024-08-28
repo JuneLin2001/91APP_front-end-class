@@ -73,6 +73,7 @@ const IssueSearch = ({ handleSearchClick }) => {
       <Box
         mb={3}
         width="100%"
+        maxWidth="1214px"
         display="flex"
         sx={{
           gap: "8px",

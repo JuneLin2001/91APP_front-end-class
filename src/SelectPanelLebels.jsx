@@ -16,13 +16,11 @@ const LabelSelectPanel = ({ labels = [], onSelect }) => {
       key: label.id,
       text: label.name,
       description: label.description,
-      color: `#${label.color}`,
+      color: `#${label.color}`, // 這裡保存顏色
     }));
 
   const handleSelectedChange = (selectedItems) => {
-    // 取得選擇的項目名稱
     const selectedNames = selectedItems.map((item) => item.text);
-
     const newSelection = selectedNames.reduce((acc, name) => {
       if (acc.includes(name)) {
         return acc.filter((item) => item !== name);
@@ -30,9 +28,7 @@ const LabelSelectPanel = ({ labels = [], onSelect }) => {
         return [...acc, name];
       }
     }, []);
-
     setSelected(newSelection);
-
     if (onSelect) {
       onSelect(newSelection);
     }
