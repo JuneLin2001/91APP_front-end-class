@@ -40,7 +40,7 @@ const IssuePage = () => {
   const [labels, setLabels] = useState([]);
   const [selectedAuthor, setSelectedAuthor] = useState("all");
   const [selectedLabel, setSelectedLabel] = useState("all");
-  // const [searchResult, setSearchResult] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [stateFilter, setStateFilter] = useState("open");
   const { repoName } = useParams();
@@ -51,6 +51,7 @@ const IssuePage = () => {
       const q = "";
       const authorFilter = "all";
       const labelFilter = "all";
+      const searchResult = "";
       if (user && user.reloadUserInfo && user.reloadUserInfo.screenName) {
         const { screenName } = user.reloadUserInfo;
 
@@ -62,7 +63,8 @@ const IssuePage = () => {
               q,
               authorFilter,
               labelFilter,
-              "open"
+              "open",
+              searchResult
             ),
             api.getAllLabels(screenName, repoName),
             api.getAllIssues(screenName, repoName),
@@ -89,6 +91,7 @@ const IssuePage = () => {
       const q = "";
       const authorFilter = selectedAuthor || "all";
       const labelFilter = selectedLabel || "all";
+      const searchResult = searchValue;
 
       if (user && user.reloadUserInfo && user.reloadUserInfo.screenName) {
         const { screenName } = user.reloadUserInfo;
@@ -100,7 +103,8 @@ const IssuePage = () => {
             q,
             authorFilter,
             labelFilter,
-            stateFilter
+            stateFilter,
+            searchResult
           );
 
           setApiResult(issuesData);
@@ -111,7 +115,7 @@ const IssuePage = () => {
     };
 
     fetchData();
-  }, [repoName, stateFilter, user, selectedAuthor, selectedLabel]);
+  }, [repoName, stateFilter, user, selectedAuthor, selectedLabel, searchValue]);
 
   const updateUrlParams = (params) => {
     const url = new URL(window.location.href);
@@ -170,10 +174,11 @@ const IssuePage = () => {
     setSelectedLabel(formattedString);
   };
 
-  const handleSearchClick = async (e, searchValue) => {
+  const handleSearchClick = async (e, newSearchValue) => {
     e.preventDefault();
     setIsSearching(true);
-    console.log("searchValue: ", searchValue);
+    console.log("searchValue: ", newSearchValue);
+    setSearchValue(newSearchValue);
 
     // try {
     //   updateUrlParams({

@@ -49,7 +49,8 @@ const api = {
     q,
     authorFilter,
     labelFilter,
-    stateFilter
+    stateFilter,
+    searchResult
   ) {
     const searchParams = new URLSearchParams(window.location.search);
     const query = q || `repo:${username}/${repo} is:issue is:${stateFilter}`;
@@ -71,6 +72,7 @@ const api = {
       query,
       formattedLabelFilter !== "" ? formattedLabelFilter : "",
       authorFilter !== "all" ? `author:${authorFilter}` : "",
+      searchResult ? searchResult : "",
     ]
       .filter(Boolean)
       .join(" ");
@@ -80,6 +82,7 @@ const api = {
       formattedLabelFilter,
       authorFilter,
       searchQuery,
+      searchResult,
     });
 
     if (searchQuery) {
