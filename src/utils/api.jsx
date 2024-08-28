@@ -59,14 +59,21 @@ const api = {
     return data;
   },
 
-  async getSearchIssues(username, repo, q, authorFilter, labelFilter) {
+  async getSearchIssues(
+    username,
+    repo,
+    q,
+    authorFilter,
+    labelFilter,
+    stateFilter
+  ) {
     const searchParams = new URLSearchParams(window.location.search);
     const query = searchParams.get("q") || "";
 
     const searchQuery = [
       `repo:${username}/${repo}`,
       `is:issue`,
-      `is:open`,
+      `is:${stateFilter}`,
       authorFilter !== "all"
         ? `author:${encodeURIComponent(authorFilter)}`
         : "",

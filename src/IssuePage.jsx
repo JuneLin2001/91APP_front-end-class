@@ -12,7 +12,12 @@ import {
   IconButton,
   SegmentedControl,
 } from "@primer/react";
-import { SearchIcon, IssueOpenedIcon, CheckIcon } from "@primer/octicons-react";
+import {
+  SearchIcon,
+  IssueOpenedIcon,
+  IssueClosedIcon,
+  CheckIcon,
+} from "@primer/octicons-react";
 import { Link } from "react-router-dom";
 import { Center } from "./style/Center.styled";
 import { useParams } from "react-router-dom";
@@ -29,6 +34,7 @@ const IssuePage = () => {
   const [searchValue, setSearchValue] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [stateFilter, setStateFilter] = useState("open");
   const { repoName } = useParams();
   const { user } = useContext(AuthContext);
 
@@ -49,7 +55,8 @@ const IssuePage = () => {
               repoName,
               q,
               authorFilter,
-              labelFilter
+              labelFilter,
+              stateFilter
             ),
             api.getLabelsWithFilter(screenName, repoName, q, labelFilter),
           ]);
@@ -68,7 +75,7 @@ const IssuePage = () => {
     };
 
     fetchData();
-  }, [user, repoName]);
+  }, [user, repoName, stateFilter]);
 
   const updateUrlParams = (params) => {
     const url = new URL(window.location.href);
@@ -252,6 +259,7 @@ const IssuePage = () => {
                 color: "#636c76",
                 bg: "transparent",
               }}
+              onClick={() => setStateFilter("open")}
             >
               Open
             </SegmentedControl.Button>
@@ -262,6 +270,7 @@ const IssuePage = () => {
                 color: "#636c76",
                 bg: "transparent",
               }}
+              onClick={() => setStateFilter("closed")}
             >
               Closed
             </SegmentedControl.Button>
@@ -337,13 +346,17 @@ const IssuePage = () => {
                     style={{ marginRight: "4px" }}
                   />
                   <IconButton
-                    aria-label="Open issue"
+                    aria-label={
+                      stateFilter === "open" ? "Open issue" : "Closed issue"
+                    }
                     variant="invisible"
                     size="small"
-                    icon={IssueOpenedIcon}
+                    icon={
+                      stateFilter === "open" ? IssueOpenedIcon : IssueClosedIcon
+                    }
                     unsafeDisableTooltip={false}
                     sx={{
-                      color: "green",
+                      color: stateFilter === "open" ? "green" : "purple", //TODO:要改用官方文件的顏色
                       cursor: "default",
                       ":hover": {
                         borderColor: "transparent",
