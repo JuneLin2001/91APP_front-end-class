@@ -1,11 +1,12 @@
 import { useState, useEffect, useContext } from "react";
 import api from "./utils/api";
-import { ActionList, Box, Text, RelativeTime, Select } from "@primer/react";
+import { ActionList, Box, Text, RelativeTime, Select, Caret } from "@primer/react";
 import { Link } from "react-router-dom";
 import { Center } from "./style/Center.styled";
 import { useParams } from "react-router-dom";
 import { AuthContext } from "./context/authContext";
 // import { LabelSelectPanel } from "./SelectPanelAuthor";
+import IssueSearch from "./IssueSearch";
 
 const IssuePage = () => {
   const [apiResult, setApiResult] = useState([]);
@@ -31,21 +32,13 @@ const IssuePage = () => {
 
         try {
           const [issuesData, labelsData] = await Promise.all([
-            api.getSearchIssues(
-              screenName,
-              repoName,
-              q,
-              authorFilter,
-              labelFilter
-            ),
+            api.getSearchIssues(screenName, repoName, q, authorFilter, labelFilter),
             api.getLabelsWithFilter(screenName, repoName, q, labelFilter),
           ]);
 
           setApiResult(issuesData);
 
-          const uniqueAuthors = [
-            ...new Set(issuesData.map((issue) => issue.user.login)),
-          ];
+          const uniqueAuthors = [...new Set(issuesData.map((issue) => issue.user.login))];
           setAuthors(uniqueAuthors);
           setLabels(labelsData);
         } catch (error) {
@@ -77,8 +70,7 @@ const IssuePage = () => {
 
     const newParams = {
       q: currentQuery,
-      author:
-        type === "author" ? (value === "all" ? "" : value) : selectedAuthor,
+      author: type === "author" ? (value === "all" ? "" : value) : selectedAuthor,
       label: type === "label" ? (value === "all" ? "" : value) : selectedLabel,
     };
 
@@ -129,13 +121,10 @@ const IssuePage = () => {
     issues.filter(
       (issue) =>
         (selectedAuthor === "all" || issue.user.login === selectedAuthor) &&
-        (selectedLabel === "all" ||
-          issue.labels.some((label) => label.name === selectedLabel))
+        (selectedLabel === "all" || issue.labels.some((label) => label.name === selectedLabel))
     );
 
-  const issuesToDisplay = isSearching
-    ? searchResult
-    : filteredIssues(apiResult);
+  const issuesToDisplay = isSearching ? searchResult : filteredIssues(apiResult);
 
   const getPlaceholder = () => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -160,13 +149,11 @@ const IssuePage = () => {
 
   return (
     <Center>
+      <IssueSearch />
+
       <Box>
         <label htmlFor="author-select">篩選作者:</label>
-        <Select
-          id="author-select"
-          value={selectedAuthor}
-          onChange={handleAuthorChange}
-        >
+        <Select id="author-select" value={selectedAuthor} onChange={handleAuthorChange}>
           <option value="all">all</option>
           {authors.map((author) => (
             <option key={author} value={author}>
@@ -177,11 +164,7 @@ const IssuePage = () => {
       </Box>
       <Box>
         <label htmlFor="label-select">篩選標籤:</label>
-        <Select
-          id="label-select"
-          value={selectedLabel}
-          onChange={handleLabelChange}
-        >
+        <Select id="label-select" value={selectedLabel} onChange={handleLabelChange}>
           <option value="all">all</option>
           {labels.map((label) => (
             <option key={label.id} value={label.name}>
@@ -192,11 +175,7 @@ const IssuePage = () => {
       </Box>
       <Box>
         <form>
-          <input
-            placeholder={getPlaceholder()}
-            value={searchValue}
-            onChange={handleSearchChange}
-          />
+          <input placeholder={getPlaceholder()} value={searchValue} onChange={handleSearchChange} />
           <button onClick={handleSearchClick}>搜尋</button>
         </form>
       </Box>

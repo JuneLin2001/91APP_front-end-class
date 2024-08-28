@@ -1,7 +1,41 @@
-import { Details, TextInput, Button, Box, ActionMenu, ActionList, Textarea } from "@primer/react";
-import { IssueClosedIcon, SearchIcon } from "@primer/octicons-react";
+import {
+  Details,
+  TextInput,
+  Button,
+  Box,
+  ActionMenu,
+  ActionList,
+  Textarea,
+  SelectPanel,
+  IconButton,
+  Text,
+} from "@primer/react";
+import { XIcon, SearchIcon, LinkExternalIcon } from "@primer/octicons-react";
+import React, { useState, useRef } from "react";
 
 const IssueSearch = () => {
+  const options = [
+    {
+      name: "Fast forward",
+    },
+    {
+      name: "Recursive",
+    },
+    {
+      name: "Ours",
+    },
+    {
+      name: "Octopus",
+    },
+    {
+      name: "Resolve",
+    },
+    {
+      name: "Subtree",
+    },
+  ];
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const selectedType = options[selectedIndex];
   return (
     <>
       <Box my={4} height="32px" width="100%" display="flex" justifyContent="flex-end" alignItems="center">
@@ -19,9 +53,39 @@ const IssueSearch = () => {
           >
             Filter
           </ActionMenu.Button>
+
           <ActionMenu.Overlay>
-            <ActionList>
-              <ActionList.Item>Close and cent</ActionList.Item>
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              p={2}
+              borderBottom="1px solid #e1e4e8"
+            >
+              <h3>Filter Options</h3>
+            </Box>
+            <ActionList selectionVariant="single" showDividers>
+              <ActionList.Group>
+                {options.map((options, index) => (
+                  <ActionList.Item
+                    key={index}
+                    selected={index === selectedIndex}
+                    onSelect={() => setSelectedIndex(index)}
+                    sx={{ fontSize: "12px" }}
+                  >
+                    {options.name}
+                  </ActionList.Item>
+                ))}
+              </ActionList.Group>
+              <ActionList.Item>
+                <IconButton
+                  icon={LinkExternalIcon}
+                  variant="invisible"
+                  name="link-external"
+                  sx={{ "hover:not([disabled])": "none" }}
+                />
+                <Text sx={{ fontSize: "12px" }}>External Link</Text>
+              </ActionList.Item>
             </ActionList>
           </ActionMenu.Overlay>
         </ActionMenu>
