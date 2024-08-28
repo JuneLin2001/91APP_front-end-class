@@ -1,5 +1,5 @@
-import { useState, useEffect, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useContext } from "react";
+
 import {
   Box,
   Timeline,
@@ -23,109 +23,122 @@ import {
   IssueClosedIcon,
   MarkdownIcon,
 } from "@primer/octicons-react";
-import api from "./utils/api";
+
 import CommentBox from "./comment";
 import { AuthContext } from "./context/authContext";
-
+import { CommentContext } from "./context/commentContext";
 function CommentPage() {
-  const [issueData, setIssueData] = useState(null);
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [editingCommentId, setEditingCommentId] = useState(null);
-  const [currentTextareaValue, setCurrentTextareaValue] = useState("");
-  const { issueNumber } = useParams();
-  const { CRUDtoken } = useContext(AuthContext);
+  // const [issueData, setIssueData] = useState(null);
+  // const [data, setData] = useState(null);
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState(null);
+  // const [editingCommentId, setEditingCommentId] = useState(null);
+  // const [currentTextareaValue, setCurrentTextareaValue] = useState("");
+  // const { issueNumber } = useParams();
+  // const { CRUDtoken } = useContext(AuthContext);
   const { user } = useContext(AuthContext);
-  const owner = "JuneLin2001";
-  const repo = "91APP_front-end-class";
+  const {
+    issueData,
+    commentData,
+    loading,
+    error,
+    editingCommentId,
+    currentTextareaValue,
+    handleDelete,
+    handleUpdate,
+    handleTextareaChange,
+    handleCreateComment,
+    setEditingCommentId,
+  } = useContext(CommentContext);
+  // const owner = "JuneLin2001";
+  // const repo = "91APP_front-end-class";
 
-  useEffect(() => {
-    const fetchInitData = async () => {
-      try {
-        setLoading(true);
-        const timestamp = new Date().getTime();
-        const issueBodyData = await api.getIssueBody(
-          owner,
-          repo,
-          issueNumber,
-          CRUDtoken
-        );
-        const commentsData = await api.getIssueComments(
-          owner,
-          repo,
-          issueNumber,
-          timestamp
-        );
-        console.log("fetch到的資料", commentsData);
-        console.log("fetch到的issueBodyData", issueBodyData);
-        setIssueData(issueBodyData);
-        setData(commentsData);
-      } catch (e) {
-        setError(e.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchInitData = async () => {
+  //     try {
+  //       setLoading(true);
+  //       const timestamp = new Date().getTime();
+  //       const issueBodyData = await api.getIssueBody(
+  //         owner,
+  //         repo,
+  //         issueNumber,
+  //         CRUDtoken
+  //       );
+  //       const commentsData = await api.getIssueComments(
+  //         owner,
+  //         repo,
+  //         issueNumber,
+  //         timestamp
+  //       );
+  //       console.log("fetch到的資料", commentsData);
+  //       console.log("fetch到的issueBodyData", issueBodyData);
+  //       setIssueData(issueBodyData);
+  //       setData(commentsData);
+  //     } catch (e) {
+  //       setError(e.message);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchInitData();
-  }, [issueNumber, CRUDtoken]);
+  //   fetchInitData();
+  // }, [issueNumber, CRUDtoken]);
 
-  const fetchData = async () => {
-    try {
-      const timestamp = new Date().getTime();
-      const commentsData = await api.getIssueComments(
-        owner,
-        repo,
-        issueNumber,
-        timestamp
-      );
-      console.log("不是首次fetch到的資料", commentsData);
-      setData(commentsData);
-    } catch (e) {
-      setError(e.message);
-    }
-  };
+  // const fetchData = async () => {
+  //   try {
+  //     const timestamp = new Date().getTime();
+  //     const commentsData = await api.getIssueComments(
+  //       owner,
+  //       repo,
+  //       issueNumber,
+  //       timestamp
+  //     );
+  //     console.log("不是首次fetch到的資料", commentsData);
+  //     setData(commentsData);
+  //   } catch (e) {
+  //     setError(e.message);
+  //   }
+  // };
 
-  const handleDelete = async (commentId) => {
-    try {
-      const userConfirmed = confirm("Are you sure you want to delete this?");
-      if (userConfirmed) {
-        await api.deleteComment(owner, repo, commentId, CRUDtoken);
-        fetchData();
-      }
-    } catch (e) {
-      console.error("删除失敗", e.message);
-    }
-  };
+  // const handleDelete = async (commentId) => {
+  //   try {
+  //     const userConfirmed = confirm("Are you sure you want to delete this?");
+  //     if (userConfirmed) {
+  //       await api.deleteComment(owner, repo, commentId, CRUDtoken);
+  //       fetchData();
+  //     }
+  //   } catch (e) {
+  //     console.error("删除失敗", e.message);
+  //   }
+  // };
 
-  const handleUpdate = async (commentId, newContent) => {
-    try {
-      console.log("新的內容：", newContent);
-      await api.updateComment(owner, repo, commentId, newContent, CRUDtoken);
-      setEditingCommentId(null);
-      fetchData();
-    } catch (e) {
-      console.error("修改失敗", e.message);
-    }
-  };
+  // const handleUpdate = async (commentId, newContent) => {
+  //   try {
+  //     console.log("新的內容：", newContent);
+  //     await api.updateComment(owner, repo, commentId, newContent, CRUDtoken);
+  //     setEditingCommentId(null);
+  //     fetchData();
+  //   } catch (e) {
+  //     console.error("修改失敗", e.message);
+  //   }
+  // };
 
-  const handleTextareaChange = (value) => {
-    setCurrentTextareaValue(value);
-  };
+  // const handleTextareaChange = (value) => {
+  //   setCurrentTextareaValue(value);
+  // };
 
-  const handleCreateComment = async (currentTextareaValue) => {
-    console.log("現在的create textarea: ", currentTextareaValue);
-    await api.createComment(
-      owner,
-      repo,
-      issueNumber,
-      currentTextareaValue,
-      CRUDtoken
-    );
-    setCurrentTextareaValue("");
-    fetchData();
-  };
+  // const handleCreateComment = async (currentTextareaValue) => {
+  //   console.log("現在的create textarea: ", currentTextareaValue);
+  //   await api.createComment(
+  //     owner,
+  //     repo,
+  //     issueNumber,
+  //     currentTextareaValue,
+  //     CRUDtoken
+  //   );
+  //   setCurrentTextareaValue("");
+  //   fetchData();
+  // };
 
   const getHeaderColor = (userLogin) => {
     if (
@@ -139,7 +152,7 @@ function CommentPage() {
 
   if (loading) return <div>載入中...</div>;
   if (error) return <div>錯誤: {error}</div>;
-  if (!data) return <div>無數據</div>;
+  if (!commentData) return <div>無數據</div>;
 
   return (
     <ThemeProvider>
@@ -308,7 +321,7 @@ function CommentPage() {
       )}
 
       <Timeline>
-        {data.map((comment) => (
+        {commentData.map((comment) => (
           <Timeline.Item
             key={comment.id}
             sx={{
