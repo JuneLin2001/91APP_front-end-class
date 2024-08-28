@@ -33,7 +33,7 @@ const LabelSelectPanel = ({ labels = [], onSelect }) => {
       onSelect(newSelection);
     }
   };
-  console.log("selected in SelectPanelLebels " + selected); //TODO:selected
+  // console.log("selected in SelectPanelLebels " + selected); //TODO:selected
 
   return (
     <>

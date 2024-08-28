@@ -40,7 +40,7 @@ const IssuePage = () => {
   const [labels, setLabels] = useState([]);
   const [selectedAuthor, setSelectedAuthor] = useState("all");
   const [selectedLabel, setSelectedLabel] = useState("all");
-  const [searchResult, setSearchResult] = useState([]);
+  // const [searchResult, setSearchResult] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [stateFilter, setStateFilter] = useState("open");
   const { repoName } = useParams();
@@ -89,12 +89,9 @@ const IssuePage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      // const searchParams = new URLSearchParams(window.location.search);
-      // const q = searchParams.get("q") || "";
       const q = "";
       const authorFilter = "all";
       const labelFilter = "all";
-
       if (user && user.reloadUserInfo && user.reloadUserInfo.screenName) {
         const { screenName } = user.reloadUserInfo;
 
@@ -106,15 +103,15 @@ const IssuePage = () => {
               q,
               authorFilter,
               labelFilter,
-              stateFilter
+              "open"
             ),
             api.getAllLabels(screenName, repoName),
             api.getAllIssues(screenName, repoName),
           ]);
 
           setApiResult(issuesData);
-          setLabels(labelsData); // 新增
-          setAllIssues(allIssuesData); // 新增
+          setLabels(labelsData);
+          setAllIssues(allIssuesData);
 
           const uniqueAuthors = [
             ...new Set(issuesData.map((issue) => issue.user.login)),
@@ -125,9 +122,37 @@ const IssuePage = () => {
         }
       }
     };
+    fetchData();
+  }, [repoName, user]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const q = ""; // 如果需要，可以將其設為動態值
+      const authorFilter = selectedAuthor || "all"; // 根據選擇的作者設置過濾器
+      const labelFilter = selectedLabel || "all"; // 根據選擇的標籤設置過濾器
+
+      if (user && user.reloadUserInfo && user.reloadUserInfo.screenName) {
+        const { screenName } = user.reloadUserInfo;
+
+        try {
+          const issuesData = await api.getSearchIssues(
+            screenName,
+            repoName,
+            q,
+            authorFilter,
+            labelFilter,
+            stateFilter
+          );
+
+          setApiResult(issuesData);
+        } catch (error) {
+          console.error("Failed to fetch data:", error);
+        }
+      }
+    };
 
     fetchData();
-  }, [repoName, stateFilter, user]); // 根據實際依賴項修改
+  }, [repoName, stateFilter, user, selectedAuthor, selectedLabel]);
 
   const updateUrlParams = (params) => {
     const url = new URL(window.location.href);
@@ -197,26 +222,27 @@ const IssuePage = () => {
     setIsSearching(true);
     console.log("searchValue: ", searchValue);
 
-    try {
-      updateUrlParams({
-        q: searchValue,
-        author: selectedAuthor === "all" ? "" : selectedAuthor,
-        label: selectedLabel === "all" ? "" : selectedLabel,
-      });
+    // try {
+    //   updateUrlParams({
+    //     q: searchValue ? `q=${searchValue}` : "",
+    //     author: selectedAuthor !== "all" ? `author=${selectedAuthor}` : "",
+    //     label: selectedLabel !== "all" ? `label=${selectedLabel}` : "",
+    //   });
 
-      const searchResults = await api.getSearchIssues(
-        user.reloadUserInfo.screenName,
-        repoName,
-        searchValue,
-        selectedAuthor,
-        selectedLabel
-      );
-      setSearchResult(searchResults);
-    } catch (error) {
-      console.error("Failed to fetch data:", error);
-    } finally {
-      setIsSearching(false);
-    }
+    //   const searchResults = await api.getSearchIssues(
+    //     user.reloadUserInfo.screenName,
+    //     repoName,
+    //     searchValue,
+    //     selectedAuthor,
+    //     selectedLabel
+    //   );
+
+    //   setSearchResult(searchResults);
+    // } catch (error) {
+    //   console.error("Failed to fetch data:", error);
+    // } finally {
+    //   setIsSearching(false);
+    // }
   };
 
   const filteredIssues = (issues) =>
@@ -227,8 +253,7 @@ const IssuePage = () => {
           issue.labels.some((label) => label.name === selectedLabel))
     );
 
-  const issuesToDisplay = filteredIssues(apiResult);
-  // isSearching ? apiResult : filteredIssues(apiResult);
+  const issuesToDisplay = isSearching ? filteredIssues(apiResult) : apiResult;
 
   const handleCheckboxChange = (issueId) => {
     console.log(`Checkbox for issue ${issueId} changed.`);

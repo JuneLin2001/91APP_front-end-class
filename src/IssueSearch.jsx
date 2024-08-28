@@ -72,7 +72,7 @@ const IssueSearch = ({ handleSearchClick }) => {
   ];
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const selectedType = options[selectedIndex];
-  console.log("in filter that choose" + selectedType);
+  // console.log("in filter that choose" + selectedType);
   return (
     <>
       <Box
