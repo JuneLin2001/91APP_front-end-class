@@ -79,9 +79,16 @@ const api = {
     return data;
   },
 
-  async getIssueComments(owner, repo, issueNumber, timestamp) {
+  async getTimelineComments(owner, repo, issueNumber, timestamp, token) {
     const response = await fetch(
-      `${this.hostname}/repos/${owner}/${repo}/issues/${issueNumber}/comments?t=${timestamp}`
+      `${this.hostname}/repos/${owner}/${repo}/issues/${issueNumber}/timeline?t=${timestamp}`,
+      {
+        headers: {
+          "X-GitHub-Api-Version": "2022-11-28",
+          Accept: "application/vnd.github+json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

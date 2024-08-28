@@ -1,5 +1,4 @@
-import { useContext, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useContext } from "react";
 
 import {
   Box,
@@ -30,7 +29,7 @@ import { AuthContext } from "./context/authContext";
 import { CommentContext } from "./context/commentContext";
 function CommentPage() {
   const { user } = useContext(AuthContext);
-  const { issueNumber } = useParams();
+
   const {
     issueData,
     commentData,
@@ -38,19 +37,13 @@ function CommentPage() {
     error,
     editingCommentId,
     currentTextareaValue,
-    fetchInitData,
+
     handleDelete,
     handleUpdate,
     handleTextareaChange,
     handleCreateComment,
     setEditingCommentId,
   } = useContext(CommentContext);
-
-  useEffect(() => {
-    if (issueNumber) {
-      fetchInitData(issueNumber);
-    }
-  }, []);
 
   const getHeaderColor = (userLogin) => {
     if (
@@ -255,8 +248,8 @@ function CommentPage() {
             >
               <Avatar
                 size={40}
-                src={comment.user.avatar_url}
-                alt={comment.user.login}
+                src={comment.actor.avatar_url}
+                alt={comment.actor.login}
               />
             </Timeline.Badge>
             <Timeline.Body
@@ -272,7 +265,7 @@ function CommentPage() {
                 <Box
                   px={3}
                   py={2}
-                  bg={getHeaderColor(comment.user.login)}
+                  bg={getHeaderColor(comment.actor.login)}
                   display="flex"
                   justifyContent="space-between"
                   alignItems="center"
@@ -283,11 +276,14 @@ function CommentPage() {
                 >
                   <Box>
                     <Text fontWeight="bold">
-                      {comment.user.login} commented{" "}
+                      {comment.actor.login} commented{" "}
                     </Text>
-                    <Link href={comment.html_url}>
-                      <RelativeTime date={new Date(comment.updated_at)} />
-                    </Link>
+                    {comment.updated_at && (
+                      <Link href={comment.html_url}>
+                        <RelativeTime date={new Date(comment.updated_at)} />
+                      </Link>
+                    )}
+
                     {comment.author_association && (
                       <Label ml={2} color="fg.muted">
                         {comment.author_association}

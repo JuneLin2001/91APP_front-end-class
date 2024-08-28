@@ -9,13 +9,18 @@ function App() {
   return (
     <>
       <AuthContextProvider>
-        <CommentContextProvider>
-          <Routes>
-            <Route path="/login" element={<GitHubLogin />} />
-            <Route path="/issue" element={<IssuePage />} />
-            <Route path="/comment/:issueNumber" element={<CommentPage />} />
-          </Routes>
-        </CommentContextProvider>
+        <Routes>
+          <Route path="/login" element={<GitHubLogin />} />
+          <Route path="/issue" element={<IssuePage />} />
+          <Route
+            path="/comment/:issueNumber"
+            element={
+              <CommentContextProvider>
+                <CommentPage />
+              </CommentContextProvider>
+            }
+          />
+        </Routes>
       </AuthContextProvider>
     </>
   );

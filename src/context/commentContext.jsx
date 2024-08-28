@@ -1,6 +1,6 @@
 import { useState, createContext, useEffect, useContext } from "react";
 import api from "../utils/api";
-//import { useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { AuthContext } from "./authContext";
 
 export const CommentContext = createContext({
@@ -27,56 +27,59 @@ export const CommentContextProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [currentTextareaValue, setCurrentTextareaValue] = useState("");
-  //const { issueNumber } = useParams();
+  const { issueNumber } = useParams();
+
+  console.log(issueNumber);
+
   const { CRUDtoken } = useContext(AuthContext);
 
   const owner = "JuneLin2001";
   const repo = "91APP_front-end-class";
 
-  //useEffect(() => {
-  const fetchInitData = async (issueNumber) => {
-    try {
-      //if (issueNumber) {
-      setLoading(true);
-      const timestamp = new Date().getTime();
-      const issueBodyData = await api.getIssueBody(
-        owner,
-        repo,
-        issueNumber,
-        CRUDtoken
-      );
-      const commentsData = await api.getIssueComments(
-        owner,
-        repo,
-        issueNumber,
-        timestamp
-      );
-      console.log("fetch到的資料", commentsData);
-      console.log("fetch到的issueBodyData", issueBodyData);
-      setIssueData(issueBodyData);
-      setCommentData(commentsData);
-      //}
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    const fetchInitData = async () => {
+      try {
+        setLoading(true);
+        const timestamp = new Date().getTime();
+        const issueBodyData = await api.getIssueBody(
+          owner,
+          repo,
+          issueNumber,
+          CRUDtoken
+        );
+        const timelineCommentsData = await api.getTimelineComments(
+          owner,
+          repo,
+          issueNumber,
+          timestamp,
+          CRUDtoken
+        );
+        console.log("fetch到timeline的資料", timelineCommentsData);
+        console.log("fetch到的issueBodyData", { issueBodyData });
+        setIssueData(issueBodyData);
+        setCommentData(timelineCommentsData);
+      } catch (e) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  //fetchInitData();
-  //}, [issueNumber, CRUDtoken]);
+    fetchInitData();
+  }, [issueNumber, CRUDtoken]);
 
   const fetchData = async () => {
     try {
       const timestamp = new Date().getTime();
-      const commentsData = await api.getIssueComments(
+      const timelineCommentsData = await api.getTimelineComments(
         owner,
         repo,
         issueNumber,
-        timestamp
+        timestamp,
+        CRUDtoken
       );
-      console.log("不是首次fetch到的資料", commentsData);
-      setCommentData(commentsData);
+      console.log("不是首次fetch到的資料", timelineCommentsData);
+      setCommentData(timelineCommentsData);
     } catch (e) {
       setError(e.message);
     }
@@ -131,7 +134,6 @@ export const CommentContextProvider = ({ children }) => {
         error,
         editingCommentId,
         currentTextareaValue,
-        fetchInitData,
         handleDelete,
         handleUpdate,
         handleTextareaChange,
