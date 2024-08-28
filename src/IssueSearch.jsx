@@ -17,7 +17,7 @@ import {
 } from "@primer/octicons-react";
 import React, { useState } from "react";
 
-const IssueSearch = ({ handleSearchClick }) => {
+const IssueSearch = ({ handleSearchClick, labelNum }) => {
   const [searchValue, setSearchValue] = useState("");
 
   const handleSearchChange = (e) => {
@@ -71,7 +71,7 @@ const IssueSearch = ({ handleSearchClick }) => {
     },
   ];
   const [selectedIndex, setSelectedIndex] = React.useState(0);
-  const selectedType = options[selectedIndex];
+  // const selectedType = options[selectedIndex];
   // console.log("in filter that choose" + selectedType);
   return (
     <>
@@ -100,6 +100,7 @@ const IssueSearch = ({ handleSearchClick }) => {
                 borderTopRightRadius: "0px",
                 borderBottomRightRadius: "0px",
                 borderRight: "none",
+                fontWeight: "bold",
               }}
             >
               Filter
@@ -196,14 +197,22 @@ const IssueSearch = ({ handleSearchClick }) => {
           </Box>
         </Box>
         <ButtonGroup>
-          <Button leadingVisual={TagIcon} count={9}>
+          <Button
+            leadingVisual={TagIcon}
+            count={labelNum}
+            sx={{ fontWeight: "bold" }}
+          >
             Labels{" "}
           </Button>
-          <Button leadingVisual={MilestoneIcon} count={0}>
+          <Button
+            leadingVisual={MilestoneIcon}
+            count={0}
+            sx={{ fontWeight: "bold" }}
+          >
             Milestones{" "}
           </Button>
         </ButtonGroup>
-        <Button variant="primary" ml={3}>
+        <Button variant="primary" ml={3} sx={{ fontWeight: "bold" }}>
           New Issue
         </Button>
       </Box>

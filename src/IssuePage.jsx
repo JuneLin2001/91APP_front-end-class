@@ -221,7 +221,10 @@ const IssuePage = () => {
 
   return (
     <Center>
-      <IssueSearch handleSearchClick={handleSearchClick} />
+      <IssueSearch
+        handleSearchClick={handleSearchClick}
+        labelNum={labels.length}
+      />
       <Box display="flex"></Box>
       <Box
         border={"1px solid"}
@@ -360,9 +363,7 @@ const IssuePage = () => {
                           },
                         }}
                       />
-                      <Text fontSize={"12px"} fontWeight={"bold"}>
-                        {issue.comments}
-                      </Text>
+                      <Text fontSize={"12px"}>{issue.comments}</Text>
                     </Box>
                   )}
                 </Box>

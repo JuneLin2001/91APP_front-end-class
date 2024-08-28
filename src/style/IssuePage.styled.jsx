@@ -34,7 +34,7 @@ export const IssueLabelBox = styled.span`
   color: ${({ color }) => color || "black"};
   border-radius: 100px;
   margin-left: 4px;
-  padding: 2px 8px;
+  padding: 0px 7px;
   font-size: 12px;
   font-weight: bold;
   border: ${({ border }) => border || "0"};
