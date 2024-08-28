@@ -20,6 +20,7 @@ import {
   IssueClosedIcon,
   CheckIcon,
   TriangleDownIcon,
+  CommentIcon,
   // TagIcon,
   // MilestoneIcon,
 } from "@primer/octicons-react";
@@ -258,14 +259,17 @@ const IssuePage = () => {
           Milestone
         </Button> */}
       </Box>
-      <Box border={"1px solid"} /*borderColor={"red"}*/ width={"80vw"}>
+      <Box
+        border={"1px solid"}
+        borderColor={"#dee3e8"}
+        width={"80vw"}
+        borderRadius={"0.375rem"} //應該有個官方規範叫做borderRadius-medium
+      >
         <Header
-          borderRadius={100}
           sx={{
             bg: "#f6f8fa",
             m: 0,
-            p: 0,
-            pl: 2,
+            p: 2,
           }}
         >
           <Checkbox sx={{ mr: 2, ml: 0 }} />
@@ -358,14 +362,14 @@ const IssuePage = () => {
           </Box>
         </Header>
         <CheckboxGroup>
-          <ActionList>
+          <ActionList sx={{ p: 0 }}>
             {issuesToDisplay.map((issue) => (
               <ActionList.Item
                 key={issue.id}
                 style={{
                   borderTop: "1px solid",
                   // borderBottom: "1px solid",
-                  borderColor: "gray",
+                  borderColor: "#dee3e8", //TODO:要改用官方文件的顏色
                   cursor: "default",
                   margin: 0,
                   borderRadius: 0,
@@ -376,7 +380,7 @@ const IssuePage = () => {
                   },
                 }}
               >
-                <Box display="flex" alignItems="center">
+                <Box display="flex" flexWrap="wrap" alignItems="center">
                   <Checkbox
                     onChange={() => handleCheckboxChange(issue.id)}
                     style={{ marginRight: "4px" }}
@@ -427,14 +431,29 @@ const IssuePage = () => {
                         fontSize={10}
                         fontWeight="bold"
                         border={isWhite ? "1px solid" : 0}
-                        borderColor={isWhite ? "gray" : "transparent"}
+                        borderColor={isWhite ? "gray" : "transparent"} //加個hover顯示文字，如aria-label="XXX"
                       >
                         {label.name}
                       </Box>
                     );
                   })}
+                  {issue.comments > 0 && (
+                    <Box ml={"auto"}>
+                      <IconButton
+                        icon={CommentIcon}
+                        variant="invisible"
+                        unsafeDisableTooltip={false}
+                        sx={{
+                          ":hover": {
+                            color: "blue", // TODO: 替換為官方文件中的顏色
+                          },
+                        }}
+                      />
+                      {issue.comments}
+                    </Box>
+                  )}
                 </Box>
-                <Box mt={1}>
+                <Box mt={1} ml={7}>
                   <Text color="fg.muted" fontSize={10}>
                     {`#${issue.number} `}
                     {`opened on `}
