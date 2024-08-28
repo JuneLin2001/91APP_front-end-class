@@ -1,10 +1,5 @@
 const api = {
   hostname: "https://api.github.com",
-  async getIssues() {
-    const response = await fetch(`${this.hostname}/products`);
-    const data = await response.json();
-    return data;
-  },
 
   async getRepo(username) {
     const response = await fetch(`${this.hostname}/users/${username}/repos`, {
@@ -47,18 +42,6 @@ const api = {
     return labels.filter((label) => label.name.includes(filter));
   },
 
-  async getAllLabelFromIssue(username, repo) {
-    const response = await fetch(
-      `${this.hostname}/repos/${username}/${repo}/labels`
-    );
-    if (!response.ok) {
-      throw new Error("Failed to fetch data");
-    }
-
-    const data = await response.json();
-    return data;
-  },
-
   async getSearchIssues(
     username,
     repo,
@@ -77,7 +60,7 @@ const api = {
       authorFilter !== "all"
         ? `author:${encodeURIComponent(authorFilter)}`
         : "",
-      labelFilter !== "all" ? `label:${encodeURIComponent(labelFilter)}` : "",
+      labelFilter !== "all" ? `label:${labelFilter}` : "",
       query,
     ]
       .filter(Boolean)
@@ -85,7 +68,7 @@ const api = {
 
     if (searchQuery) {
       const response = await fetch(
-        `${this.hostname}/search/issues?q=${encodeURIComponent(searchQuery)}`
+        `${this.hostname}/search/issues?q=${searchQuery}`
       );
 
       if (!response.ok) {

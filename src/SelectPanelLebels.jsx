@@ -3,7 +3,7 @@ import { TriangleDownIcon } from "@primer/octicons-react";
 import { SelectPanel, Button } from "@primer/react";
 
 const LabelSelectPanel = ({ labels = [], onSelect }) => {
-  const [selected, setSelected] = useState([]); // 初始選擇為空陣列
+  const [selected, setSelected] = useState([]);
   const [filter, setFilter] = useState("");
   const [open, setOpen] = useState(false);
   const buttonRef = useRef(null);
@@ -16,7 +16,7 @@ const LabelSelectPanel = ({ labels = [], onSelect }) => {
       key: label.id,
       text: label.name,
       description: label.description,
-      color: `#${label.color}`, // 這裡保存顏色
+      color: `#${label.color}`,
     }));
 
   const handleSelectedChange = (selectedItems) => {
@@ -33,6 +33,7 @@ const LabelSelectPanel = ({ labels = [], onSelect }) => {
       onSelect(newSelection);
     }
   };
+  console.log("selected in SelectPanelLebels " + selected); //TODO:selected
 
   return (
     <>
@@ -45,7 +46,7 @@ const LabelSelectPanel = ({ labels = [], onSelect }) => {
           <Button
             variant="invisible"
             trailingAction={TriangleDownIcon}
-            aria-labelledby={ariaLabelledBy}
+            aria-labelledby={` ${ariaLabelledBy}`}
             {...anchorProps}
           >
             {"Label"}
@@ -56,6 +57,19 @@ const LabelSelectPanel = ({ labels = [], onSelect }) => {
         open={open}
         onOpenChange={setOpen}
         items={filteredItems}
+        // renderItem={({ item }) => (
+        //   <span
+        //     style={{
+        //       display: "inline-block",
+        //       width: "12px",
+        //       height: "12px",
+        //       backgroundColor: item.color,
+        //       borderRadius: "50%",
+        //       marginRight: "8px",
+        //       border: "1px solid gray",
+        //     }}
+        //   ></span>
+        // )}
         selected={filteredItems.filter((item) => selected.includes(item.text))}
         onSelectedChange={handleSelectedChange}
         onFilterChange={setFilter}

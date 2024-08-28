@@ -35,13 +35,18 @@ const IssueSearch = ({ handleSearchClick }) => {
     if (authorFilter !== "all") {
       parts.push(`author:${authorFilter}`);
     }
+
     if (labelFilter !== "all") {
-      const decodedLabel = decodeURIComponent(labelFilter);
-      parts.push(`label:"${decodedLabel}"`);
+      const decodedLabels = decodeURIComponent(labelFilter).split("+");
+      decodedLabels.forEach((label) => {
+        parts.push(`label:"${label}"`);
+      });
     }
+
     if (q) {
       parts.push(q);
     }
+
     return parts.join(" ");
   };
 

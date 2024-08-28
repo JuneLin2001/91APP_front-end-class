@@ -51,8 +51,17 @@ const IssuePage = () => {
       const searchParams = new URLSearchParams(window.location.search);
       const q = searchParams.get("q") || "";
       const authorFilter = searchParams.get("author") || "all";
-      const labelFilter = searchParams.get("label") || "all";
+      // const labelFilter = searchParams.get("label") || "all";
+      const labelFilter = `wontfix`; // FIXME:``需要反斜線
+      // const labelFilter = encodeURIComponent("bug");
 
+      // if (labelFilter !== "all") {
+      //   const labelMatches = labelFilter.match(/label:"[^"]+"/g) || [];
+      //   // const labels = labelMatches.map((label) =>
+      //   //   label.replace("label:", "").trim()
+      //   // );
+      //   console.log("Label陣列現在是" + labelMatches);
+      // }
       if (user && user.reloadUserInfo && user.reloadUserInfo.screenName) {
         const { screenName } = user.reloadUserInfo;
 
@@ -89,13 +98,20 @@ const IssuePage = () => {
 
   const updateUrlParams = (params) => {
     const url = new URL(window.location.href);
-    Object.keys(params).forEach((key) => {
-      if (params[key] === "all" || params[key] === "") {
-        url.searchParams.delete(key);
-      } else {
-        url.searchParams.set(key, params[key]);
-      }
-    });
+
+    // 取得當前查詢字串
+    const currentSearch = url.search;
+
+    // 移除所有以 `label:` 開頭的參數
+    url.search = currentSearch.replace(/([&?]label:[^&]*)/g, "");
+
+    // 構建新的查詢字串
+    if (params.label) {
+      const labelQuery = params.label.trim(); // 去除首尾空白
+      url.search = `${url.search}${url.search ? "&" : "?"}${labelQuery}`;
+    }
+
+    // 更新 URL
     window.history.pushState({}, "", url);
   };
 
@@ -105,89 +121,67 @@ const IssuePage = () => {
     const params = new URLSearchParams(window.location.search);
     const currentQuery = params.get("q") || "";
 
+    // 獲取當前的標籤
+    const currentLabels = params.get("label")
+      ? params.get("label").split(" ")
+      : [];
+
+    // 更新標籤
     const newParams = {
       q: currentQuery,
-      author:
-        type === "author" ? (value === "all" ? "" : value) : selectedAuthor,
-      label: type === "label" ? (value === "all" ? "" : value) : selectedLabel,
+      label:
+        type === "label"
+          ? value === "all"
+            ? "" // 如果 value 是 "all"，則清空所有標籤
+            : [...new Set([...currentLabels, value])].join(" ") // 添加新標籤並去除重複
+          : currentLabels.join(" "),
     };
+
     updateUrlParams(newParams);
   };
 
   const handleAuthorChange = (selectedAuthor) => {
     console.log("Selected author:", selectedAuthor);
     setSelectedAuthor(selectedAuthor);
-    handleFilterChange("author", selectedAuthor);
+    //FIXME: handleFilterChange("author", selectedAuthor);
   };
 
-  const handleLabelChange = (label) => {
-    setSelectedLabel((prevSelected) => {
-      const normalizeLabelString = (labelString) => {
-        return labelString
-          .split("+")
-          .map((part) => part.trim())
-          .filter(Boolean)
-          .join("+");
-      };
+  const handleLabelChange = (labels) => {
+    setSelectedLabel(labels);
+    console.log("SelectedLabel: ", labels); //FIXME:現在是ARRAY，要轉換成反斜線包著的字串，並更新labelFilter
 
-      console.log("Previous Selected:", prevSelected);
-
-      let selectedLabels =
-        prevSelected === "all"
-          ? []
-          : normalizeLabelString(prevSelected).split("+");
-
-      console.log("Normalized Labels:", selectedLabels);
-
-      const labelsSet = new Set(selectedLabels);
-
-      console.log("Labels Set (before change):", Array.from(labelsSet));
-
-      if (labelsSet.has(label)) {
-        labelsSet.delete(label);
-      } else {
-        labelsSet.add(label);
-      }
-
-      console.log("Labels Set (after change):", Array.from(labelsSet));
-
-      const result = Array.from(labelsSet).join("+");
-
-      console.log("Result String:", result);
-
-      const finalResult = result.length ? result : "all";
-
-      console.log("Final Result:", finalResult);
-
-      handleFilterChange("label", finalResult);
-      return finalResult;
-    });
+    const formattedString = labels.map((label) => `label:${label}`).join(" ");
+    console.log("formattedString: ", formattedString); //現在是字串formattedString:  label:invalid label:question label:enhancement
+    handleFilterChange("label", formattedString);
+    setSelectedLabel(formattedString);
+    return formattedString;
   };
 
   const handleSearchClick = async (e, searchValue) => {
     e.preventDefault();
     setIsSearching(true);
+    console.log("searchValue: ", searchValue);
 
-    try {
-      updateUrlParams({
-        q: searchValue,
-        author: selectedAuthor === "all" ? "" : selectedAuthor,
-        label: selectedLabel === "all" ? "" : selectedLabel,
-      });
+    // try {
+    //   updateUrlParams({
+    //     q: searchValue,
+    //     author: selectedAuthor === "all" ? "" : selectedAuthor,
+    //     label: selectedLabel === "all" ? "" : selectedLabel,
+    //   });
 
-      const searchResults = await api.getSearchIssues(
-        user.reloadUserInfo.screenName,
-        repoName,
-        searchValue,
-        selectedAuthor,
-        selectedLabel
-      );
-      setSearchResult(searchResults);
-    } catch (error) {
-      console.error("Failed to fetch data:", error);
-    } finally {
-      setIsSearching(false);
-    }
+    //   const searchResults = await api.getSearchIssues(
+    //     user.reloadUserInfo.screenName,
+    //     repoName,
+    //     searchValue,
+    //     selectedAuthor,
+    //     selectedLabel
+    //   );
+    //   setSearchResult(searchResults);
+    // } catch (error) {
+    //   console.error("Failed to fetch data:", error);
+    // } finally {
+    //   setIsSearching(false);
+    // }
   };
 
   const filteredIssues = (issues) =>
