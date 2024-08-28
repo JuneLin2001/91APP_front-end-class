@@ -52,10 +52,8 @@ const api = {
     stateFilter,
     searchResult
   ) {
-    const searchParams = new URLSearchParams(window.location.search);
     const query = q || `repo:${username}/${repo} is:issue is:${stateFilter}`;
 
-    console.log("URL query parameter 'q':", searchParams.get("q"));
     console.log("Using query:", query);
 
     const formattedLabelFilter = labelFilter

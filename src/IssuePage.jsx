@@ -48,10 +48,34 @@ const IssuePage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const q = "";
-      const authorFilter = "all";
-      const labelFilter = "all";
-      const searchResult = "";
+      const urlParams = new URLSearchParams(window.location.search);
+      const q = urlParams.get("q") || "";
+      const authorFilter = urlParams.get("author") || "all";
+      const labelFilter = urlParams.get("label") || "all";
+      const searchResult = urlParams.get("searchResult") || "";
+
+      const formattedLabelFilter = labelFilter
+        ? labelFilter
+            .match(/label:"[^"]+"|label:\S+/g)
+            ?.map((label) => label.trim())
+            .join(" ")
+        : "";
+
+      const shouldUpdateUrl =
+        q !== "" ||
+        authorFilter !== "all" ||
+        labelFilter !== "all" ||
+        searchResult !== "";
+
+      if (shouldUpdateUrl) {
+        updateUrlParams({
+          q,
+          author: authorFilter !== "all" ? authorFilter : "",
+          label: labelFilter !== "all" ? labelFilter : "",
+          searchResult,
+        });
+      }
+
       if (user && user.reloadUserInfo && user.reloadUserInfo.screenName) {
         const { screenName } = user.reloadUserInfo;
 
@@ -62,7 +86,7 @@ const IssuePage = () => {
               repoName,
               q,
               authorFilter,
-              labelFilter,
+              formattedLabelFilter,
               "open",
               searchResult
             ),
@@ -114,26 +138,26 @@ const IssuePage = () => {
       }
     };
 
+    updateUrlParams({
+      q: searchValue || "",
+      author: selectedAuthor !== "all" ? selectedAuthor : "",
+      label: selectedLabel !== "all" ? selectedLabel : "",
+    });
+
     fetchData();
   }, [repoName, stateFilter, user, selectedAuthor, selectedLabel, searchValue]);
 
   const updateUrlParams = (params) => {
     const url = new URL(window.location.href);
 
-    const currentSearch = url.search;
+    Object.keys(params).forEach((key) => {
+      if (params[key]) {
+        url.searchParams.set(key, params[key]);
+      } else {
+        url.searchParams.delete(key);
+      }
+    });
 
-    url.search = currentSearch.replace(/([&?](label:[^&]*|author=[^&]*))/g, "");
-
-    const newSearchParams = [];
-    if (params.q) newSearchParams.push(`q=${encodeURIComponent(params.q)}`);
-    if (params.label)
-      newSearchParams.push(`label=${encodeURIComponent(params.label)}`);
-    if (params.author)
-      newSearchParams.push(`author=${encodeURIComponent(params.author)}`);
-
-    url.search = `${url.search}${url.search ? "&" : "?"}${newSearchParams.join(
-      "&"
-    )}`;
     window.history.pushState({}, "", url);
   };
 
@@ -179,28 +203,6 @@ const IssuePage = () => {
     setIsSearching(true);
     console.log("searchValue: ", newSearchValue);
     setSearchValue(newSearchValue);
-
-    // try {
-    //   updateUrlParams({
-    //     q: searchValue ? `q=${searchValue}` : "",
-    //     author: selectedAuthor !== "all" ? `author=${selectedAuthor}` : "",
-    //     label: selectedLabel !== "all" ? `label=${selectedLabel}` : "",
-    //   });
-
-    //   const searchResults = await api.getSearchIssues(
-    //     user.reloadUserInfo.screenName,
-    //     repoName,
-    //     searchValue,
-    //     selectedAuthor,
-    //     selectedLabel
-    //   );
-
-    //   setSearchResult(searchResults);
-    // } catch (error) {
-    //   console.error("Failed to fetch data:", error);
-    // } finally {
-    //   setIsSearching(false);
-    // }
   };
 
   const filteredIssues = (issues) =>
