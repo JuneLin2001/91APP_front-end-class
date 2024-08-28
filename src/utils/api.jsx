@@ -21,7 +21,7 @@ const api = {
     return data;
   },
 
-  async getAllIssue(username, repo) {
+  async getAllIssues(username, repo) {
     const response = await fetch(
       `${this.hostname}/repos/${username}/${repo}/issues`
     );
