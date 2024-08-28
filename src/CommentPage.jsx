@@ -32,12 +32,38 @@ function CommentPage() {
   const repo = "Wordle";
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    const fetchInitData = async () => {
+      try {
+        setLoading(true);
+        const timestamp = new Date().getTime();
+        const issueBodyData = await api.getIssueBody(
+          owner,
+          repo,
+          issueNumber,
+          CRUDtoken
+        );
+        const commentsData = await api.getIssueComments(
+          owner,
+          repo,
+          issueNumber,
+          timestamp
+        );
+        console.log("fetch到的資料", commentsData);
+        console.log("fetch到的issueBodyData", issueBodyData);
+        setIssueData(issueBodyData);
+        setData(commentsData);
+      } catch (e) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInitData();
+  }, [issueNumber, CRUDtoken]);
 
   const fetchData = async () => {
     try {
-      setLoading(true);
       const timestamp = new Date().getTime();
       const commentsData = await api.getIssueComments(
         owner,
@@ -45,12 +71,10 @@ function CommentPage() {
         issueNumber,
         timestamp
       );
-      console.log("fetch到的資料", commentsData);
+      console.log("不是首次fetch到的資料", commentsData);
       setData(commentsData);
     } catch (e) {
       setError(e.message);
-    } finally {
-      setLoading(false);
     }
   };
 
