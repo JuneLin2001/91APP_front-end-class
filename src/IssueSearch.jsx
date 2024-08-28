@@ -99,7 +99,6 @@ const IssueSearch = ({ handleSearchClick }) => {
                 alignItems: "center",
                 borderTopRightRadius: "0px",
                 borderBottomRightRadius: "0px",
-                fontSize: 0,
                 borderRight: "none",
               }}
             >
@@ -160,27 +159,22 @@ const IssueSearch = ({ handleSearchClick }) => {
             borderRadius="0px"
             position="relative"
             sx={{
-              width: "inherit",
+              width: "100%",
               borderRadius: "6px",
               borderTopLeftRadius: "0px",
               borderBottomLeftRadius: "0px",
               backgroundColor: "var(--bgColor-muted)",
               border: "1px solid var(--control-borderColor-rest)",
-              paddingLeft: "8px",
               "&:focus-within": {
                 border: "1px solid var(--focus-outlineColor)",
                 backgroundColor: "white",
               },
             }}
           >
-            <form onSubmit={handleSearchClick}>
-              <SearchIcon
-                sx={{
-                  pointerEvents: "none",
-                }}
-              />
+            <Box as="form" onSubmit={handleSearchClick} sx={{ width: "100%" }}>
               <TextInput
                 size="small"
+                leadingVisual={SearchIcon}
                 placeholder={getPlaceholder()}
                 onChange={handleSearchChange}
                 onKeyDown={(event) => {
@@ -189,7 +183,7 @@ const IssueSearch = ({ handleSearchClick }) => {
                   }
                 }}
                 sx={{
-                  width: "inherit",
+                  width: "100%",
                   backgroundColor: "transparent",
                   border: "none",
                   paddingY: "1px",
@@ -198,7 +192,7 @@ const IssueSearch = ({ handleSearchClick }) => {
                   },
                 }}
               ></TextInput>
-            </form>
+            </Box>
           </Box>
         </Box>
         <ButtonGroup>
