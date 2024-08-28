@@ -1,4 +1,5 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 import {
   Box,
@@ -37,6 +38,7 @@ function CommentPage() {
   // const { issueNumber } = useParams();
   // const { CRUDtoken } = useContext(AuthContext);
   const { user } = useContext(AuthContext);
+  const { issueNumber } = useParams();
   const {
     issueData,
     commentData,
@@ -44,6 +46,7 @@ function CommentPage() {
     error,
     editingCommentId,
     currentTextareaValue,
+    fetchInitData,
     handleDelete,
     handleUpdate,
     handleTextareaChange,
@@ -52,7 +55,11 @@ function CommentPage() {
   } = useContext(CommentContext);
   // const owner = "JuneLin2001";
   // const repo = "91APP_front-end-class";
-
+  useEffect(() => {
+    if (issueNumber) {
+      fetchInitData(issueNumber);
+    }
+  }, []);
   // useEffect(() => {
   //   const fetchInitData = async () => {
   //     try {

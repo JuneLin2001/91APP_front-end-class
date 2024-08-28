@@ -1,18 +1,20 @@
 import { useState, createContext, useEffect, useContext } from "react";
 import api from "../utils/api";
-import { useParams } from "react-router-dom";
+//import { useParams } from "react-router-dom";
 import { AuthContext } from "./authContext";
 
 export const CommentContext = createContext({
   issueData: {},
   commentData: {},
-  loading: true,
+  loading: false,
   error: null,
   editingCommentId: null,
   currentTextareaValue: "",
+  fetchInitData: () => {},
   setComments: () => {},
   handleDelete: () => {},
   handleEdit: () => {},
+  handleUpdate: () => {},
   handleTextareaChange: () => {},
   handleCreateComment: () => {},
   setEditingCommentId: () => {},
@@ -21,46 +23,48 @@ export const CommentContext = createContext({
 export const CommentContextProvider = ({ children }) => {
   const [issueData, setIssueData] = useState(null);
   const [commentData, setCommentData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [currentTextareaValue, setCurrentTextareaValue] = useState("");
-  const { issueNumber } = useParams();
+  //const { issueNumber } = useParams();
   const { CRUDtoken } = useContext(AuthContext);
 
   const owner = "JuneLin2001";
   const repo = "91APP_front-end-class";
 
-  useEffect(() => {
-    const fetchInitData = async () => {
-      try {
-        setLoading(true);
-        const timestamp = new Date().getTime();
-        const issueBodyData = await api.getIssueBody(
-          owner,
-          repo,
-          issueNumber,
-          CRUDtoken
-        );
-        const commentsData = await api.getIssueComments(
-          owner,
-          repo,
-          issueNumber,
-          timestamp
-        );
-        console.log("fetch到的資料", commentsData);
-        console.log("fetch到的issueBodyData", issueBodyData);
-        setIssueData(issueBodyData);
-        setCommentData(commentsData);
-      } catch (e) {
-        setError(e.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  //useEffect(() => {
+  const fetchInitData = async (issueNumber) => {
+    try {
+      //if (issueNumber) {
+      setLoading(true);
+      const timestamp = new Date().getTime();
+      const issueBodyData = await api.getIssueBody(
+        owner,
+        repo,
+        issueNumber,
+        CRUDtoken
+      );
+      const commentsData = await api.getIssueComments(
+        owner,
+        repo,
+        issueNumber,
+        timestamp
+      );
+      console.log("fetch到的資料", commentsData);
+      console.log("fetch到的issueBodyData", issueBodyData);
+      setIssueData(issueBodyData);
+      setCommentData(commentsData);
+      //}
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchInitData();
-  }, [issueNumber, CRUDtoken]);
+  //fetchInitData();
+  //}, [issueNumber, CRUDtoken]);
 
   const fetchData = async () => {
     try {
@@ -127,6 +131,7 @@ export const CommentContextProvider = ({ children }) => {
         error,
         editingCommentId,
         currentTextareaValue,
+        fetchInitData,
         handleDelete,
         handleUpdate,
         handleTextareaChange,
