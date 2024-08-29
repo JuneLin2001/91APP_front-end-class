@@ -251,7 +251,8 @@ const IssuePage = () => {
               }}
               onClick={() => setStateFilter("open")}
             >
-              {`${allIssues.length} `}Open
+              {`${allIssues.filter((issue) => !issue.pull_request).length} `}
+              Open
             </IssueOpenClosedButton>
             <IssueOpenClosedButton //選中的關鍵字是aria-current
               aria-label={"Raw"}
