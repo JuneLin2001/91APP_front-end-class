@@ -1,12 +1,12 @@
 import { useState, useEffect, useContext } from "react";
-import api from "../utils/api";
-import { Center } from "../style/Center.styled";
+import api from "../../utils/api";
+import { Center } from "../../style/Center.styled";
 import { useParams } from "react-router-dom";
-import { AuthContext } from "../context/authContext";
+import { AuthContext } from "../../context/authContext";
 import IssueSearch from "./IssuePageSearch";
 import IssuePageHeader from "./IssuePageHeader";
 import IssuePageList from "./IssuePageList";
-import { IssueAllContainer } from "../style/IssuePage.styled";
+import { IssueAllContainer } from "../../style/IssuePage.styled";
 
 const IssuePage = () => {
   const [apiResult, setApiResult] = useState([]);

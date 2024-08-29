@@ -5,7 +5,6 @@ export const IssueHeader = styled(Header)`
   height: 55px;
   background-color: #f6f8fa;
   margin: 0;
-  padding: 16px;
 `;
 
 export const IssueCheckbox = styled(Checkbox)`
@@ -61,7 +60,7 @@ export const IssueCardContainer = styled(ActionList.Item)`
   cursor: default;
   margin: 0;
   border-radius: 0;
-  padding-left: 16px; /* px: 3 相當於 padding-left: 16px */
+  padding-left: 16px;
   padding-right: 16px;
   width: 100%;
   max-width: 1214px;

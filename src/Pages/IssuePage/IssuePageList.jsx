@@ -1,11 +1,4 @@
-import {
-  ActionList,
-  Box,
-  Text,
-  RelativeTime,
-  CheckboxGroup,
-  IconButton,
-} from "@primer/react";
+import { ActionList, Box, Text, RelativeTime, IconButton } from "@primer/react";
 import {
   IssueOpenedIcon,
   IssueClosedIcon,
@@ -16,7 +9,7 @@ import {
   IssueCheckbox,
   IssueLabelBox,
   IssueCardContainer,
-} from "../style/IssuePage.styled";
+} from "../../style/IssuePage.styled";
 
 const IssuePageList = ({
   issuesToDisplay,
@@ -26,8 +19,7 @@ const IssuePageList = ({
   owner,
 }) => {
   return (
-    <CheckboxGroup>
-      <CheckboxGroup.Label />
+    <>
       <ActionList sx={{ p: 0 }}>
         {issuesToDisplay.map((issue) => (
           <IssueCardContainer key={issue.id}>
@@ -44,7 +36,7 @@ const IssuePageList = ({
                 }
                 unsafeDisableTooltip={false}
                 sx={{
-                  color: stateFilter === "open" ? "green.5" : "purple.5", //TODO: 替換為 Primer 的官方顏色
+                  color: stateFilter === "open" ? "green" : "purple", //TODO: 替換為 Primer 的官方顏色
                   cursor: "default",
                   ":hover": {
                     borderColor: "transparent",
@@ -86,7 +78,7 @@ const IssuePageList = ({
                     unsafeDisableTooltip={false}
                     sx={{
                       ":hover": {
-                        color: "blue.5", // TODO: 替換為 Primer 的官方顏色
+                        color: "blue", // TODO: 替換為 Primer 的官方顏色
                       },
                     }}
                   />
@@ -116,7 +108,7 @@ const IssuePageList = ({
           </IssueCardContainer>
         ))}
       </ActionList>
-    </CheckboxGroup>
+    </>
   );
 };
 

@@ -9,9 +9,9 @@ import {
   IssueHeader,
   IssueCheckbox,
   IssueOpenClosedButton,
-} from "../style/IssuePage.styled.jsx";
-import SelectPanelLabel from "../SelectPanelLebels.jsx";
-import SelectPanelAuthor from "../SelectPanelAuthor.jsx";
+} from "../../style/IssuePage.styled.jsx";
+import SelectPanelLabel from "./IssuePageSelectPanelLebels.jsx";
+import SelectPanelAuthor from "./IssuePageSelectPanelAuthor.jsx";
 
 const IssuePageHeader = ({
   allIssues,
