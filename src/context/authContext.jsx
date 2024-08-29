@@ -43,30 +43,6 @@ export const AuthContextProvider = ({ children }) => {
       unsubscribe();
     };
   }, []);
-  const githubLogin = useCallback(() => {
-    const provider = new GithubAuthProvider();
-    provider.addScope("repo");
-    provider.addScope("user");
-
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        const credential = GithubAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
-        const user = result.user;
-        setUser(user);
-        setIsLogin(true);
-        setCRUDtoken(token);
-
-        localStorage.setItem("CRUDtoken", token);
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // const email = error.email;
-        // const credential = GithubAuthProvider.credentialFromError(error);
-        console.error("Error during GitHub login:", errorCode, errorMessage);
-      });
-  }, []);
 
   const githubLogout = useCallback(() => {
     signOut(auth)
@@ -82,6 +58,39 @@ export const AuthContextProvider = ({ children }) => {
         console.error("Error during logout:", error);
       });
   }, []);
+
+  const githubLogin = useCallback(() => {
+    const provider = new GithubAuthProvider();
+    provider.addScope("repo");
+    provider.addScope("user");
+
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const credential = GithubAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        const user = result.user;
+        setUser(user);
+        setIsLogin(true);
+        setCRUDtoken(token);
+
+        localStorage.setItem("CRUDtoken", token);
+
+        const timeoutId = setTimeout(() => {
+          githubLogout();
+        }, 28800 * 1000);
+
+        return () => {
+          clearTimeout(timeoutId);
+        };
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // const email = error.email;
+        // const credential = GithubAuthProvider.credentialFromError(error);
+        console.error("Error during GitHub login:", errorCode, errorMessage);
+      });
+  }, [githubLogout]);
 
   return (
     <AuthContext.Provider
