@@ -1,8 +1,16 @@
 import { useState } from "react";
 
-import { Box, TabNav, Textarea, Text, IconButton, Button } from "@primer/react";
 import {
-  FileIcon,
+  Box,
+  TabNav,
+  Textarea,
+  Text,
+  IconButton,
+  Button,
+  ActionBar,
+} from "@primer/react";
+import {
+  CrossReferenceIcon,
   MarkdownIcon,
   BoldIcon,
   ItalicIcon,
@@ -12,10 +20,11 @@ import {
   QuoteIcon,
   MentionIcon,
   CodeIcon,
-  IssueClosedIcon,
+  ReplyIcon,
   HeadingIcon,
   PaperclipIcon,
   FileMediaIcon,
+  DiffIgnoredIcon,
 } from "@primer/octicons-react";
 import PropType from "prop-types";
 
@@ -40,83 +49,109 @@ const CommentBox = ({ initialValue, onTextareaChange }) => {
       borderRadius={2}
       bg="canvas.default"
     >
-      <TabNav aria-label="Comment">
-        <TabNav.Link
-          selected={!isPreview}
-          onClick={() => handleTabClick("Write")}
+      <TabNav aria-label="Comment" sx={{ height: "39px" }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            backgroundColor: "canvas.subtle",
+            borderTopLeftRadius: 2,
+            borderTopRightRadius: 2,
+            justifyContent: "space-between",
+            width: "-webkit-fill-available",
+            height: "39px",
+            alignItems: "center",
+          }}
+          as="header"
         >
-          Write
-        </TabNav.Link>
-        <TabNav.Link
-          selected={isPreview}
-          onClick={() => handleTabClick("Preview")}
-        >
-          Preview
-        </TabNav.Link>
-        <Box>
-          <IconButton
-            icon={HeadingIcon}
-            variant="invisible"
-            aria-label="Attach files"
-            mr={2}
-          />
-          <IconButton
-            icon={BoldIcon}
-            variant="invisible"
-            aria-label="Bold"
-            mr={2}
-          />
-          <IconButton
-            icon={ItalicIcon}
-            variant="invisible"
-            aria-label="Italic"
-            mr={2}
-          />
-          <IconButton
-            icon={CodeIcon}
-            variant="invisible"
-            aria-label="Code"
-            mr={2}
-          />
-          <IconButton
-            icon={LinkIcon}
-            variant="invisible"
-            aria-label="Link"
-            mr={2}
-          />
-          <IconButton
-            icon={ListUnorderedIcon}
-            variant="invisible"
-            aria-label="Unordered list"
-            mr={2}
-          />
-          <IconButton
-            icon={ListOrderedIcon}
-            variant="invisible"
-            aria-label="Ordered list"
-            mr={2}
-          />
-          <IconButton
-            icon={QuoteIcon}
-            variant="invisible"
-            aria-label="Quote"
-            mr={2}
-          />
-          <IconButton
-            icon={PaperclipIcon}
-            variant="invisible"
-            aria-label="Data files attachment"
-            mr={2}
-          />
-          <IconButton
-            icon={MentionIcon}
-            variant="invisible"
-            aria-label="Mention"
-            mr={2}
-          />
+          <Box sx={{ width: "20%", padding: "2px 0px", height: "34px" }}>
+            <TabNav.Link
+              selected={!isPreview}
+              onClick={() => handleTabClick("Write")}
+              sx={{ width: "50%", padding: "8px 16px" }}
+            >
+              Write
+            </TabNav.Link>
+            <TabNav.Link
+              selected={isPreview}
+              onClick={() => handleTabClick("Preview")}
+              sx={{ width: "50%", padding: "8px 16px" }}
+            >
+              Preview
+            </TabNav.Link>
+          </Box>
+
+          <Box sx={{ width: "80%" }}>
+            <ActionBar>
+              <ActionBar.IconButton
+                icon={HeadingIcon}
+                variant="invisible"
+                aria-label="Attach files"
+              />
+              <ActionBar.IconButton
+                icon={BoldIcon}
+                variant="invisible"
+                aria-label="Bold"
+              />
+              <ActionBar.IconButton
+                icon={ItalicIcon}
+                variant="invisible"
+                aria-label="Italic"
+              />
+              <ActionBar.IconButton
+                icon={CodeIcon}
+                variant="invisible"
+                aria-label="Code"
+              />
+              <ActionBar.IconButton
+                icon={LinkIcon}
+                variant="invisible"
+                aria-label="Link"
+              />
+              <ActionBar.IconButton
+                icon={ListUnorderedIcon}
+                variant="invisible"
+                aria-label="Unordered list"
+              />
+              <ActionBar.IconButton
+                icon={ListOrderedIcon}
+                variant="invisible"
+                aria-label="Ordered list"
+              />
+              <ActionBar.IconButton
+                icon={QuoteIcon}
+                variant="invisible"
+                aria-label="Quote"
+              />
+              <ActionBar.IconButton
+                icon={PaperclipIcon}
+                variant="invisible"
+                aria-label="Data files attachment"
+              />
+              <ActionBar.IconButton
+                icon={MentionIcon}
+                variant="invisible"
+                aria-label="Mention"
+              />
+              <ActionBar.IconButton
+                icon={CrossReferenceIcon}
+                variant="invisible"
+                aria-label="Mention"
+              />
+              <ActionBar.IconButton
+                icon={ReplyIcon}
+                variant="invisible"
+                aria-label="Mention"
+              />
+              <ActionBar.IconButton
+                icon={DiffIgnoredIcon}
+                variant="invisible"
+                aria-label="Mention"
+              />
+            </ActionBar>
+          </Box>
         </Box>
       </TabNav>
-
       <Box m={2}>
         {!isPreview ? (
           <>
