@@ -102,7 +102,7 @@ const IssueSearch = ({ handleSearchClick, labelNum }) => {
                 borderRight: "none",
               }}
             >
-              Filter
+              Filters
             </ActionMenu.Button>
 
             <ActionMenu.Overlay>

@@ -64,6 +64,7 @@ export const IssueOpenClosedButton = styled(Button)`
   border: 0;
   padding: 6px;
   margin-right: 10px;
+  box-shadow: none;
 `;
 
 export const IssueCardContainer = styled(ActionList.Item)`
