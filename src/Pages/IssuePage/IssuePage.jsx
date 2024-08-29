@@ -22,35 +22,23 @@ const IssuePage = () => {
   // const { user } = useContext(AuthContext);
   const { owner } = useParams();
 
-  console.log("owner: ", owner);
+  function debounce(fn, delay = 500) {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        fn(...args);
+      }, delay);
+    };
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const q = urlParams.get("q") || "";
-        const authorFilter = urlParams.get("author") || "all";
-        const labelFilter = urlParams.get("label") || "all";
-        const searchResult = urlParams.get("searchResult") || "";
-
-        const formattedLabelFilter =
-          labelFilter !== "all"
-            ? labelFilter
-                .match(/label:"[^"]+"|label:\S+/g)
-                ?.map((label) => label.trim())
-                .join(" ")
-            : "";
-
-        const shouldUpdateUrl =
-          q || authorFilter !== "all" || labelFilter !== "all" || searchResult;
-
-        if (shouldUpdateUrl) {
-          updateUrlParams({
-            q,
-            author: authorFilter !== "all" ? authorFilter : "",
-            label: labelFilter !== "all" ? labelFilter : "",
-            searchResult,
-          });
-        }
+        const q = searchValue || "";
+        const authorFilter = selectedAuthor || "all";
+        const labelFilter = selectedLabel || "all";
+        const searchResult = searchValue || "";
 
         if (owner && repoName) {
           const [issuesData, labelsData, allIssuesData] = await Promise.all([
@@ -59,8 +47,8 @@ const IssuePage = () => {
               repoName,
               q,
               authorFilter,
-              formattedLabelFilter,
-              "open",
+              labelFilter,
+              stateFilter,
               searchResult
             ),
             api.getAllLabels(owner, repoName),
@@ -81,37 +69,7 @@ const IssuePage = () => {
       }
     };
 
-    fetchData();
-  }, [repoName, owner]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const q = "";
-      const authorFilter = selectedAuthor || "all";
-      const labelFilter = selectedLabel || "all";
-      const searchResult = searchValue;
-
-      if (owner) {
-        const repoOwner = owner;
-        console.log("repoOwner: ", repoOwner);
-
-        try {
-          const issuesData = await api.getSearchIssues(
-            repoOwner,
-            repoName,
-            q,
-            authorFilter,
-            labelFilter,
-            stateFilter,
-            searchResult
-          );
-
-          setApiResult(issuesData);
-        } catch (error) {
-          console.error("Failed to fetch data:", error);
-        }
-      }
-    };
+    const debouncedFetchData = debounce(fetchData, 500);
 
     updateUrlParams({
       q: searchValue || "",
@@ -119,11 +77,13 @@ const IssuePage = () => {
       label: selectedLabel !== "all" ? selectedLabel : "",
     });
 
-    fetchData();
+    debouncedFetchData();
+
+    return () => clearTimeout(debouncedFetchData);
   }, [
     repoName,
-    stateFilter,
     owner,
+    stateFilter,
     selectedAuthor,
     selectedLabel,
     searchValue,
