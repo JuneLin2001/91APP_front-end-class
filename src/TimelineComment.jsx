@@ -9,6 +9,7 @@ import {
   RelativeTime,
   Label,
   Link,
+  PointerBox,
 } from "@primer/react";
 import { KebabHorizontalIcon, SmileyIcon } from "@primer/octicons-react";
 import { useContext } from "react";
@@ -65,14 +66,14 @@ const TimelineComment = () => {
               borderColor="border.default"
               borderRadius={2}
             >
-              <Box
+              <PointerBox
+                caret="left-top"
                 px={3}
                 py={2}
                 bg={getHeaderColor(comment.actor.login)}
                 display="flex"
                 justifyContent="space-between"
                 alignItems="center"
-                borderBottom="1px solid"
                 borderColor="border.default"
                 borderTopLeftRadius={2}
                 borderTopRightRadius={2}
@@ -159,7 +160,7 @@ const TimelineComment = () => {
                     </ActionList>
                   </ActionMenu.Overlay>
                 </ActionMenu>
-              </Box>
+              </PointerBox>
               <Box>
                 {editingCommentId === comment.id ? (
                   <>

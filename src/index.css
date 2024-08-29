@@ -36,10 +36,10 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* margin: 0 auto;
+  margin: 0 auto;
   display: flex;
-  justify-content: center; */
-  /* 
+  justify-content: center;
+  /*
   --control-bgColor-rest: #f6f8fa;
   --bgColor-accent-muted: #ddf4ff;
   --bgColor-accent-emphasis: #0969da; */
