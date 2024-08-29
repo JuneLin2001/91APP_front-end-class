@@ -18,11 +18,8 @@ const IssuePage = () => {
   const [searchValue, setSearchValue] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [stateFilter, setStateFilter] = useState("open");
-  const { repoName } = useParams();
-  const { user } = useContext(AuthContext);
-  const { owner } = useParams();
+  const { owner, repoName } = useParams();
 
-  console.log("owner: ", owner);
   useEffect(() => {
     const fetchData = async () => {
       const urlParams = new URLSearchParams(window.location.search);

@@ -28,11 +28,9 @@ export const CommentContextProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [currentTextareaValue, setCurrentTextareaValue] = useState("");
-  const { repoName, issueNumber } = useParams();
+  const { owner, repoName, issueNumber } = useParams();
   const { user, CRUDtoken } = useContext(AuthContext);
 
-  const owner =
-    user && user.reloadUserInfo ? user.reloadUserInfo.screenName : "";
   const repo = repoName ? repoName : "";
 
   useEffect(() => {

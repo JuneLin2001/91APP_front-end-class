@@ -125,24 +125,6 @@ function CommentPage() {
             </PageHeader.Description>
           </PageHeader>
         </PageLayout.Header>
-
-        {/* <Pagehead>
-        <PageHeader.Title
-          sx={{
-            lineHeight: "1.25",
-            fontWeight: "normal",
-            fontSize: ["26px", "26px", "var(--text-title-size-large, 32px)"],
-          }}
-        >
-          {issueData.title}
-        </PageHeader.Title>
-        <p color="f1-light color-fg-muted">#{issueData.number}</p>
-        <StateLabel status="issueOpened">{issueData.state}</StateLabel>
-        <Text fontWeight="bold">{issueData.user.login}</Text>
-        <Text color="fg.muted"> opened this issue </Text>
-        <RelativeTime date={new Date(issueData.created_at)} color="fg.muted" />
-        <Text color="fg.muted"> · {issueData.comments} comments</Text>
-      </Pagehead> */}
         <PageLayout.Content>
           <IssueBody />
           <TimelineComment />
