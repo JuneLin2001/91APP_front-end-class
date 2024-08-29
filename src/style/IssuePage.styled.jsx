@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import {
   ActionList,
-  //   Box,
+  Box,
   // Text,
   // RelativeTime,
   Header,
@@ -18,7 +18,6 @@ export const IssueHeader = styled(Header)`
   background-color: #f6f8fa;
   margin: 0;
   padding: 16px;
-  box-sizing: border-box;
 `;
 
 export const IssueCheckbox = styled(Checkbox)`
@@ -83,4 +82,12 @@ export const IssueCardContainer = styled(ActionList.Item)`
   &:hover {
     background-color: #f6f8fa;
   }
+`;
+
+export const IssueAllContainer = styled(Box)`
+  border: 1px solid #dee3e8;
+  width: 100%;
+  max-width: 1214px; // TODO: 查找官方文件
+  border-radius: 0.375rem; // 應該有個官方規範叫做 borderRadius-medium
+  margin: auto;
 `;

@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import IssuePage from "./IssuePage.jsx";
+import IssuePage from "./IssuePage/IssuePage.jsx";
 import GitHubLogin from "./utils/GitHubLogin";
 import CommentPage from "./CommentPage.jsx";
 import PageLayoutComponent from "./PageLayout.jsx";
