@@ -68,6 +68,10 @@ button {
   transition: border-color 0.25s;
 }
 
+a {
+  text-decoration: inherit;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
