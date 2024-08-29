@@ -22,6 +22,7 @@ const IssuePage = () => {
   const { user } = useContext(AuthContext);
   const { owner } = useParams();
 
+  console.log("owner: ", owner);
   useEffect(() => {
     const fetchData = async () => {
       const urlParams = new URLSearchParams(window.location.search);
@@ -52,13 +53,13 @@ const IssuePage = () => {
         });
       }
 
-      if (user && user.reloadUserInfo && user.reloadUserInfo.screenName) {
-        const { screenName } = user.reloadUserInfo;
+      if (owner) {
+        const repoOwner = owner;
 
         try {
           const [issuesData, labelsData, allIssuesData] = await Promise.all([
             api.getSearchIssues(
-              screenName,
+              repoOwner,
               repoName,
               q,
               authorFilter,
@@ -66,8 +67,8 @@ const IssuePage = () => {
               "open",
               searchResult
             ),
-            api.getAllLabels(screenName, repoName),
-            api.getAllIssues(screenName, repoName),
+            api.getAllLabels(repoOwner, repoName),
+            api.getAllIssues(repoOwner, repoName),
           ]);
 
           setApiResult(issuesData);
@@ -84,7 +85,7 @@ const IssuePage = () => {
       }
     };
     fetchData();
-  }, [repoName, user]);
+  }, [repoName, owner]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -93,12 +94,13 @@ const IssuePage = () => {
       const labelFilter = selectedLabel || "all";
       const searchResult = searchValue;
 
-      if (user && user.reloadUserInfo && user.reloadUserInfo.screenName) {
-        const { screenName } = user.reloadUserInfo;
+      if (owner) {
+        const repoOwner = owner;
+        console.log("repoOwner: ", repoOwner);
 
         try {
           const issuesData = await api.getSearchIssues(
-            screenName,
+            repoOwner,
             repoName,
             q,
             authorFilter,
@@ -121,7 +123,14 @@ const IssuePage = () => {
     });
 
     fetchData();
-  }, [repoName, stateFilter, user, selectedAuthor, selectedLabel, searchValue]);
+  }, [
+    repoName,
+    stateFilter,
+    owner,
+    selectedAuthor,
+    selectedLabel,
+    searchValue,
+  ]);
 
   const updateUrlParams = (params) => {
     const url = new URL(window.location.href);
