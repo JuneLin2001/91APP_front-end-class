@@ -1,6 +1,5 @@
 import { useContext } from "react";
 import {
-  Box,
   Text,
   ActionMenu,
   ActionList,
@@ -10,27 +9,14 @@ import {
   Pagehead,
   PageHeader,
   StateLabel,
+  Box,
 } from "@primer/react";
-import { IssueClosedIcon, MarkdownIcon } from "@primer/octicons-react";
+import { IssueClosedIcon } from "@primer/octicons-react";
 import { CommentContext } from "./context/commentContext";
 import CommentBox from "./comment";
 import TimelineComment from "./TimelineComment";
 import IssueBody from "./IssueBody";
 
-import {
-  Box,
-  Timeline,
-  Avatar,
-  Text,
-  Label,
-  ActionMenu,
-  ActionList,
-  IconButton,
-  ThemeProvider,
-  RelativeTime,
-} from "@primer/react";
-
-import { KebabHorizontalIcon } from "@primer/octicons-react";
 function CommentPage() {
   const {
     issueData,
