@@ -3,7 +3,6 @@ import IssuePage from "./IssuePage.jsx";
 import GitHubLogin from "./utils/GitHubLogin";
 import CommentPage from "./CommentPage.jsx";
 import { AuthContextProvider } from "./context/authContext";
-import { IssueProvider } from "./context/issueContext";
 import { ThemeProvider, BaseStyles } from "@primer/react";
 
 function App() {
@@ -12,16 +11,11 @@ function App() {
       <ThemeProvider>
         <BaseStyles>
           <AuthContextProvider>
-            <IssueProvider>
-              <Routes>
-                <Route path="/login" element={<GitHubLogin />} />
-                <Route path="/:repoName/issue" element={<IssuePage />} />
-                <Route
-                  path="/comment/:issue_number"
-                  element={<CommentPage />}
-                />
-              </Routes>
-            </IssueProvider>
+            <Routes>
+              <Route path="/login" element={<GitHubLogin />} />
+              <Route path="/:repoName/issue" element={<IssuePage />} />
+              <Route path="/comment/:issue_number" element={<CommentPage />} />
+            </Routes>
           </AuthContextProvider>
         </BaseStyles>
       </ThemeProvider>
