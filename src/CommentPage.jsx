@@ -55,17 +55,6 @@ function CommentPage() {
       <TimelineComment />
       <h4>Add a comment </h4>
       <CommentBox onTextareaChange={handleTextareaChange} />
-      <Box
-        mt={2}
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        <Text>
-          <MarkdownIcon /> Markdown is supported
-        </Text>
-      </Box>
-
       <Box mt={3} display="flex" justifyContent="flex-end" alignItems="center">
         <ActionMenu>
           <ActionMenu.Button
