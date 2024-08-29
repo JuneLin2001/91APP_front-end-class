@@ -3,7 +3,7 @@ import { AuthContext } from "../context/authContext";
 import api from "./api";
 import { Avatar, Label, RelativeTime } from "@primer/react";
 import { DataTable } from "@primer/react/experimental";
-import { Link } from "@primer/react";
+import { Link, PageLayout } from "@primer/react";
 
 const GitHubLogin = () => {
   const { user, githubLogin, githubLogout } = useContext(AuthContext);
@@ -41,15 +41,6 @@ const GitHubLogin = () => {
         );
       },
     },
-    // {
-    //   header: "Topics",
-    //   field: "topics",
-    //   renderCell: (row) => {
-    //     return row.topics.map((topic, index) => {
-    //       return <Label key={index}>{topic}</Label>;
-    //     });
-    //   },
-    // },
     {
       header: "Private",
       field: "private",
@@ -67,9 +58,9 @@ const GitHubLogin = () => {
   ];
 
   return (
-    <>
+    <PageLayout containerWidth="full">
       {user && user.reloadUserInfo && user.reloadUserInfo.screenName ? (
-        <>
+        <PageLayout.Content width="full">
           <div>
             <h2>Welcome, {user.displayName}</h2>
             <Avatar size={40} src={user.photoURL} alt={user.displayName} />
@@ -84,11 +75,11 @@ const GitHubLogin = () => {
             data={repoList}
             columns={columns}
           />
-        </>
+        </PageLayout.Content>
       ) : (
         <button onClick={githubLogin}>Login with GitHub</button>
       )}
-    </>
+    </PageLayout>
   );
 };
 
