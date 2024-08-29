@@ -14,9 +14,9 @@ function App() {
         <AuthContextProvider>
           <Routes>
             <Route path="/login" element={<GitHubLogin />} />
-            <Route path="/:onwer/:repoName/issue" element={<IssuePage />} />
+            <Route path="/:owner/:repoName/issue" element={<IssuePage />} />
             <Route
-              path="/:onwer/:repoName/issue/comment/:issueNumber"
+              path="/:owner/:repoName/issue/comment/:issueNumber"
               element={
                 <CommentContextProvider>
                   <CommentPage />

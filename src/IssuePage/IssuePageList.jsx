@@ -23,6 +23,7 @@ const IssuePageList = ({
   stateFilter,
   repoName,
   handleCheckboxChange,
+  owner,
 }) => {
   return (
     <CheckboxGroup>
@@ -53,7 +54,7 @@ const IssuePageList = ({
               />
               <Text>
                 <Link
-                  to={`/${repoName}/issue/comment/${issue.number}`}
+                  to={`/${owner}/${repoName}/issue/comment/${issue.number}`}
                   style={{
                     color: "black",
                     fontSize: "16px",

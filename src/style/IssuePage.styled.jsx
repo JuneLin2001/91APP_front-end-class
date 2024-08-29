@@ -1,17 +1,5 @@
 import styled from "styled-components";
-import {
-  ActionList,
-  Box,
-  // Text,
-  // RelativeTime,
-  Header,
-  Checkbox,
-  // CheckboxGroup,
-  // IconButton,
-  //   SegmentedControl,
-  Button,
-  // ButtonGroup,
-} from "@primer/react";
+import { ActionList, Box, Header, Checkbox, Button } from "@primer/react";
 
 export const IssueHeader = styled(Header)`
   height: 55px;

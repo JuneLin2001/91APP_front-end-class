@@ -20,6 +20,7 @@ const IssuePage = () => {
   const [stateFilter, setStateFilter] = useState("open");
   const { repoName } = useParams();
   const { user } = useContext(AuthContext);
+  const { owner } = useParams();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -215,6 +216,7 @@ const IssuePage = () => {
           stateFilter={stateFilter}
           repoName={repoName}
           handleCheckboxChange={handleCheckboxChange}
+          owner={owner}
         />
       </IssueAllContainer>
     </Center>
