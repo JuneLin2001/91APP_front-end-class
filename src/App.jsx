@@ -16,7 +16,7 @@ function App() {
             <Route path="/login" element={<GitHubLogin />} />
             <Route path="/:repoName/issue" element={<IssuePage />} />
             <Route
-              path="/comment/:issueNumber"
+              path="/:repoName/issue/comment/:issueNumber"
               element={
                 <CommentContextProvider>
                   <CommentPage />

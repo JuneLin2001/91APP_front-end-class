@@ -327,7 +327,7 @@ const IssuePage = () => {
                   />
                   <Text>
                     <Link
-                      to={`/comment/${issue.number}`}
+                      to={`/${repoName}/issue/comment/${issue.number}`}
                       style={{
                         color: "black",
                         fontSize: "16px",

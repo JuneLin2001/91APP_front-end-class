@@ -28,12 +28,12 @@ export const CommentContextProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [currentTextareaValue, setCurrentTextareaValue] = useState("");
-  const { issueNumber } = useParams();
+  const { repoName, issueNumber } = useParams();
   const { user, CRUDtoken } = useContext(AuthContext);
 
   const owner =
     user && user.reloadUserInfo ? user.reloadUserInfo.screenName : "";
-  const repo = "Wordle";
+  const repo = repoName ? repoName : "";
 
   useEffect(() => {
     if (!owner) return;
@@ -66,7 +66,7 @@ export const CommentContextProvider = ({ children }) => {
     };
 
     fetchInitData();
-  }, [issueNumber, CRUDtoken, user]);
+  }, [issueNumber, CRUDtoken, user, repo, owner]);
 
   const fetchData = async () => {
     try {
