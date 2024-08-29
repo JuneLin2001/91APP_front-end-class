@@ -45,6 +45,7 @@ const IssuePage = () => {
   const [stateFilter, setStateFilter] = useState("open");
   const { repoName } = useParams();
   const { user } = useContext(AuthContext);
+  const { onwer } = useParams();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -327,7 +328,7 @@ const IssuePage = () => {
                   />
                   <Text>
                     <Link
-                      to={`/${repoName}/issue/comment/${issue.number}`}
+                      to={`/${onwer}/${repoName}/issue/comment/${issue.number}`}
                       style={{
                         color: "black",
                         fontSize: "16px",

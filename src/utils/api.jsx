@@ -2,11 +2,14 @@ const api = {
   hostname: "https://api.github.com",
 
   async getRepo(username) {
-    const response = await fetch(`${this.hostname}/users/${username}/repos`, {
-      headers: {
-        "X-GitHub-Api-Version": "2022-11-28",
-      },
-    });
+    const response = await fetch(
+      `${this.hostname}/users/${username}/repos?type=all`,
+      {
+        headers: {
+          "X-GitHub-Api-Version": "2022-11-28",
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Failed to fetch data");
