@@ -35,7 +35,7 @@ const GitHubLogin = () => {
       rowHeader: true,
       renderCell: (row) => {
         return (
-          <Link href={`/${row.name}/issue`} key={row.name}>
+          <Link href={`${row.owner.login}/${row.name}/issue`} key={row.name}>
             {row.name}
           </Link>
         );
