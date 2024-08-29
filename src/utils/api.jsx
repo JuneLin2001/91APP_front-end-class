@@ -32,39 +32,75 @@ const api = {
   //   return data;
   // },
 
-  async getAllIssues(username, repo) {
-    const queryBase = `repo:${username}/${repo} is:issue`; // 確保 queryBase 是字符串
-    const openQuery = `${queryBase} is:open`;
-    const closedQuery = `${queryBase} is:closed`;
+  async getAllIssuesAndSearchIssues(
+    username,
+    repo,
+    q,
+    authorFilter,
+    labelFilter,
+    stateFilter,
+    searchResult
+  ) {
+    const queryBase = `repo:${username}/${repo} is:issue`;
 
-    try {
-      const [openResponse, closedResponse] = await Promise.all([
-        fetch(
-          `https://api.github.com/search/issues?q=${encodeURIComponent(
-            openQuery
-          )}`
-        ),
-        fetch(
-          `https://api.github.com/search/issues?q=${encodeURIComponent(
-            closedQuery
-          )}`
-        ),
-      ]);
+    // 組合查詢字符串
+    const searchQuery = [
+      q || `${queryBase} is:${stateFilter}`,
+      labelFilter
+        ? labelFilter
+            .match(/label:"[^"]+"|label:\S+/g)
+            ?.map((label) => label.trim())
+            .join(" ")
+        : "",
+      authorFilter !== "all" ? `author:${authorFilter}` : "",
+      searchResult || "",
+    ]
+      .filter(Boolean)
+      .join(" ");
 
-      if (!openResponse.ok || !closedResponse.ok) {
-        throw new Error("Failed to fetch data");
+    // 確保查詢字符串存在
+    if (searchQuery) {
+      const encodedQuery = encodeURIComponent(searchQuery);
+
+      try {
+        const response = await fetch(
+          `${this.hostname}/search/issues?q=${encodedQuery}`
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to search issues");
+        }
+
+        const data = await response.json();
+        const issues = data.items;
+
+        // 計算開啟和關閉的問題數量
+        const openCount = issues.filter(
+          (issue) => issue.state === "open"
+        ).length;
+        const closedCount = issues.filter(
+          (issue) => issue.state === "closed"
+        ).length;
+
+        // 獲取標籤
+        const labelsResponse = await fetch(
+          `${this.hostname}/repos/${username}/${repo}/labels`
+        );
+        if (!labelsResponse.ok) {
+          throw new Error("Failed to fetch labels");
+        }
+        const labels = await labelsResponse.json();
+
+        return {
+          openCount,
+          closedCount,
+          issues,
+          labels,
+        };
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+        throw error;
       }
-
-      const openData = await openResponse.json();
-      const closedData = await closedResponse.json();
-
-      return {
-        openCount: openData.total_count,
-        closedCount: closedData.total_count,
-      };
-    } catch (error) {
-      console.error("Failed to fetch issue counts:", error);
-      throw error;
     }
   },
 
@@ -80,57 +116,6 @@ const api = {
     const labels = await response.json();
 
     return labels;
-  },
-
-  async getSearchIssues(
-    username,
-    repo,
-    q,
-    authorFilter,
-    labelFilter,
-    stateFilter,
-    searchResult
-  ) {
-    const query = q || `repo:${username}/${repo} is:issue is:${stateFilter}`;
-
-    console.log("Using query:", query);
-
-    const formattedLabelFilter = labelFilter
-      ? labelFilter
-          .match(/label:"[^"]+"|label:\S+/g)
-          ?.map((label) => label.trim())
-          .join(" ")
-      : "";
-
-    const searchQuery = [
-      query,
-      formattedLabelFilter !== "" ? formattedLabelFilter : "",
-      authorFilter !== "all" ? `author:${authorFilter}` : "",
-      searchResult ? searchResult : "",
-    ]
-      .filter(Boolean)
-      .join(" ");
-
-    if (searchQuery) {
-      const encodedQuery = encodeURIComponent(searchQuery);
-      console.log("Encoded search query:", encodedQuery);
-
-      const response = await fetch(
-        `${this.hostname}/search/issues?q=${encodedQuery}`
-      );
-
-      console.log("Response status:", response.status);
-      console.log("Response headers:", response.headers);
-
-      if (!response.ok) {
-        throw new Error("Failed to search issues");
-      }
-
-      const data = await response.json();
-      console.log("Search results:", data.items);
-
-      return data.items;
-    }
   },
 
   async getIssueBody(owner, repo, issueNumber, token) {
