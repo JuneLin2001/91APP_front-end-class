@@ -29,13 +29,14 @@ export const CommentContextProvider = ({ children }) => {
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [currentTextareaValue, setCurrentTextareaValue] = useState("");
   const { issueNumber } = useParams();
-  const { CRUDtoken } = useContext(AuthContext);
-  const { user } = useContext(AuthContext);
+  const { user, CRUDtoken } = useContext(AuthContext);
 
-  const owner = "JuneLin2001";
-  const repo = "91APP_front-end-class";
+  const owner =
+    user && user.reloadUserInfo ? user.reloadUserInfo.screenName : "";
+  const repo = "Wordle";
 
   useEffect(() => {
+    if (!owner) return;
     const fetchInitData = async () => {
       try {
         setLoading(true);
@@ -65,7 +66,7 @@ export const CommentContextProvider = ({ children }) => {
     };
 
     fetchInitData();
-  }, [issueNumber, CRUDtoken]);
+  }, [issueNumber, CRUDtoken, user]);
 
   const fetchData = async () => {
     try {
