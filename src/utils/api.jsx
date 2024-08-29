@@ -1,10 +1,5 @@
 const api = {
   hostname: "https://api.github.com",
-  async getIssues() {
-    const response = await fetch(`${this.hostname}/products`);
-    const data = await response.json();
-    return data;
-  },
 
   async getRepo(username) {
     const response = await fetch(`${this.hostname}/users/${username}/repos`, {
@@ -21,7 +16,7 @@ const api = {
     return data;
   },
 
-  async getAllIssue(username, repo) {
+  async getAllIssues(username, repo) {
     const response = await fetch(
       `${this.hostname}/repos/${username}/${repo}/issues`
     );
@@ -34,30 +29,80 @@ const api = {
     return data;
   },
 
-  async getAllLabelFromIssue(username, repo) {
+  async getAllLabels(username, repo) {
     const response = await fetch(
       `${this.hostname}/repos/${username}/${repo}/labels`
     );
+
     if (!response.ok) {
-      throw new Error("Failed to fetch data");
+      throw new Error("Failed to fetch labels");
     }
 
-    const data = await response.json();
-    return data;
+    const labels = await response.json();
+
+    return labels;
   },
 
-  async getSearchIssues(username, repo, q) {
-    const response = await fetch(
-      `${this.hostname}/search/issues?q=repo:${username}/${repo} ${q}`
-    );
+  async getSearchIssues(
+    username,
+    repo,
+    q,
+    authorFilter,
+    labelFilter,
+    stateFilter,
+    searchResult
+  ) {
+    const query = q || `repo:${username}/${repo} is:issue is:${stateFilter}`;
 
-    if (!response.ok) {
-      throw new Error("Failed to search issues");
+    console.log("Using query:", query);
+
+    const formattedLabelFilter = labelFilter
+      ? labelFilter
+          .match(/label:"[^"]+"|label:\S+/g)
+          ?.map((label) => label.trim())
+          .join(" ")
+      : "";
+
+    console.log("Raw labelFilter:", labelFilter);
+    console.log("Formatted labelFilter:", formattedLabelFilter);
+
+    const searchQuery = [
+      query,
+      formattedLabelFilter !== "" ? formattedLabelFilter : "",
+      authorFilter !== "all" ? `author:${authorFilter}` : "",
+      searchResult ? searchResult : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+    console.log("Search query components:", {
+      query,
+      formattedLabelFilter,
+      authorFilter,
+      searchQuery,
+      searchResult,
+    });
+
+    if (searchQuery) {
+      const encodedQuery = encodeURIComponent(searchQuery);
+      console.log("Encoded search query:", encodedQuery);
+
+      const response = await fetch(
+        `${this.hostname}/search/issues?q=${encodedQuery}`
+      );
+
+      console.log("Response status:", response.status);
+      console.log("Response headers:", response.headers);
+
+      if (!response.ok) {
+        throw new Error("Failed to search issues");
+      }
+
+      const data = await response.json();
+      console.log("Search results:", data.items);
+
+      return data.items;
     }
-
-    const data = await response.json();
-    console.log(data);
-    return data.items;
   },
 
   async getIssueBody(owner, repo, issueNumber, token) {
