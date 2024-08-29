@@ -19,17 +19,53 @@ const api = {
     return data;
   },
 
+  // async getAllIssues(username, repo) {
+  //   const response = await fetch(
+  //     `${this.hostname}/repos/${username}/${repo}/issues`
+  //   );
+
+  //   if (!response.ok) {
+  //     throw new Error("Failed to fetch data");
+  //   }
+
+  //   const data = await response.json();
+  //   return data;
+  // },
+
   async getAllIssues(username, repo) {
-    const response = await fetch(
-      `${this.hostname}/repos/${username}/${repo}/issues`
-    );
+    const queryBase = `repo:${username}/${repo} is:issue`; // 確保 queryBase 是字符串
+    const openQuery = `${queryBase} is:open`;
+    const closedQuery = `${queryBase} is:closed`;
 
-    if (!response.ok) {
-      throw new Error("Failed to fetch data");
+    try {
+      const [openResponse, closedResponse] = await Promise.all([
+        fetch(
+          `https://api.github.com/search/issues?q=${encodeURIComponent(
+            openQuery
+          )}`
+        ),
+        fetch(
+          `https://api.github.com/search/issues?q=${encodeURIComponent(
+            closedQuery
+          )}`
+        ),
+      ]);
+
+      if (!openResponse.ok || !closedResponse.ok) {
+        throw new Error("Failed to fetch data");
+      }
+
+      const openData = await openResponse.json();
+      const closedData = await closedResponse.json();
+
+      return {
+        openCount: openData.total_count,
+        closedCount: closedData.total_count,
+      };
+    } catch (error) {
+      console.error("Failed to fetch issue counts:", error);
+      throw error;
     }
-
-    const data = await response.json();
-    return data;
   },
 
   async getAllLabels(username, repo) {
@@ -66,9 +102,6 @@ const api = {
           .join(" ")
       : "";
 
-    console.log("Raw labelFilter:", labelFilter);
-    console.log("Formatted labelFilter:", formattedLabelFilter);
-
     const searchQuery = [
       query,
       formattedLabelFilter !== "" ? formattedLabelFilter : "",
@@ -77,14 +110,6 @@ const api = {
     ]
       .filter(Boolean)
       .join(" ");
-
-    console.log("Search query components:", {
-      query,
-      formattedLabelFilter,
-      authorFilter,
-      searchQuery,
-      searchResult,
-    });
 
     if (searchQuery) {
       const encodedQuery = encodeURIComponent(searchQuery);

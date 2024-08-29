@@ -1,8 +1,8 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import api from "../../utils/api";
 import { Center } from "../../style/Center.styled";
 import { useParams } from "react-router-dom";
-import { AuthContext } from "../../context/authContext";
+// import { AuthContext } from "../../context/authContext";
 import IssueSearch from "./IssuePageSearch";
 import IssuePageHeader from "./IssuePageHeader";
 import IssuePageList from "./IssuePageList";
@@ -10,7 +10,7 @@ import { IssueAllContainer } from "../../style/IssuePage.styled";
 
 const IssuePage = () => {
   const [apiResult, setApiResult] = useState([]);
-  const [allIssues, setAllIssues] = useState([]);
+  const [allIssues, setAllIssues] = useState({ openCount: 0, closedCount: 0 });
   const [authors, setAuthors] = useState([]);
   const [labels, setLabels] = useState([]);
   const [selectedAuthor, setSelectedAuthor] = useState("all");
@@ -19,47 +19,43 @@ const IssuePage = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [stateFilter, setStateFilter] = useState("open");
   const { repoName } = useParams();
-  const { user } = useContext(AuthContext);
+  // const { user } = useContext(AuthContext);
   const { owner } = useParams();
 
   console.log("owner: ", owner);
   useEffect(() => {
     const fetchData = async () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const q = urlParams.get("q") || "";
-      const authorFilter = urlParams.get("author") || "all";
-      const labelFilter = urlParams.get("label") || "all";
-      const searchResult = urlParams.get("searchResult") || "";
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const q = urlParams.get("q") || "";
+        const authorFilter = urlParams.get("author") || "all";
+        const labelFilter = urlParams.get("label") || "all";
+        const searchResult = urlParams.get("searchResult") || "";
 
-      const formattedLabelFilter = labelFilter
-        ? labelFilter
-            .match(/label:"[^"]+"|label:\S+/g)
-            ?.map((label) => label.trim())
-            .join(" ")
-        : "";
+        const formattedLabelFilter =
+          labelFilter !== "all"
+            ? labelFilter
+                .match(/label:"[^"]+"|label:\S+/g)
+                ?.map((label) => label.trim())
+                .join(" ")
+            : "";
 
-      const shouldUpdateUrl =
-        q !== "" ||
-        authorFilter !== "all" ||
-        labelFilter !== "all" ||
-        searchResult !== "";
+        const shouldUpdateUrl =
+          q || authorFilter !== "all" || labelFilter !== "all" || searchResult;
 
-      if (shouldUpdateUrl) {
-        updateUrlParams({
-          q,
-          author: authorFilter !== "all" ? authorFilter : "",
-          label: labelFilter !== "all" ? labelFilter : "",
-          searchResult,
-        });
-      }
+        if (shouldUpdateUrl) {
+          updateUrlParams({
+            q,
+            author: authorFilter !== "all" ? authorFilter : "",
+            label: labelFilter !== "all" ? labelFilter : "",
+            searchResult,
+          });
+        }
 
-      if (owner) {
-        const repoOwner = owner;
-
-        try {
+        if (owner && repoName) {
           const [issuesData, labelsData, allIssuesData] = await Promise.all([
             api.getSearchIssues(
-              repoOwner,
+              owner,
               repoName,
               q,
               authorFilter,
@@ -67,23 +63,24 @@ const IssuePage = () => {
               "open",
               searchResult
             ),
-            api.getAllLabels(repoOwner, repoName),
-            api.getAllIssues(repoOwner, repoName),
+            api.getAllLabels(owner, repoName),
+            api.getAllIssues(owner, repoName),
           ]);
 
           setApiResult(issuesData);
           setLabels(labelsData);
           setAllIssues(allIssuesData);
 
-          const uniqueAuthors = [
-            ...new Set(issuesData.map((issue) => issue.user.login)),
-          ];
+          const uniqueAuthors = Array.from(
+            new Set(issuesData.map((issue) => issue.user.login))
+          );
           setAuthors(uniqueAuthors);
-        } catch (error) {
-          console.error("Failed to fetch data:", error);
         }
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
       }
     };
+
     fetchData();
   }, [repoName, owner]);
 
@@ -212,7 +209,8 @@ const IssuePage = () => {
       />
       <IssueAllContainer>
         <IssuePageHeader
-          allIssues={allIssues}
+          openCount={allIssues.openCount}
+          closedCount={allIssues.closedCount}
           stateFilter={stateFilter}
           setStateFilter={setStateFilter}
           authors={authors}
