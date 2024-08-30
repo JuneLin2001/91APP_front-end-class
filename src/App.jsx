@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import IssuePage from "./Pages/IssuePage/IssuePage.jsx";
 import GitHubLogin from "./utils/GitHubLogin";
 import CommentPage from "./CommentPage.jsx";
-import PageLayoutComponent from "./PageLayout.jsx";
+import ErrorComponent from "./Pages/ErrorPage.jsx";
 import { AuthContextProvider } from "./context/authContext";
 import { CommentContextProvider } from "./context/commentContext.jsx";
 import { ThemeProvider, BaseStyles } from "@primer/react";
@@ -23,7 +23,7 @@ function App() {
                 </CommentContextProvider>
               }
             />
-            <Route path="/page" element={<PageLayoutComponent />} />
+            <Route path="/error" element={<ErrorComponent />} />
           </Routes>
         </AuthContextProvider>
       </BaseStyles>

@@ -1,5 +1,5 @@
 import { useState, createContext, useEffect, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { AuthContext } from "./authContext";
 import api from "../utils/api";
 
@@ -28,11 +28,10 @@ export const CommentContextProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [currentTextareaValue, setCurrentTextareaValue] = useState("");
-  const { repoName, issueNumber } = useParams();
+  const { owner, repoName, issueNumber } = useParams();
   const { user, CRUDtoken } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-  const owner =
-    user && user.reloadUserInfo ? user.reloadUserInfo.screenName : "";
   const repo = repoName ? repoName : "";
 
   useEffect(() => {
@@ -60,13 +59,15 @@ export const CommentContextProvider = ({ children }) => {
         setCommentData(timelineCommentsData);
       } catch (e) {
         setError(e.message);
+        const errorMessage = e.message || "Something went wrong";
+        navigate("/error", { state: { errorMessage } });
       } finally {
         setLoading(false);
       }
     };
 
     fetchInitData();
-  }, [issueNumber, CRUDtoken, user, repo, owner]);
+  }, [issueNumber, CRUDtoken, user, repo, owner, navigate]);
 
   const fetchData = async () => {
     try {
