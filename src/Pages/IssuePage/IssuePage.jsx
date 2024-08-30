@@ -19,14 +19,6 @@ const IssuePage = () => {
   const [stateFilter, setStateFilter] = useState("open");
   const { repoName, owner } = useParams();
 
-  const debounce = (fn, delay = 500) => {
-    let timer;
-    return (...args) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => fn(...args), delay);
-    };
-  };
-
   const fetchData = useCallback(async () => {
     try {
       const q = searchValue || "";
@@ -70,8 +62,13 @@ const IssuePage = () => {
   ]);
 
   useEffect(() => {
-    // 防抖處理
-    const debouncedFetchData = debounce(fetchData, 500);
+    const debouncedFetchData = () => {
+      const timer = setTimeout(() => {
+        fetchData();
+      }, 500);
+
+      return () => clearTimeout(timer);
+    };
 
     updateUrlParams({
       q: searchValue || "",
@@ -79,11 +76,9 @@ const IssuePage = () => {
       label: selectedLabel !== "all" ? selectedLabel : "",
     });
 
-    debouncedFetchData();
+    const cleanup = debouncedFetchData();
 
-    return () => {
-      clearTimeout(debouncedFetchData.timer);
-    };
+    return cleanup;
   }, [fetchData, searchValue, selectedAuthor, selectedLabel]);
 
   const updateUrlParams = (params) => {
