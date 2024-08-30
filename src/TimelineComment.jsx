@@ -209,27 +209,35 @@ const TimelineComment = () => {
                     </ActionMenu>
                   </Box>
                 </PointerBox>
-                <Box borderTop="1px solid var(--borderColor-default)">
+                <Box borderTop="1px solid var(--borderColor-default)" p={2}>
                   {editingCommentId === comment.id ? (
                     <>
                       <CommentBox
                         initialValue={comment.body}
                         onTextareaChange={handleTextareaChange}
+                        hasMarkdownBtn={false}
                       />
-                      <Button
-                        variant="danger"
-                        onClick={() => setEditingCommentId(null)}
+                      <Box
+                        display="flex"
+                        justifyContent="flex-end"
+                        mt={2}
+                        sx={{ gap: 2 }}
                       >
-                        Cancel
-                      </Button>
-                      <Button
-                        variant="primary"
-                        onClick={() =>
-                          handleUpdate(comment.id, currentTextareaValue)
-                        }
-                      >
-                        Update comment
-                      </Button>
+                        <Button
+                          variant="danger"
+                          onClick={() => setEditingCommentId(null)}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          variant="primary"
+                          onClick={() =>
+                            handleUpdate(comment.id, currentTextareaValue)
+                          }
+                        >
+                          Update comment
+                        </Button>
+                      </Box>
                     </>
                   ) : (
                     <>

@@ -28,7 +28,7 @@ import {
 } from "@primer/octicons-react";
 import PropType from "prop-types";
 
-const CommentBox = ({ initialValue, onTextareaChange }) => {
+const CommentBox = ({ initialValue, onTextareaChange, hasMarkdownBtn }) => {
   const [inputValue, setInputValue] = useState(initialValue || "");
   const [isPreview, setIsPreview] = useState(false);
 
@@ -162,40 +162,42 @@ const CommentBox = ({ initialValue, onTextareaChange }) => {
               onChange={handleInputChange}
               sx={{ width: "100%", height: "100%", resize: "none" }}
             />
-            <Box
-              mt={2}
-              sx={{
-                display: "flex",
-                justifyContent: "flex-start",
-              }}
-            >
-              <Box>
-                <Button
-                  variant="invisible"
-                  size="small"
-                  leadingVisual={MarkdownIcon}
-                >
-                  Markdown is supported
-                </Button>
-              </Box>
+            {hasMarkdownBtn ? (
               <Box
-                role="separator"
-                mx={1}
+                mt={2}
                 sx={{
-                  width: 1,
-                  backgroundColor: "#e1e4e8",
+                  display: "flex",
+                  justifyContent: "flex-start",
                 }}
-              ></Box>
-              <Box>
-                <Button
-                  variant="invisible"
-                  size="small"
-                  leadingVisual={FileMediaIcon}
-                >
-                  Paste, drop, or click to add files
-                </Button>
+              >
+                <Box>
+                  <Button
+                    variant="invisible"
+                    size="small"
+                    leadingVisual={MarkdownIcon}
+                  >
+                    Markdown is supported
+                  </Button>
+                </Box>
+                <Box
+                  role="separator"
+                  mx={1}
+                  sx={{
+                    width: 1,
+                    backgroundColor: "#e1e4e8",
+                  }}
+                ></Box>
+                <Box>
+                  <Button
+                    variant="invisible"
+                    size="small"
+                    leadingVisual={FileMediaIcon}
+                  >
+                    Paste, drop, or click to add files
+                  </Button>
+                </Box>
               </Box>
-            </Box>
+            ) : null}
           </>
         ) : (
           <Box

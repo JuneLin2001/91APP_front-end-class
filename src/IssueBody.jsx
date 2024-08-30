@@ -137,12 +137,13 @@ const IssueBody = () => {
             </ActionMenu>
           </Box>
         </PointerBox>
-        <Box p={2}>
+        <Box borderTop="1px solid var(--borderColor-default)" p={2}>
           {editingCommentId === issueData.id ? (
             <>
               <CommentBox
                 initialValue={issueData.body}
                 onTextareaChange={handleTextareaChange}
+                hasMarkdownBtn={false}
               />
               <Box
                 display="flex"

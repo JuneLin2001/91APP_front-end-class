@@ -132,7 +132,10 @@ function CommentPage() {
             <TimelineComment />
           </Box>
           <h4>Add a comment </h4>
-          <CommentBox onTextareaChange={handleTextareaChange} />
+          <CommentBox
+            onTextareaChange={handleTextareaChange}
+            hasMarkdownBtn={true}
+          />
           <Box
             mt={3}
             display="flex"
