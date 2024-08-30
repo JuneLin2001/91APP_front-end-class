@@ -14,7 +14,8 @@ import SelectPanelLabel from "./IssuePageSelectPanelLebels.jsx";
 import SelectPanelAuthor from "./IssuePageSelectPanelAuthor.jsx";
 
 const IssuePageHeader = ({
-  allIssues,
+  openCount,
+  closedCount,
   stateFilter,
   setStateFilter,
   authors,
@@ -40,7 +41,7 @@ const IssuePageHeader = ({
           }}
           onClick={() => setStateFilter("open")}
         >
-          {`${allIssues.filter((issue) => !issue.pull_request).length} Open`}
+          {`${openCount} Open`}
         </IssueOpenClosedButton>
 
         <IssueOpenClosedButton
@@ -52,11 +53,7 @@ const IssuePageHeader = ({
           }}
           onClick={() => setStateFilter("closed")}
         >
-          {`${
-            allIssues.filter(
-              (issue) => issue.state === "closed" && !issue.pull_request
-            ).length
-          } Closed`}
+          {`${closedCount} Closed`}
         </IssueOpenClosedButton>
       </SegmentedControl>
 

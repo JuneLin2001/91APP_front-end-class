@@ -19,17 +19,89 @@ const api = {
     return data;
   },
 
-  async getAllIssues(username, repo) {
-    const response = await fetch(
-      `${this.hostname}/repos/${username}/${repo}/issues`
-    );
+  // async getAllIssues(username, repo) {
+  //   const response = await fetch(
+  //     `${this.hostname}/repos/${username}/${repo}/issues`
+  //   );
 
-    if (!response.ok) {
-      throw new Error("Failed to fetch data");
+  //   if (!response.ok) {
+  //     throw new Error("Failed to fetch data");
+  //   }
+
+  //   const data = await response.json();
+  //   return data;
+  // },
+
+  async getAllIssuesAndSearchIssues(
+    username,
+    repo,
+    q,
+    authorFilter,
+    labelFilter,
+    stateFilter,
+    searchResult
+  ) {
+    const queryBase = `repo:${username}/${repo} is:issue`;
+
+    // 組合查詢字符串
+    const searchQuery = [
+      q || `${queryBase} is:${stateFilter}`,
+      labelFilter
+        ? labelFilter
+            .match(/label:"[^"]+"|label:\S+/g)
+            ?.map((label) => label.trim())
+            .join(" ")
+        : "",
+      authorFilter !== "all" ? `author:${authorFilter}` : "",
+      searchResult || "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+    // 確保查詢字符串存在
+    if (searchQuery) {
+      const encodedQuery = encodeURIComponent(searchQuery);
+
+      try {
+        const response = await fetch(
+          `${this.hostname}/search/issues?q=${encodedQuery}`
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to search issues");
+        }
+
+        const data = await response.json();
+        const issues = data.items;
+
+        // 計算開啟和關閉的問題數量
+        const openCount = issues.filter(
+          (issue) => issue.state === "open"
+        ).length;
+        const closedCount = issues.filter(
+          (issue) => issue.state === "closed"
+        ).length;
+
+        // 獲取標籤
+        const labelsResponse = await fetch(
+          `${this.hostname}/repos/${username}/${repo}/labels`
+        );
+        if (!labelsResponse.ok) {
+          throw new Error("Failed to fetch labels");
+        }
+        const labels = await labelsResponse.json();
+
+        return {
+          openCount,
+          closedCount,
+          issues,
+          labels,
+        };
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+        throw error;
+      }
     }
-
-    const data = await response.json();
-    return data;
   },
 
   async getAllLabels(username, repo) {
@@ -44,68 +116,6 @@ const api = {
     const labels = await response.json();
 
     return labels;
-  },
-
-  async getSearchIssues(
-    username,
-    repo,
-    q,
-    authorFilter,
-    labelFilter,
-    stateFilter,
-    searchResult
-  ) {
-    const query = q || `repo:${username}/${repo} is:issue is:${stateFilter}`;
-
-    console.log("Using query:", query);
-
-    const formattedLabelFilter = labelFilter
-      ? labelFilter
-          .match(/label:"[^"]+"|label:\S+/g)
-          ?.map((label) => label.trim())
-          .join(" ")
-      : "";
-
-    console.log("Raw labelFilter:", labelFilter);
-    console.log("Formatted labelFilter:", formattedLabelFilter);
-
-    const searchQuery = [
-      query,
-      formattedLabelFilter !== "" ? formattedLabelFilter : "",
-      authorFilter !== "all" ? `author:${authorFilter}` : "",
-      searchResult ? searchResult : "",
-    ]
-      .filter(Boolean)
-      .join(" ");
-
-    console.log("Search query components:", {
-      query,
-      formattedLabelFilter,
-      authorFilter,
-      searchQuery,
-      searchResult,
-    });
-
-    if (searchQuery) {
-      const encodedQuery = encodeURIComponent(searchQuery);
-      console.log("Encoded search query:", encodedQuery);
-
-      const response = await fetch(
-        `${this.hostname}/search/issues?q=${encodedQuery}`
-      );
-
-      console.log("Response status:", response.status);
-      console.log("Response headers:", response.headers);
-
-      if (!response.ok) {
-        throw new Error("Failed to search issues");
-      }
-
-      const data = await response.json();
-      console.log("Search results:", data.items);
-
-      return data.items;
-    }
   },
 
   async getIssueBody(owner, repo, issueNumber, token) {

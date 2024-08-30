@@ -1,8 +1,7 @@
-import { useState, useEffect, useContext } from "react";
-import api from "../../utils/api";
+import { useState, useEffect, useCallback } from "react";
 import { Center } from "../../style/Center.styled";
-import { useParams } from "react-router-dom";
-import { AuthContext } from "../../context/authContext";
+import { useNavigate, useParams } from "react-router-dom";
+import api from "../../utils/api";
 import IssueSearch from "./IssuePageSearch";
 import IssuePageHeader from "./IssuePageHeader";
 import IssuePageList from "./IssuePageList";
@@ -10,7 +9,7 @@ import { IssueAllContainer } from "../../style/IssuePage.styled";
 
 const IssuePage = () => {
   const [apiResult, setApiResult] = useState([]);
-  const [allIssues, setAllIssues] = useState([]);
+  const [allIssues, setAllIssues] = useState({ openCount: 0, closedCount: 0 });
   const [authors, setAuthors] = useState([]);
   const [labels, setLabels] = useState([]);
   const [selectedAuthor, setSelectedAuthor] = useState("all");
@@ -19,99 +18,64 @@ const IssuePage = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [stateFilter, setStateFilter] = useState("open");
   const { owner, repoName } = useParams();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const q = urlParams.get("q") || "";
-      const authorFilter = urlParams.get("author") || "all";
-      const labelFilter = urlParams.get("label") || "all";
-      const searchResult = urlParams.get("searchResult") || "";
-
-      const formattedLabelFilter = labelFilter
-        ? labelFilter
-            .match(/label:"[^"]+"|label:\S+/g)
-            ?.map((label) => label.trim())
-            .join(" ")
-        : "";
-
-      const shouldUpdateUrl =
-        q !== "" ||
-        authorFilter !== "all" ||
-        labelFilter !== "all" ||
-        searchResult !== "";
-
-      if (shouldUpdateUrl) {
-        updateUrlParams({
-          q,
-          author: authorFilter !== "all" ? authorFilter : "",
-          label: labelFilter !== "all" ? labelFilter : "",
-          searchResult,
-        });
-      }
-
-      if (owner) {
-        const repoOwner = owner;
-
-        try {
-          const [issuesData, labelsData, allIssuesData] = await Promise.all([
-            api.getSearchIssues(
-              repoOwner,
-              repoName,
-              q,
-              authorFilter,
-              formattedLabelFilter,
-              "open",
-              searchResult
-            ),
-            api.getAllLabels(repoOwner, repoName),
-            api.getAllIssues(repoOwner, repoName),
-          ]);
-
-          setApiResult(issuesData);
-          setLabels(labelsData);
-          setAllIssues(allIssuesData);
-
-          const uniqueAuthors = [
-            ...new Set(issuesData.map((issue) => issue.user.login)),
-          ];
-          setAuthors(uniqueAuthors);
-        } catch (error) {
-          console.error("Failed to fetch data:", error);
-        }
-      }
+  const debounce = (fn, delay = 500) => {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn(...args), delay);
     };
-    fetchData();
-  }, [repoName, owner]);
+  };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const q = "";
+  const fetchData = useCallback(async () => {
+    try {
+      const q = searchValue || "";
       const authorFilter = selectedAuthor || "all";
       const labelFilter = selectedLabel || "all";
-      const searchResult = searchValue;
+      const searchResult = searchValue || "";
 
-      if (owner) {
-        const repoOwner = owner;
-        console.log("repoOwner: ", repoOwner);
+      if (owner && repoName) {
+        const response = await api.getAllIssuesAndSearchIssues(
+          owner,
+          repoName,
+          q,
+          authorFilter,
+          labelFilter,
+          stateFilter,
+          searchResult
+        );
 
-        try {
-          const issuesData = await api.getSearchIssues(
-            repoOwner,
-            repoName,
-            q,
-            authorFilter,
-            labelFilter,
-            stateFilter,
-            searchResult
-          );
+        setApiResult(response.issues);
+        setLabels(response.labels);
+        setAllIssues({
+          openCount: response.openCount,
+          closedCount: response.closedCount,
+        });
 
-          setApiResult(issuesData);
-        } catch (error) {
-          console.error("Failed to fetch data:", error);
-        }
+        const uniqueAuthors = Array.from(
+          new Set(response.issues.map((issue) => issue.user.login))
+        );
+        setAuthors(uniqueAuthors);
       }
-    };
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+      const errorMessage = error.message || "Something went wrong";
+      navigate("/error", { state: { errorMessage } });
+    }
+  }, [
+    owner,
+    repoName,
+    stateFilter,
+    selectedAuthor,
+    selectedLabel,
+    searchValue,
+    navigate,
+  ]);
+
+  useEffect(() => {
+    // 防抖處理
+    const debouncedFetchData = debounce(fetchData, 500);
 
     updateUrlParams({
       q: searchValue || "",
@@ -119,15 +83,12 @@ const IssuePage = () => {
       label: selectedLabel !== "all" ? selectedLabel : "",
     });
 
-    fetchData();
-  }, [
-    repoName,
-    stateFilter,
-    owner,
-    selectedAuthor,
-    selectedLabel,
-    searchValue,
-  ]);
+    debouncedFetchData();
+
+    return () => {
+      clearTimeout(debouncedFetchData.timer);
+    };
+  }, [fetchData, searchValue, selectedAuthor, selectedLabel]);
 
   const updateUrlParams = (params) => {
     const url = new URL(window.location.href);
@@ -175,7 +136,7 @@ const IssuePage = () => {
 
   const handleLabelChange = (labels) => {
     const formattedString = labels.map((label) => `label:"${label}"`).join(" ");
-    console.log("formattedString: ", formattedString); // 現在是字串 formattedString:  label:"invalid" label:"question" label:"enhancement"
+    console.log("formattedString: ", formattedString);
     handleFilterChange("label", formattedString);
     setSelectedLabel(formattedString);
   };
@@ -209,7 +170,8 @@ const IssuePage = () => {
       />
       <IssueAllContainer>
         <IssuePageHeader
-          allIssues={allIssues}
+          openCount={allIssues.openCount}
+          closedCount={allIssues.closedCount}
           stateFilter={stateFilter}
           setStateFilter={setStateFilter}
           authors={authors}
