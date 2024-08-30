@@ -2,7 +2,7 @@ import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
 import api from "./api";
-import { Avatar, Label, RelativeTime } from "@primer/react";
+import { Avatar, Box, Label, RelativeTime, Button } from "@primer/react";
 import { DataTable } from "@primer/react/experimental";
 import { Link, PageLayout } from "@primer/react";
 
@@ -61,28 +61,31 @@ const GitHubLogin = () => {
   ];
 
   return (
-    <PageLayout containerWidth="full">
-      {user && user.reloadUserInfo && user.reloadUserInfo.screenName ? (
-        <PageLayout.Content width="full">
-          <div>
-            <h2>Welcome, {user.displayName}</h2>
-            <Avatar size={40} src={user.photoURL} alt={user.displayName} />
+    <>
+      <PageLayout containerWidth="full">
+        {user && user.reloadUserInfo && user.reloadUserInfo.screenName ? (
+          <PageLayout.Content width="full">
+            <div>
+              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <Avatar size={36} src={user.photoURL} alt={user.displayName} />
+                <h2>Welcome, {user.displayName}</h2>
+              </Box>
+              <br />
+              <Button onClick={githubLogout}>Logout</Button>
+            </div>
             <br />
-            <br />
-            <button onClick={githubLogout}>Logout</button>
-          </div>
-          <br />
-          <DataTable
-            aria-labelledby="repositories"
-            aria-describedby="repositories-subtitle"
-            data={repoList}
-            columns={columns}
-          />
-        </PageLayout.Content>
-      ) : (
-        <button onClick={githubLogin}>Login with GitHub</button>
-      )}
-    </PageLayout>
+            <DataTable
+              aria-labelledby="repositories"
+              aria-describedby="repositories-subtitle"
+              data={repoList}
+              columns={columns}
+            />
+          </PageLayout.Content>
+        ) : (
+          <button onClick={githubLogin}>Login with GitHub</button>
+        )}
+      </PageLayout>
+    </>
   );
 };
 
