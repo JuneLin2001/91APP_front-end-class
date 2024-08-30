@@ -44,8 +44,8 @@ const TimelineComment = () => {
           <Timeline.Badge
             sx={{
               position: "absolute",
-              left: "-30px",
-              top: "10px",
+              left: "-40px",
+              top: "0px",
               width: "40px",
               height: "40px",
             }}
@@ -77,6 +77,7 @@ const TimelineComment = () => {
                 borderColor="border.default"
                 borderTopLeftRadius={2}
                 borderTopRightRadius={2}
+                border="none"
               >
                 <Box>
                   <Text fontWeight="bold">
@@ -87,81 +88,84 @@ const TimelineComment = () => {
                       <RelativeTime date={new Date(comment.updated_at)} />
                     </Link>
                   )}
-
+                </Box>
+                <Box display="flex" alignItems="center">
                   {comment.author_association && (
                     <Label ml={2} color="fg.muted">
                       {comment.author_association}
                     </Label>
                   )}
-                </Box>
 
-                <ActionMenu>
-                  <ActionMenu.Button
-                    aria-label="Actions"
-                    sx={{
-                      '[data-component="trailingAction"]': {
-                        display: "none",
-                      },
-                      border: "none",
-                      backgroundColor: "transparent",
-                      boxShadow: "none",
-                      "&:hover": {
+                  <ActionMenu>
+                    <ActionMenu.Button
+                      aria-label="Actions"
+                      sx={{
+                        '[data-component="trailingAction"]': {
+                          display: "none",
+                        },
+                        border: "none",
                         backgroundColor: "transparent",
                         boxShadow: "none",
-                      },
-                      "&:focus": {
-                        backgroundColor: "transparent",
-                        boxShadow: "none",
-                      },
-                      "&:active": {
-                        backgroundColor: "transparent",
-                        boxShadow: "none",
-                      },
-                      "&:hover:not([disabled]):not([data-inactive])": {
-                        backgroundColor: "transparent",
-                        boxShadow: "none",
-                      },
-                      "& svg": {
-                        color: "currentColor",
                         "&:hover": {
-                          color: "var(--bgColor-accent-emphasis)",
+                          backgroundColor: "transparent",
+                          boxShadow: "none",
                         },
                         "&:focus": {
-                          color: "var(--bgColor-accent-emphasis)",
+                          backgroundColor: "transparent",
+                          boxShadow: "none",
                         },
-                      },
-                      "&[aria-expanded='true']": {
-                        backgroundColor: "transparent",
-                      },
-                    }}
-                  >
-                    <KebabHorizontalIcon />
-                  </ActionMenu.Button>
-                  <ActionMenu.Overlay width="medium">
-                    <ActionList>
-                      <ActionList.Item>Copy link</ActionList.Item>
-                      <ActionList.Item>Quote reply</ActionList.Item>
-                      <ActionList.Item>Reference in new issue</ActionList.Item>
-                      <ActionList.Divider />
-                      <ActionList.Item
-                        onSelect={() => setEditingCommentId(comment.id)}
-                      >
-                        Edit
-                      </ActionList.Item>
-                      <ActionList.Item>Hide</ActionList.Item>
-                      <ActionList.Item
-                        variant="danger"
-                        onClick={() => handleDelete(comment.id)}
-                      >
-                        Delete
-                      </ActionList.Item>
-                      <ActionList.Divider />
-                      <ActionList.Item>Report content</ActionList.Item>
-                    </ActionList>
-                  </ActionMenu.Overlay>
-                </ActionMenu>
+                        "&:active": {
+                          backgroundColor: "transparent",
+                          boxShadow: "none",
+                        },
+                        "&:hover:not([disabled]):not([data-inactive])": {
+                          backgroundColor: "transparent",
+                          boxShadow: "none",
+                        },
+                        "& svg": {
+                          color: "currentColor",
+                          "&:hover": {
+                            color: "var(--bgColor-accent-emphasis)",
+                          },
+                          "&:focus": {
+                            color: "var(--bgColor-accent-emphasis)",
+                          },
+                        },
+                        "&[aria-expanded='true']": {
+                          backgroundColor: "transparent",
+                        },
+                      }}
+                    >
+                      <KebabHorizontalIcon />
+                    </ActionMenu.Button>
+                    <ActionMenu.Overlay width="medium">
+                      <ActionList>
+                        <ActionList.Item>Copy link</ActionList.Item>
+                        <ActionList.Item>Quote reply</ActionList.Item>
+                        <ActionList.Item>
+                          Reference in new issue
+                        </ActionList.Item>
+                        <ActionList.Divider />
+                        <ActionList.Item
+                          onSelect={() => setEditingCommentId(comment.id)}
+                        >
+                          Edit
+                        </ActionList.Item>
+                        <ActionList.Item>Hide</ActionList.Item>
+                        <ActionList.Item
+                          variant="danger"
+                          onClick={() => handleDelete(comment.id)}
+                        >
+                          Delete
+                        </ActionList.Item>
+                        <ActionList.Divider />
+                        <ActionList.Item>Report content</ActionList.Item>
+                      </ActionList>
+                    </ActionMenu.Overlay>
+                  </ActionMenu>
+                </Box>
               </PointerBox>
-              <Box>
+              <Box borderTop="1px solid var(--borderColor-default)">
                 {editingCommentId === comment.id ? (
                   <>
                     <CommentBox

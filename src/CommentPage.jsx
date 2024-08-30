@@ -127,8 +127,10 @@ function CommentPage() {
           </PageHeader>
         </PageLayout.Header>
         <PageLayout.Content>
-          <IssueBody />
-          <TimelineComment />
+          <Box ml={7}>
+            <IssueBody />
+            <TimelineComment />
+          </Box>
           <h4>Add a comment </h4>
           <CommentBox onTextareaChange={handleTextareaChange} />
           <Box
