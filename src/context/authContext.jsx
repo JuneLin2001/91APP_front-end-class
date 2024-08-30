@@ -19,7 +19,7 @@ export const AuthContext = createContext({
 
 export const AuthContextProvider = ({ children }) => {
   const [isLogin, setIsLogin] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState({});
   const [CRUDtoken, setCRUDtoken] = useState(
     localStorage.getItem("CRUDtoken") || ""
