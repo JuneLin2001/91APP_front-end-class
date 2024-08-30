@@ -30,16 +30,16 @@ const IssueSearch = ({ handleSearchClick, labelNum }) => {
     const authorFilter = searchParams.get("author") || "all";
     const labelFilter = searchParams.get("label") || "all";
 
-    const parts = ["is:issue", "is:open"];
+    const parts = [];
 
     if (authorFilter !== "all") {
       parts.push(`author:${authorFilter}`);
     }
 
     if (labelFilter !== "all") {
-      const decodedLabels = decodeURIComponent(labelFilter).split("+");
-      decodedLabels.forEach((label) => {
-        parts.push(`label:"${label}"`);
+      const labels = decodeURIComponent(labelFilter).split("+");
+      labels.forEach((label) => {
+        parts.push(`${label}`);
       });
     }
 

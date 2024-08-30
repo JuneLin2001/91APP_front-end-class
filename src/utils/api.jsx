@@ -19,46 +19,81 @@ const api = {
     return data;
   },
 
-  // async getAllIssues(username, repo) {
-  //   const response = await fetch(
-  //     `${this.hostname}/repos/${username}/${repo}/issues`
-  //   );
+  async fetchInitialData(username, repo) {
+    const queryBase = `repo:${username}/${repo} is:issue`;
 
-  //   if (!response.ok) {
-  //     throw new Error("Failed to fetch data");
-  //   }
+    try {
+      const response = await fetch(
+        `${this.hostname}/search/issues?q=${encodeURIComponent(queryBase)}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch issues");
+      }
+      const data = await response.json();
+      const issues = data.items;
 
-  //   const data = await response.json();
-  //   return data;
-  // },
+      const openCount = issues.filter((issue) => issue.state === "open").length;
+      const closedCount = issues.filter(
+        (issue) => issue.state === "closed"
+      ).length;
 
-  async getAllIssuesAndSearchIssues(
-    username,
-    repo,
+      const labelsResponse = await fetch(
+        `${this.hostname}/repos/${username}/${repo}/labels`
+      );
+      if (!labelsResponse.ok) {
+        throw new Error("Failed to fetch labels");
+      }
+      const labels = await labelsResponse.json();
+
+      const uniqueAuthors = Array.from(
+        new Set(issues.map((issue) => issue.user.login))
+      );
+
+      return {
+        openCount,
+        closedCount,
+        issues,
+        labels,
+        uniqueAuthors,
+      };
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+      throw error;
+    }
+  },
+
+  async fetchFilteredIssues(
     q,
+    owner,
+    repoName,
     authorFilter,
     labelFilter,
     stateFilter,
     searchResult
   ) {
-    const queryBase = `repo:${username}/${repo} is:issue`;
+    const queryBase = `repo:${owner}/${repoName}`;
 
-    // 組合查詢字符串
-    const searchQuery = [
-      q || `${queryBase} is:${stateFilter}`,
-      labelFilter
-        ? labelFilter
-            .match(/label:"[^"]+"|label:\S+/g)
-            ?.map((label) => label.trim())
-            .join(" ")
-        : "",
-      authorFilter !== "all" ? `author:${authorFilter}` : "",
-      searchResult || "",
-    ]
-      .filter(Boolean)
-      .join(" ");
+    let searchQuery;
+    if (q && q.includes(`repo:${owner}`) && q.includes(`repo:${repoName}`)) {
+      searchQuery = q;
+      console.log("have q " + searchQuery);
+    } else {
+      searchQuery = [
+        `${queryBase} is:issue is:${stateFilter}`,
+        labelFilter
+          ? labelFilter
+              .match(/label:"[^"]+"|label:\S+/g)
+              ?.map((label) => label.trim())
+              .join(" ")
+          : "",
+        authorFilter !== "all" ? `author:${authorFilter}` : "",
+        searchResult || "",
+      ]
+        .filter(Boolean)
+        .join(" ");
+      console.log("don't have q " + searchQuery);
+    }
 
-    // 確保查詢字符串存在
     if (searchQuery) {
       const encodedQuery = encodeURIComponent(searchQuery);
 
@@ -74,48 +109,12 @@ const api = {
         const data = await response.json();
         const issues = data.items;
 
-        // 計算開啟和關閉的問題數量
-        const openCount = issues.filter(
-          (issue) => issue.state === "open"
-        ).length;
-        const closedCount = issues.filter(
-          (issue) => issue.state === "closed"
-        ).length;
-
-        // 獲取標籤
-        const labelsResponse = await fetch(
-          `${this.hostname}/repos/${username}/${repo}/labels`
-        );
-        if (!labelsResponse.ok) {
-          throw new Error("Failed to fetch labels");
-        }
-        const labels = await labelsResponse.json();
-
-        return {
-          openCount,
-          closedCount,
-          issues,
-          labels,
-        };
+        return issues;
       } catch (error) {
-        console.error("Failed to fetch data:", error);
+        console.error("Failed to fetch filtered issues:", error);
         throw error;
       }
     }
-  },
-
-  async getAllLabels(username, repo) {
-    const response = await fetch(
-      `${this.hostname}/repos/${username}/${repo}/labels`
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch labels");
-    }
-
-    const labels = await response.json();
-
-    return labels;
   },
 
   async getIssueBody(owner, repo, issueNumber, token) {
