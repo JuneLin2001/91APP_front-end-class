@@ -39,7 +39,7 @@ const IssueSearch = ({ handleSearchClick, labelNum }) => {
     if (labelFilter !== "all") {
       const labels = decodeURIComponent(labelFilter).split("+");
       labels.forEach((label) => {
-        parts.push(`label:${label}`);
+        parts.push(`${label}`);
       });
     }
 

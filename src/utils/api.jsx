@@ -23,7 +23,6 @@ const api = {
     const queryBase = `repo:${username}/${repo} is:issue`;
 
     try {
-      // 獲取所有問題的數據
       const response = await fetch(
         `${this.hostname}/search/issues?q=${encodeURIComponent(queryBase)}`
       );
@@ -33,13 +32,11 @@ const api = {
       const data = await response.json();
       const issues = data.items;
 
-      // 計算 open 和 closed 的問題數量
       const openCount = issues.filter((issue) => issue.state === "open").length;
       const closedCount = issues.filter(
         (issue) => issue.state === "closed"
       ).length;
 
-      // 獲取所有標籤
       const labelsResponse = await fetch(
         `${this.hostname}/repos/${username}/${repo}/labels`
       );
@@ -48,7 +45,6 @@ const api = {
       }
       const labels = await labelsResponse.json();
 
-      // 獲取唯一作者
       const uniqueAuthors = Array.from(
         new Set(issues.map((issue) => issue.user.login))
       );
@@ -75,21 +71,28 @@ const api = {
     stateFilter,
     searchResult
   ) {
-    const queryBase = `repo:${username}/${repo} is:issue`;
+    const queryBase = `repo:${username}/${repo}`;
 
-    const searchQuery = [
-      q || `${queryBase} is:${stateFilter}`,
-      labelFilter
-        ? labelFilter
-            .match(/label:"[^"]+"|label:\S+/g)
-            ?.map((label) => label.trim())
-            .join(" ")
-        : "",
-      authorFilter !== "all" ? `author:${authorFilter}` : "",
-      searchResult || "",
-    ]
-      .filter(Boolean)
-      .join(" ");
+    let searchQuery;
+    if (q && q.includes(`repo:${username}`) && q.includes(`repo:${repo}`)) {
+      searchQuery = q;
+      console.log("have q" + searchQuery);
+    } else {
+      searchQuery = [
+        `${queryBase} is:issue is:${stateFilter}`,
+        labelFilter
+          ? labelFilter
+              .match(/label:"[^"]+"|label:\S+/g)
+              ?.map((label) => label.trim())
+              .join(" ")
+          : "",
+        authorFilter !== "all" ? `author:${authorFilter}` : "",
+        searchResult || "",
+      ]
+        .filter(Boolean)
+        .join(" ");
+      console.log("don't have q" + searchQuery);
+    }
 
     if (searchQuery) {
       const encodedQuery = encodeURIComponent(searchQuery);
@@ -103,6 +106,7 @@ const api = {
           throw new Error("Failed to search issues");
         }
 
+        // 解析回應
         const data = await response.json();
         const issues = data.items;
 

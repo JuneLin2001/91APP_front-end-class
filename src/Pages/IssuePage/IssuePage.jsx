@@ -31,12 +31,6 @@ const IssuePage = () => {
     setSelectedAuthor(authorFilter);
     setSelectedLabel(labelFilter);
     setStateFilter(state);
-
-    if (state === "closed") {
-      setStateFilter("closed");
-    } else {
-      setStateFilter("open");
-    }
   };
 
   const fetchInitialData = useCallback(async () => {
@@ -59,21 +53,27 @@ const IssuePage = () => {
   }, [navigate, owner, repoName]);
 
   const fetchDataAndUpdateUrl = useCallback(() => {
+    if (!owner || !repoName || !stateFilter) {
+      const errorMessage = "Repository owner, name, and state are required.";
+      navigate("/error", { state: { errorMessage } });
+      return;
+    }
+
     const updateUrlParams = () => {
       const url = new URL(window.location.href);
       const searchParams = new URLSearchParams();
 
-      const repoQuery = `repo:${owner}/${repoName}`;
-      const q = searchValue ? `is:issue ${searchValue}` : "is:issue";
+      const repoInfo = `repo:${owner}/${repoName}`;
+      const state = `is:issue is:${stateFilter}`;
       const author = selectedAuthor !== "all" ? `author:${selectedAuthor}` : "";
-      const label = selectedLabel !== "all" ? `label:${selectedLabel}` : "";
-      const state = stateFilter ? `is:${stateFilter}` : "";
+      const label = selectedLabel !== "all" ? `${selectedLabel}` : "";
+      const searchResult = searchValue || "";
 
-      searchParams.set(
-        "q",
-        [repoQuery, q, author, label, state].filter(Boolean).join(" ")
-      );
+      const queryString = [repoInfo, state, author, label, searchResult]
+        .filter(Boolean)
+        .join(" ");
 
+      searchParams.set("q", queryString);
       url.search = searchParams.toString();
       window.history.pushState({}, "", url);
     };
@@ -82,24 +82,18 @@ const IssuePage = () => {
 
     const fetchFilteredIssues = async () => {
       try {
-        const repoQuery = `repo:${owner}/${repoName}`;
-        const q = searchValue || "";
         const authorFilter = selectedAuthor || "all";
         const labelFilter = selectedLabel || "all";
-        const searchResult = searchValue || "";
 
-        if (owner && repoName) {
-          const response = await api.fetchFilteredIssues(
-            owner,
-            repoName,
-            `${repoQuery} ${q}`,
-            authorFilter,
-            labelFilter,
-            stateFilter,
-            searchResult
-          );
-          setApiResult(response);
-        }
+        const response = await api.fetchFilteredIssues(
+          owner,
+          repoName,
+          searchValue,
+          authorFilter,
+          labelFilter,
+          stateFilter
+        );
+        setApiResult(response);
       } catch (error) {
         console.error("Failed to fetch filtered issues:", error);
         const errorMessage = error.message || "Something went wrong";
@@ -162,15 +156,8 @@ const IssuePage = () => {
 
   const handleSearchClick = async (e, newSearchValue) => {
     e.preventDefault();
-
-    // 將新的搜尋值追加到現有的 searchValue 末尾
-    const updatedSearchValue = searchValue
-      ? `${searchValue} ${newSearchValue}`
-      : newSearchValue;
-
     setIsSearching(true);
-    console.log("searchValue: ", updatedSearchValue);
-    setSearchValue(updatedSearchValue);
+    setSearchValue(newSearchValue);
     fetchDataAndUpdateUrl();
   };
 
