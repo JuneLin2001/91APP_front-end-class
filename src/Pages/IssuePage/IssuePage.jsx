@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import api from "../../utils/api";
 import { Center } from "../../style/Center.styled";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import IssueSearch from "./IssuePageSearch";
 import IssuePageHeader from "./IssuePageHeader";
 import IssuePageList from "./IssuePageList";
@@ -18,6 +18,7 @@ const IssuePage = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [stateFilter, setStateFilter] = useState("open");
   const { repoName, owner } = useParams();
+  const navigate = useNavigate();
 
   const parseUrlParams = () => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -52,8 +53,10 @@ const IssuePage = () => {
       }
     } catch (error) {
       console.error("Failed to fetch initial data:", error);
+      const errorMessage = error.message || "Something went wrong";
+      navigate("/error", { state: { errorMessage } });
     }
-  }, [owner, repoName]);
+  }, [navigate, owner, repoName]);
 
   const fetchDataAndUpdateUrl = useCallback(() => {
     const updateUrlParams = () => {
@@ -97,11 +100,14 @@ const IssuePage = () => {
         }
       } catch (error) {
         console.error("Failed to fetch filtered issues:", error);
+        const errorMessage = error.message || "Something went wrong";
+        navigate("/error", { state: { errorMessage } });
       }
     };
 
     fetchFilteredIssues();
   }, [
+    navigate,
     owner,
     repoName,
     searchValue,
