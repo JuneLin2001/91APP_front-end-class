@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import api from "../../utils/api";
 import { Center } from "../../style/Center.styled";
 import { useNavigate, useParams } from "react-router-dom";
 import IssueSearch from "./IssuePageSearch";
