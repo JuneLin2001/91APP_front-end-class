@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
-import api from "./api";
+import api from "../utils/api";
 import { Avatar, Box, Label, RelativeTime, Button } from "@primer/react";
 import { DataTable } from "@primer/react/experimental";
 import { Link, PageLayout } from "@primer/react";

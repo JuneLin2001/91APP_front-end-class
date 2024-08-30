@@ -12,8 +12,8 @@ import {
   Avatar,
 } from "@primer/react";
 import { KebabHorizontalIcon, SmileyIcon } from "@primer/octicons-react";
-import { CommentContext } from "./context/commentContext";
-import CommentBox from "./comment";
+import { CommentContext } from "../../context/commentContext";
+import CommentBox from "./CommentBox";
 
 const IssueBody = () => {
   const {

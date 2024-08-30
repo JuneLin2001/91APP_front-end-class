@@ -23,8 +23,8 @@ import {
   PencilIcon,
 } from "@primer/octicons-react";
 import { useContext } from "react";
-import { CommentContext } from "./context/commentContext";
-import CommentBox from "./comment";
+import { CommentContext } from "../../context/commentContext";
+import CommentBox from "./CommentBox";
 
 const TimelineComment = () => {
   const {

@@ -15,8 +15,8 @@ import {
   Octicon,
 } from "@primer/react";
 import { IssueClosedIcon, CopyIcon, SkipIcon } from "@primer/octicons-react";
-import { CommentContext } from "./context/commentContext";
-import CommentBox from "./comment";
+import { CommentContext } from "../../context/commentContext";
+import CommentBox from "./CommentBox";
 import TimelineComment from "./TimelineComment";
 import IssueBody from "./IssueBody";
 

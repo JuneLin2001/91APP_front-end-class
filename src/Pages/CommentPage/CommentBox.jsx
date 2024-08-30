@@ -87,66 +87,79 @@ const CommentBox = ({ initialValue, onTextareaChange, hasMarkdownBtn }) => {
                 icon={HeadingIcon}
                 variant="invisible"
                 aria-label="Attach files"
+                key="HeadingIcon"
               />
               <ActionBar.IconButton
                 icon={BoldIcon}
                 variant="invisible"
                 aria-label="Bold"
+                key="BoldIcon"
               />
               <ActionBar.IconButton
                 icon={ItalicIcon}
                 variant="invisible"
                 aria-label="Italic"
+                key="ItalicIcon"
               />
               <ActionBar.IconButton
                 icon={CodeIcon}
                 variant="invisible"
                 aria-label="Code"
+                key="CodeIcon"
               />
               <ActionBar.IconButton
                 icon={LinkIcon}
                 variant="invisible"
                 aria-label="Link"
+                key="LinkIcon"
               />
               <ActionBar.IconButton
                 icon={ListUnorderedIcon}
                 variant="invisible"
                 aria-label="Unordered list"
+                key="ListUnorderedIcon"
               />
               <ActionBar.IconButton
                 icon={ListOrderedIcon}
                 variant="invisible"
                 aria-label="Ordered list"
+                key="ListOrderedIcon"
               />
               <ActionBar.IconButton
                 icon={QuoteIcon}
                 variant="invisible"
                 aria-label="Quote"
+                key="QuoteIcon"
               />
               <ActionBar.IconButton
                 icon={PaperclipIcon}
                 variant="invisible"
                 aria-label="Data files attachment"
+                key="PaperclipIcon"
               />
               <ActionBar.IconButton
                 icon={MentionIcon}
                 variant="invisible"
                 aria-label="Mention"
+                key="MentionIcon"
               />
               <ActionBar.IconButton
                 icon={CrossReferenceIcon}
                 variant="invisible"
                 aria-label="Mention"
+                key="CrossReferenceIcon"
               />
               <ActionBar.IconButton
                 icon={ReplyIcon}
                 variant="invisible"
                 aria-label="Mention"
+                key="ReplyIcon"
               />
               <ActionBar.IconButton
                 icon={DiffIgnoredIcon}
                 variant="invisible"
                 aria-label="Mention"
+                key="DiffIgnoredIcon"
               />
             </ActionBar>
           </Box>

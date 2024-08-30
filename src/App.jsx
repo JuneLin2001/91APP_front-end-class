@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import IssuePage from "./Pages/IssuePage/IssuePage.jsx";
-import GitHubLogin from "./utils/GitHubLogin";
-import CommentPage from "./CommentPage.jsx";
+import GitHubLogin from "./Pages/GitHubLoginPage.jsx";
+import CommentPage from "./Pages/CommentPage/CommentPage.jsx";
 import ErrorComponent from "./Pages/ErrorPage.jsx";
 import { AuthContextProvider } from "./context/authContext";
 import { CommentContextProvider } from "./context/commentContext.jsx";
