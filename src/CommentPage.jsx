@@ -12,8 +12,9 @@ import {
   Box,
   PageLayout,
   Link,
+  Octicon,
 } from "@primer/react";
-import { IssueClosedIcon, CopyIcon } from "@primer/octicons-react";
+import { IssueClosedIcon, CopyIcon, SkipIcon } from "@primer/octicons-react";
 import { CommentContext } from "./context/commentContext";
 import CommentBox from "./comment";
 import TimelineComment from "./TimelineComment";
@@ -125,27 +126,11 @@ function CommentPage() {
             </PageHeader.Description>
           </PageHeader>
         </PageLayout.Header>
-
-        {/* <Pagehead>
-        <PageHeader.Title
-          sx={{
-            lineHeight: "1.25",
-            fontWeight: "normal",
-            fontSize: ["26px", "26px", "var(--text-title-size-large, 32px)"],
-          }}
-        >
-          {issueData.title}
-        </PageHeader.Title>
-        <p color="f1-light color-fg-muted">#{issueData.number}</p>
-        <StateLabel status="issueOpened">{issueData.state}</StateLabel>
-        <Text fontWeight="bold">{issueData.user.login}</Text>
-        <Text color="fg.muted"> opened this issue </Text>
-        <RelativeTime date={new Date(issueData.created_at)} color="fg.muted" />
-        <Text color="fg.muted"> · {issueData.comments} comments</Text>
-      </Pagehead> */}
         <PageLayout.Content>
-          <IssueBody />
-          <TimelineComment />
+          <Box ml={7}>
+            <IssueBody />
+            <TimelineComment />
+          </Box>
           <h4>Add a comment </h4>
           <CommentBox onTextareaChange={handleTextareaChange} />
           <Box
@@ -153,29 +138,44 @@ function CommentPage() {
             display="flex"
             justifyContent="flex-end"
             alignItems="center"
+            sx={{ gap: 2 }}
           >
             <ActionMenu>
               <ActionMenu.Button
                 aria-label="Close issue"
-                sx={{ display: "flex", alignItems: "center", mr: 2 }}
+                leadingVisual={() => (
+                  <Octicon
+                    icon={IssueClosedIcon}
+                    color="var(--bgColor-done-emphasis)"
+                  />
+                )}
               >
-                <IssueClosedIcon
-                  sx={{
-                    backgroundColor: "success.fg",
-                    color: "fg.done",
-                    mr: 3,
-                    pr: 5,
-                  }}
-                  mr={1}
-                  size={16}
-                />{" "}
-                Close issue
+                Leading visual
               </ActionMenu.Button>
-              <ActionMenu.Overlay>
+
+              <ActionMenu.Overlay side="outside-bottom" align="end">
                 <ActionList>
-                  <ActionList.Item>
-                    <IssueClosedIcon className="color-fg-done" size={16} />
-                    Close and cent
+                  <ActionList.Item
+                    sx={{ padding: "8px 8px 8px 30px", width: "max-content" }}
+                  >
+                    <ActionList.LeadingVisual>
+                      <Octicon
+                        icon={IssueClosedIcon}
+                        color="var(--bgColor-done-emphasis)"
+                      />
+                    </ActionList.LeadingVisual>
+                    Close as Completed
+                  </ActionList.Item>
+                  <ActionList.Item
+                    sx={{ padding: "8px 8px 8px 30px", width: "max-content" }}
+                  >
+                    <ActionList.LeadingVisual>
+                      <Octicon
+                        icon={SkipIcon}
+                        color="var(--bgColor-neutral-emphasis)"
+                      />
+                    </ActionList.LeadingVisual>
+                    Close as not planned
                   </ActionList.Item>
                 </ActionList>
               </ActionMenu.Overlay>
