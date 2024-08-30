@@ -1,4 +1,5 @@
 import { useState, useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
 import api from "./api";
 import { Avatar, Label, RelativeTime } from "@primer/react";
@@ -8,24 +9,26 @@ import { Link, PageLayout } from "@primer/react";
 const GitHubLogin = () => {
   const { user, githubLogin, githubLogout } = useContext(AuthContext);
   const [repoList, setRepoList] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getRepoList = async () => {
       if (user && user.reloadUserInfo && user.reloadUserInfo.screenName) {
         const username = user.reloadUserInfo.screenName;
-
         try {
           const repoData = await api.getRepo(username);
           setRepoList(repoData);
         } catch (error) {
           console.error("Failed to fetch data:", error);
+          const errorMessage = error.message || "Something went wrong";
+          navigate("/error", { state: { errorMessage } });
         }
       }
     };
     if (user && user.reloadUserInfo && user.reloadUserInfo.screenName) {
       getRepoList();
     }
-  }, [user]);
+  }, [user, navigate]);
 
   console.log("repoList:", repoList);
   const columns = [

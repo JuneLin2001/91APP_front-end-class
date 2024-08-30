@@ -1,8 +1,7 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../../utils/api";
 import { Center } from "../../style/Center.styled";
-import { useParams } from "react-router-dom";
-import { AuthContext } from "../../context/authContext";
 import IssueSearch from "./IssuePageSearch";
 import IssuePageHeader from "./IssuePageHeader";
 import IssuePageList from "./IssuePageList";
@@ -19,6 +18,7 @@ const IssuePage = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [stateFilter, setStateFilter] = useState("open");
   const { owner, repoName } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,11 +78,13 @@ const IssuePage = () => {
           setAuthors(uniqueAuthors);
         } catch (error) {
           console.error("Failed to fetch data:", error);
+          const errorMessage = error.message || "Something went wrong";
+          navigate("/error", { state: { errorMessage } });
         }
       }
     };
     fetchData();
-  }, [repoName, owner]);
+  }, [repoName, owner, navigate]);
 
   useEffect(() => {
     const fetchData = async () => {
