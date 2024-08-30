@@ -20,6 +20,7 @@ import {
   IssueReopenedIcon,
   TagIcon,
   SkipIcon,
+  PencilIcon,
 } from "@primer/octicons-react";
 import { useContext } from "react";
 import { CommentContext } from "./context/commentContext";
@@ -67,6 +68,10 @@ const TimelineComment = () => {
     unlabeled: {
       iconName: TagIcon,
       content: "removed the ",
+    },
+    renamed: {
+      iconName: PencilIcon,
+      content: "changed the title ",
     },
   };
 
