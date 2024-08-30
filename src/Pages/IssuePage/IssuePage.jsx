@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
-import api from "../../utils/api";
 import { Center } from "../../style/Center.styled";
-import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import api from "../../utils/api";
 import IssueSearch from "./IssuePageSearch";
 import IssuePageHeader from "./IssuePageHeader";
 import IssuePageList from "./IssuePageList";
@@ -18,6 +19,7 @@ const IssuePage = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [stateFilter, setStateFilter] = useState("open");
   const { owner, repoName } = useParams();
+  const navigate = useNavigate();
 
   const debounce = (fn, delay = 500) => {
     let timer;
@@ -26,6 +28,71 @@ const IssuePage = () => {
       timer = setTimeout(() => fn(...args), delay);
     };
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const q = urlParams.get("q") || "";
+      const authorFilter = urlParams.get("author") || "all";
+      const labelFilter = urlParams.get("label") || "all";
+      const searchResult = urlParams.get("searchResult") || "";
+
+      const formattedLabelFilter = labelFilter
+        ? labelFilter
+            .match(/label:"[^"]+"|label:\S+/g)
+            ?.map((label) => label.trim())
+            .join(" ")
+        : "";
+
+      const shouldUpdateUrl =
+        q !== "" ||
+        authorFilter !== "all" ||
+        labelFilter !== "all" ||
+        searchResult !== "";
+
+      if (shouldUpdateUrl) {
+        updateUrlParams({
+          q,
+          author: authorFilter !== "all" ? authorFilter : "",
+          label: labelFilter !== "all" ? labelFilter : "",
+          searchResult,
+        });
+      }
+
+      if (owner) {
+        const repoOwner = owner;
+
+        try {
+          const [issuesData, labelsData, allIssuesData] = await Promise.all([
+            api.getSearchIssues(
+              repoOwner,
+              repoName,
+              q,
+              authorFilter,
+              formattedLabelFilter,
+              "open",
+              searchResult
+            ),
+            api.getAllLabels(repoOwner, repoName),
+            api.getAllIssues(repoOwner, repoName),
+          ]);
+
+          setApiResult(issuesData);
+          setLabels(labelsData);
+          setAllIssues(allIssuesData);
+
+          const uniqueAuthors = [
+            ...new Set(issuesData.map((issue) => issue.user.login)),
+          ];
+          setAuthors(uniqueAuthors);
+        } catch (error) {
+          console.error("Failed to fetch data:", error);
+          const errorMessage = error.message || "Something went wrong";
+          navigate("/error", { state: { errorMessage } });
+        }
+      }
+    };
+    fetchData();
+  }, [repoName, owner, navigate]);
 
   const fetchData = useCallback(async () => {
     try {
