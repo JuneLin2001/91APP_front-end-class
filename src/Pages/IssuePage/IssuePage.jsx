@@ -63,6 +63,7 @@ const IssuePage = () => {
       const url = new URL(window.location.href);
       const searchParams = new URLSearchParams();
 
+      const repoQuery = `repo:${owner}/${repoName}`;
       const q = searchValue ? `is:issue ${searchValue}` : "is:issue";
       const author = selectedAuthor !== "all" ? `author:${selectedAuthor}` : "";
       const label = selectedLabel !== "all" ? `label:${selectedLabel}` : "";
@@ -70,7 +71,7 @@ const IssuePage = () => {
 
       searchParams.set(
         "q",
-        [q, author, label, state].filter(Boolean).join(" ")
+        [repoQuery, q, author, label, state].filter(Boolean).join(" ")
       );
 
       url.search = searchParams.toString();
@@ -81,6 +82,7 @@ const IssuePage = () => {
 
     const fetchFilteredIssues = async () => {
       try {
+        const repoQuery = `repo:${owner}/${repoName}`;
         const q = searchValue || "";
         const authorFilter = selectedAuthor || "all";
         const labelFilter = selectedLabel || "all";
@@ -90,7 +92,7 @@ const IssuePage = () => {
           const response = await api.fetchFilteredIssues(
             owner,
             repoName,
-            q,
+            `${repoQuery} ${q}`,
             authorFilter,
             labelFilter,
             stateFilter,
@@ -122,17 +124,11 @@ const IssuePage = () => {
   }, [fetchInitialData]);
 
   useEffect(() => {
-    const debouncedFetchDataAndUpdateUrl = () => {
-      const timer = setTimeout(() => {
-        fetchDataAndUpdateUrl();
-      }, 500);
+    const timer = setTimeout(() => {
+      fetchDataAndUpdateUrl();
+    }, 500);
 
-      return () => clearTimeout(timer);
-    };
-
-    const cleanup = debouncedFetchDataAndUpdateUrl();
-
-    return cleanup;
+    return () => clearTimeout(timer);
   }, [
     fetchDataAndUpdateUrl,
     searchValue,
@@ -150,7 +146,6 @@ const IssuePage = () => {
       setSelectedAuthor(value);
     }
 
-    // 觸發 URL 和數據更新
     fetchDataAndUpdateUrl();
   };
 
@@ -167,9 +162,15 @@ const IssuePage = () => {
 
   const handleSearchClick = async (e, newSearchValue) => {
     e.preventDefault();
+
+    // 將新的搜尋值追加到現有的 searchValue 末尾
+    const updatedSearchValue = searchValue
+      ? `${searchValue} ${newSearchValue}`
+      : newSearchValue;
+
     setIsSearching(true);
-    console.log("searchValue: ", newSearchValue);
-    setSearchValue(newSearchValue);
+    console.log("searchValue: ", updatedSearchValue);
+    setSearchValue(updatedSearchValue);
     fetchDataAndUpdateUrl();
   };
 
