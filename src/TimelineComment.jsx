@@ -10,8 +10,17 @@ import {
   Label,
   Link,
   PointerBox,
+  Octicon,
 } from "@primer/react";
-import { KebabHorizontalIcon, SmileyIcon } from "@primer/octicons-react";
+import {
+  KebabHorizontalIcon,
+  SmileyIcon,
+  XIcon,
+  IssueClosedIcon,
+  IssueReopenedIcon,
+  TagIcon,
+  SkipIcon,
+} from "@primer/octicons-react";
 import { useContext } from "react";
 import { CommentContext } from "./context/commentContext";
 import CommentBox from "./comment";
@@ -28,188 +37,271 @@ const TimelineComment = () => {
     getHeaderColor,
   } = useContext(CommentContext);
 
+  const eventMapping = {
+    comment_deleted: {
+      iconName: XIcon,
+      content: "deleted a comment from ",
+    },
+    closed: {
+      not_planned: {
+        iconName: SkipIcon,
+        content: "closed this as not planned ",
+      },
+      null: {
+        iconName: IssueClosedIcon,
+        content: "closed this as completed ",
+        iconColor: "var(--bgColor-default)",
+        backgroundColor: "var(--bgColor-done-emphasis)",
+      },
+    },
+    reopened: {
+      iconName: IssueReopenedIcon,
+      content: "reopened this ",
+      iconColor: "var(--bgColor-default)",
+      backgroundColor: "var(--bgColor-open-emphasis)",
+    },
+    labeled: {
+      iconName: TagIcon,
+      content: " added ",
+    },
+    unlabeled: {
+      iconName: TagIcon,
+      content: "removed the ",
+    },
+  };
+
   return (
     <Timeline>
-      {commentData.map((comment) => (
-        <Timeline.Item
-          key={comment.id}
-          sx={{
-            marginLeft: "0px",
-            "::before": {
-              left: "20px",
-              zIndex: "-1 ",
-            },
-          }}
-        >
-          <Timeline.Badge
+      {commentData.map((comment) =>
+        comment.event === "commented" ? (
+          <Timeline.Item
+            key={comment.id}
             sx={{
-              position: "absolute",
-              left: "-30px",
-              top: "10px",
-              width: "40px",
-              height: "40px",
+              marginLeft: "0px",
+              "::before": {
+                left: "20px",
+                zIndex: "-1 ",
+              },
             }}
           >
-            <Avatar
-              size={40}
-              src={comment.actor.avatar_url}
-              alt={comment.actor.login}
-            />
-          </Timeline.Badge>
-          <Timeline.Body
-            bg="bg.muted"
-            sx={{ zIndex: 1, backgroundColor: "white" }}
-          >
-            <Box
-              borderWidth={1}
-              borderStyle="solid"
-              borderColor="border.default"
-              borderRadius={2}
+            <Timeline.Badge
+              sx={{
+                position: "absolute",
+                left: "-30px",
+                top: "10px",
+                width: "40px",
+                height: "40px",
+              }}
             >
-              <PointerBox
-                caret="left-top"
-                px={3}
-                py={2}
-                bg={getHeaderColor(comment.actor.login)}
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
+              <Avatar
+                size={40}
+                src={comment.actor.avatar_url}
+                alt={comment.actor.login}
+              />
+            </Timeline.Badge>
+            <Timeline.Body
+              bg="bg.muted"
+              sx={{ zIndex: 1, backgroundColor: "white" }}
+            >
+              <Box
+                borderWidth={1}
+                borderStyle="solid"
                 borderColor="border.default"
-                borderTopLeftRadius={2}
-                borderTopRightRadius={2}
+                borderRadius={2}
               >
-                <Box>
-                  <Text fontWeight="bold">
-                    {comment.actor.login} commented{" "}
-                  </Text>
-                  {comment.updated_at && (
-                    <Link href={comment.html_url}>
-                      <RelativeTime date={new Date(comment.updated_at)} />
-                    </Link>
-                  )}
+                <PointerBox
+                  caret="left-top"
+                  px={3}
+                  py={2}
+                  bg={getHeaderColor(comment.actor.login)}
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  borderColor="border.default"
+                  borderTopLeftRadius={2}
+                  borderTopRightRadius={2}
+                >
+                  <Box>
+                    <Text fontWeight="bold">
+                      {comment.actor.login} commented{" "}
+                    </Text>
+                    {comment.updated_at && (
+                      <Link href={comment.html_url}>
+                        <RelativeTime date={new Date(comment.updated_at)} />
+                      </Link>
+                    )}
 
-                  {comment.author_association && (
-                    <Label ml={2} color="fg.muted">
-                      {comment.author_association}
-                    </Label>
-                  )}
-                </Box>
+                    {comment.author_association && (
+                      <Label ml={2} color="fg.muted">
+                        {comment.author_association}
+                      </Label>
+                    )}
+                  </Box>
 
-                <ActionMenu>
-                  <ActionMenu.Button
-                    aria-label="Actions"
-                    sx={{
-                      '[data-component="trailingAction"]': {
-                        display: "none",
-                      },
-                      border: "none",
-                      backgroundColor: "transparent",
-                      boxShadow: "none",
-                      "&:hover": {
+                  <ActionMenu>
+                    <ActionMenu.Button
+                      aria-label="Actions"
+                      sx={{
+                        '[data-component="trailingAction"]': {
+                          display: "none",
+                        },
+                        border: "none",
                         backgroundColor: "transparent",
                         boxShadow: "none",
-                      },
-                      "&:focus": {
-                        backgroundColor: "transparent",
-                        boxShadow: "none",
-                      },
-                      "&:active": {
-                        backgroundColor: "transparent",
-                        boxShadow: "none",
-                      },
-                      "&:hover:not([disabled]):not([data-inactive])": {
-                        backgroundColor: "transparent",
-                        boxShadow: "none",
-                      },
-                      "& svg": {
-                        color: "currentColor",
                         "&:hover": {
-                          color: "var(--bgColor-accent-emphasis)",
+                          backgroundColor: "transparent",
+                          boxShadow: "none",
                         },
                         "&:focus": {
-                          color: "var(--bgColor-accent-emphasis)",
+                          backgroundColor: "transparent",
+                          boxShadow: "none",
                         },
-                      },
-                      "&[aria-expanded='true']": {
-                        backgroundColor: "transparent",
-                      },
-                    }}
-                  >
-                    <KebabHorizontalIcon />
-                  </ActionMenu.Button>
-                  <ActionMenu.Overlay width="medium">
-                    <ActionList>
-                      <ActionList.Item>Copy link</ActionList.Item>
-                      <ActionList.Item>Quote reply</ActionList.Item>
-                      <ActionList.Item>Reference in new issue</ActionList.Item>
-                      <ActionList.Divider />
-                      <ActionList.Item
-                        onSelect={() => setEditingCommentId(comment.id)}
-                      >
-                        Edit
-                      </ActionList.Item>
-                      <ActionList.Item>Hide</ActionList.Item>
-                      <ActionList.Item
+                        "&:active": {
+                          backgroundColor: "transparent",
+                          boxShadow: "none",
+                        },
+                        "&:hover:not([disabled]):not([data-inactive])": {
+                          backgroundColor: "transparent",
+                          boxShadow: "none",
+                        },
+                        "& svg": {
+                          color: "currentColor",
+                          "&:hover": {
+                            color: "var(--bgColor-accent-emphasis)",
+                          },
+                          "&:focus": {
+                            color: "var(--bgColor-accent-emphasis)",
+                          },
+                        },
+                        "&[aria-expanded='true']": {
+                          backgroundColor: "transparent",
+                        },
+                      }}
+                    >
+                      <KebabHorizontalIcon />
+                    </ActionMenu.Button>
+                    <ActionMenu.Overlay width="medium">
+                      <ActionList>
+                        <ActionList.Item>Copy link</ActionList.Item>
+                        <ActionList.Item>Quote reply</ActionList.Item>
+                        <ActionList.Item>
+                          Reference in new issue
+                        </ActionList.Item>
+                        <ActionList.Divider />
+                        <ActionList.Item
+                          onSelect={() => setEditingCommentId(comment.id)}
+                        >
+                          Edit
+                        </ActionList.Item>
+                        <ActionList.Item>Hide</ActionList.Item>
+                        <ActionList.Item
+                          variant="danger"
+                          onClick={() => handleDelete(comment.id)}
+                        >
+                          Delete
+                        </ActionList.Item>
+                        <ActionList.Divider />
+                        <ActionList.Item>Report content</ActionList.Item>
+                      </ActionList>
+                    </ActionMenu.Overlay>
+                  </ActionMenu>
+                </PointerBox>
+                <Box>
+                  {editingCommentId === comment.id ? (
+                    <>
+                      <CommentBox
+                        initialValue={comment.body}
+                        onTextareaChange={handleTextareaChange}
+                      />
+                      <Button
                         variant="danger"
-                        onClick={() => handleDelete(comment.id)}
+                        onClick={() => setEditingCommentId(null)}
                       >
-                        Delete
-                      </ActionList.Item>
-                      <ActionList.Divider />
-                      <ActionList.Item>Report content</ActionList.Item>
-                    </ActionList>
-                  </ActionMenu.Overlay>
-                </ActionMenu>
-              </PointerBox>
-              <Box>
-                {editingCommentId === comment.id ? (
-                  <>
-                    <CommentBox
-                      initialValue={comment.body}
-                      onTextareaChange={handleTextareaChange}
-                    />
-                    <Button
-                      variant="danger"
-                      onClick={() => setEditingCommentId(null)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      variant="primary"
-                      onClick={() =>
-                        handleUpdate(comment.id, currentTextareaValue)
-                      }
-                    >
-                      Update comment
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Box p={3}>
-                      <Text>{comment.body}</Text>
-                    </Box>
-                    <Box px={3} pb={3} display="flex" alignItems="center">
-                      <Timeline.Badge
-                        variant="invisible"
-                        sx={{
-                          fontSixe: "14px",
-                          display: "flex",
-                          padding: "0px",
-                          width: "26px",
-                          height: "26px",
-                          marginLeft: "0",
-                        }}
+                        Cancel
+                      </Button>
+                      <Button
+                        variant="primary"
+                        onClick={() =>
+                          handleUpdate(comment.id, currentTextareaValue)
+                        }
                       >
-                        <SmileyIcon />
-                      </Timeline.Badge>
-                    </Box>
-                  </>
-                )}
+                        Update comment
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Box p={3}>
+                        <Text>{comment.body}</Text>
+                      </Box>
+                      <Box px={3} pb={3} display="flex" alignItems="center">
+                        <Timeline.Badge
+                          variant="invisible"
+                          sx={{
+                            fontSixe: "14px",
+                            display: "flex",
+                            padding: "0px",
+                            width: "26px",
+                            height: "26px",
+                            marginLeft: "0",
+                          }}
+                        >
+                          <SmileyIcon />
+                        </Timeline.Badge>
+                      </Box>
+                    </>
+                  )}
+                </Box>
               </Box>
-            </Box>
-          </Timeline.Body>
-        </Timeline.Item>
-      ))}
+            </Timeline.Body>
+          </Timeline.Item>
+        ) : (
+          (() => {
+            const { iconName, content, iconColor, backgroundColor } =
+              eventMapping[comment.event]?.[comment.state_reason] ||
+              eventMapping[comment.event];
+            return (
+              <Box key={comment.id} ml={1}>
+                <Timeline.Item>
+                  <Timeline.Badge sx={{ backgroundColor: backgroundColor }}>
+                    <Octicon icon={iconName} color={iconColor} />
+                  </Timeline.Badge>
+                  <Timeline.Body>
+                    <Avatar
+                      size={20}
+                      src={comment.actor.avatar_url}
+                      alt={comment.actor.login}
+                    />
+                    <Link
+                      href={comment.actor.html_url}
+                      sx={{
+                        fontWeight: "bold",
+                        color: "fg.default",
+                        mr: 1,
+                      }}
+                      muted
+                    >
+                      {" "}
+                      {comment.actor.login}
+                    </Link>
+                    {content}
+                    {comment.label && (
+                      <>
+                        <Label ml={2} backgroundColor={comment.label.color}>
+                          {comment.label.name}
+                        </Label>
+                        <Text> labels </Text>
+                      </>
+                    )}
+                    <Link href={comment.html_url}>
+                      <RelativeTime date={new Date(comment.created_at)} />
+                    </Link>
+                  </Timeline.Body>
+                </Timeline.Item>
+              </Box>
+            );
+          })()
+        )
+      )}
 
       <Timeline.Break />
     </Timeline>
@@ -217,3 +309,46 @@ const TimelineComment = () => {
 };
 
 export default TimelineComment;
+
+/* {<Box>
+  <Timeline>
+    <Timeline.Item>
+      <Timeline.Badge>
+        <Octicon icon={CrossReferenceIcon} />
+      </Timeline.Badge>
+      <Timeline.Body>
+        <Link
+          href="https://github.com/broccolinisoup"
+          sx={{
+            fontWeight: "bold",
+            color: "fg.default",
+            mr: 1,
+          }}
+          muted
+        >
+          broccolinisoup
+        </Link>
+        mentioned this on Jul 20, 2022
+      </Timeline.Body>
+    </Timeline.Item>
+    <Timeline.Item>
+      <Timeline.Badge>
+        <Octicon icon={PaperclipIcon} />
+      </Timeline.Badge>
+      <Timeline.Body>
+        <Link
+          href="https://github.com/lesliecdubbs"
+          sx={{
+            fontWeight: "bold",
+            color: "fg.default",
+            mr: 1,
+          }}
+          muted
+        >
+          lesliecdubbs
+        </Link>
+        added react and accessibility labels on Jul 12, 2022
+      </Timeline.Body>
+    </Timeline.Item>
+  </Timeline>
+</Box>;} */
