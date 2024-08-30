@@ -63,20 +63,20 @@ const api = {
   },
 
   async fetchFilteredIssues(
-    username,
-    repo,
     q,
+    owner,
+    repoName,
     authorFilter,
     labelFilter,
     stateFilter,
     searchResult
   ) {
-    const queryBase = `repo:${username}/${repo}`;
+    const queryBase = `repo:${owner}/${repoName}`;
 
     let searchQuery;
-    if (q && q.includes(`repo:${username}`) && q.includes(`repo:${repo}`)) {
+    if (q && q.includes(`repo:${owner}`) && q.includes(`repo:${repoName}`)) {
       searchQuery = q;
-      console.log("have q" + searchQuery);
+      console.log("have q " + searchQuery);
     } else {
       searchQuery = [
         `${queryBase} is:issue is:${stateFilter}`,
@@ -91,7 +91,7 @@ const api = {
       ]
         .filter(Boolean)
         .join(" ");
-      console.log("don't have q" + searchQuery);
+      console.log("don't have q " + searchQuery);
     }
 
     if (searchQuery) {
@@ -106,7 +106,6 @@ const api = {
           throw new Error("Failed to search issues");
         }
 
-        // 解析回應
         const data = await response.json();
         const issues = data.items;
 

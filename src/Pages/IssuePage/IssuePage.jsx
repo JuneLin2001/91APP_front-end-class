@@ -15,22 +15,43 @@ const IssuePage = () => {
   const [selectedAuthor, setSelectedAuthor] = useState("all");
   const [selectedLabel, setSelectedLabel] = useState("all");
   const [searchValue, setSearchValue] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
   const [stateFilter, setStateFilter] = useState("open");
   const { repoName, owner } = useParams();
   const navigate = useNavigate();
 
   const parseUrlParams = () => {
     const searchParams = new URLSearchParams(window.location.search);
-    const q = searchParams.get("q") || "";
-    const authorFilter = searchParams.get("author") || "all";
-    const labelFilter = searchParams.get("label") || "all";
-    const state = searchParams.get("state") || "open";
+    const query = searchParams.get("q") || "";
 
-    setSearchValue(q);
-    setSelectedAuthor(authorFilter);
-    setSelectedLabel(labelFilter);
-    setStateFilter(state);
+    const params = query.split("+").reduce(
+      (acc, param) => {
+        if (param.startsWith("repo:")) {
+          acc.repo = param.substring(5);
+        } else if (param.startsWith("is:")) {
+          acc.state = param.substring(3);
+        } else if (param.startsWith("label:")) {
+          acc.labels = acc.labels || [];
+          acc.labels.push(param.substring(6));
+        } else if (param.startsWith("author:")) {
+          acc.author = param.substring(7);
+        }
+        return acc;
+      },
+      { labels: [] }
+    );
+
+    const resultString = [
+      params.repo ? `repo:${params.repo}` : "error",
+      params.state ? `is:issue is:${params.state}` : "is:issue",
+      params.author ? `author:${params.author}` : "",
+      params.labels.length > 0
+        ? params.labels.map((label) => `${label}`).join(" ")
+        : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+    return resultString;
   };
 
   const fetchInitialData = useCallback(async () => {
@@ -83,16 +104,20 @@ const IssuePage = () => {
     const fetchFilteredIssues = async () => {
       try {
         const authorFilter = selectedAuthor || "all";
-        const labelFilter = selectedLabel || "all";
+        const labelFilter = selectedLabel || "";
+        const searchResult = searchValue || "";
+        const q = parseUrlParams();
 
         const response = await api.fetchFilteredIssues(
+          q,
           owner,
           repoName,
-          searchValue,
           authorFilter,
           labelFilter,
-          stateFilter
+          stateFilter,
+          searchResult
         );
+
         setApiResult(response);
       } catch (error) {
         console.error("Failed to fetch filtered issues:", error);
@@ -132,8 +157,6 @@ const IssuePage = () => {
   ]);
 
   const handleFilterChange = (type, value) => {
-    setIsSearching(false);
-
     if (type === "label") {
       setSelectedLabel(value);
     } else if (type === "author") {
@@ -156,20 +179,11 @@ const IssuePage = () => {
 
   const handleSearchClick = async (e, newSearchValue) => {
     e.preventDefault();
-    setIsSearching(true);
     setSearchValue(newSearchValue);
     fetchDataAndUpdateUrl();
   };
 
-  const filteredIssues = (issues) =>
-    issues.filter(
-      (issue) =>
-        (selectedAuthor === "all" || issue.user.login === selectedAuthor) &&
-        (selectedLabel === "all" ||
-          issue.labels.some((label) => label.name === selectedLabel))
-    );
-
-  const issuesToDisplay = isSearching ? filteredIssues(apiResult) : apiResult;
+  // const issuesToDisplay = apiResult;
 
   const handleCheckboxChange = (issueId) => {
     console.log(`Checkbox for issue ${issueId} changed.`);
@@ -193,7 +207,7 @@ const IssuePage = () => {
           handleLabelChange={handleLabelChange}
         />
         <IssuePageList
-          issuesToDisplay={issuesToDisplay}
+          issuesToDisplay={apiResult}
           stateFilter={stateFilter}
           repoName={repoName}
           handleCheckboxChange={handleCheckboxChange}
