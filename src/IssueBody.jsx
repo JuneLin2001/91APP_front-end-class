@@ -55,7 +55,8 @@ const IssueBody = () => {
             <Text fontWeight="bold">{issueData.user.login} commented </Text>
 
             <RelativeTime date={new Date(issueData.created_at)} />
-
+          </Box>
+          <Box>
             {issueData.author_association === "OWNER" && (
               //<Tooltip aria-label="Hello, Tooltip!">
               <Label ml={2} color="fg.muted">
@@ -63,65 +64,64 @@ const IssueBody = () => {
               </Label>
               //</Tooltip>
             )}
-          </Box>
-
-          <ActionMenu>
-            <ActionMenu.Button
-              aria-label="Actions"
-              sx={{
-                '[data-component="trailingAction"]': {
-                  display: "none",
-                },
-                border: "none",
-                backgroundColor: "transparent",
-                boxShadow: "none",
-                "&:hover": {
+            <ActionMenu>
+              <ActionMenu.Button
+                aria-label="Actions"
+                sx={{
+                  '[data-component="trailingAction"]': {
+                    display: "none",
+                  },
+                  border: "none",
                   backgroundColor: "transparent",
                   boxShadow: "none",
-                },
-                "&:focus": {
-                  backgroundColor: "transparent",
-                  boxShadow: "none",
-                },
-                "&:active": {
-                  backgroundColor: "transparent",
-                  boxShadow: "none",
-                },
-                "&:hover:not([disabled]):not([data-inactive])": {
-                  backgroundColor: "transparent",
-                  boxShadow: "none",
-                },
-                "& svg": {
-                  color: "currentColor",
                   "&:hover": {
-                    color: "var(--bgColor-accent-emphasis)",
+                    backgroundColor: "transparent",
+                    boxShadow: "none",
                   },
                   "&:focus": {
-                    color: "var(--bgColor-accent-emphasis)",
+                    backgroundColor: "transparent",
+                    boxShadow: "none",
                   },
-                },
-                "&[aria-expanded='true']": {
-                  backgroundColor: "transparent",
-                },
-              }}
-            >
-              <KebabHorizontalIcon />
-            </ActionMenu.Button>
-            <ActionMenu.Overlay width="medium">
-              <ActionList>
-                <ActionList.Item>Copy link</ActionList.Item>
-                <ActionList.Item>Quote reply</ActionList.Item>
-                <ActionList.Divider />
-                <ActionList.Item
-                  onSelect={() => setEditingCommentId(issueData.id)}
-                >
-                  Edit
-                </ActionList.Item>
-                <ActionList.Divider />
-                <ActionList.Item>Report content</ActionList.Item>
-              </ActionList>
-            </ActionMenu.Overlay>
-          </ActionMenu>
+                  "&:active": {
+                    backgroundColor: "transparent",
+                    boxShadow: "none",
+                  },
+                  "&:hover:not([disabled]):not([data-inactive])": {
+                    backgroundColor: "transparent",
+                    boxShadow: "none",
+                  },
+                  "& svg": {
+                    color: "currentColor",
+                    "&:hover": {
+                      color: "var(--bgColor-accent-emphasis)",
+                    },
+                    "&:focus": {
+                      color: "var(--bgColor-accent-emphasis)",
+                    },
+                  },
+                  "&[aria-expanded='true']": {
+                    backgroundColor: "transparent",
+                  },
+                }}
+              >
+                <KebabHorizontalIcon />
+              </ActionMenu.Button>
+              <ActionMenu.Overlay width="medium">
+                <ActionList>
+                  <ActionList.Item>Copy link</ActionList.Item>
+                  <ActionList.Item>Quote reply</ActionList.Item>
+                  <ActionList.Divider />
+                  <ActionList.Item
+                    onSelect={() => setEditingCommentId(issueData.id)}
+                  >
+                    Edit
+                  </ActionList.Item>
+                  <ActionList.Divider />
+                  <ActionList.Item>Report content</ActionList.Item>
+                </ActionList>
+              </ActionMenu.Overlay>
+            </ActionMenu>
+          </Box>
         </PointerBox>
         <Box p={2}>
           {editingCommentId === issueData.id ? (
