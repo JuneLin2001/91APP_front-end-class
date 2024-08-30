@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import { Center } from "../../style/Center.styled";
-import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../utils/api";
 import IssueSearch from "./IssuePageSearch";
