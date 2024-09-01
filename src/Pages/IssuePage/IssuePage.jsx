@@ -189,7 +189,10 @@ const IssuePage = () => {
   };
 
   const handleLabelChange = (labels) => {
-    const formattedString = labels.map((label) => `label:"${label}"`).join(" ");
+    const formattedString =
+      labels.length > 0
+        ? labels.map((label) => `label:"${label}"`).join(" ")
+        : "all";
     handleFilterChange("label", formattedString);
   };
 
@@ -208,6 +211,7 @@ const IssuePage = () => {
     setSelectedLabel("all");
     setSearchValue("");
     setStateOpenOrClosed("open");
+    handleLabelChange([]);
 
     const url = new URL(window.location.href);
     const searchParams = new URLSearchParams();
