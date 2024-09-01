@@ -69,7 +69,7 @@ const api = {
     repoName,
     authorFilter,
     labelFilter,
-    stateFilter,
+    stateOpenOrClosed,
     searchResult
   ) {
     const queryBase = `repo:${owner}/${repoName}`;
@@ -80,7 +80,7 @@ const api = {
       console.log("have q " + searchQuery);
     } else {
       searchQuery = [
-        `${queryBase} is:issue is:${stateFilter}`,
+        `${queryBase} is:issue is:${stateOpenOrClosed}`,
         labelFilter
           ? labelFilter
               .match(/label:"[^"]+"|label:[^\s+]+(?:\s[^\s+]+)*/g)

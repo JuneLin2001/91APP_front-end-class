@@ -15,7 +15,7 @@ const IssuePage = () => {
   const [selectedAuthor, setSelectedAuthor] = useState("all");
   const [selectedLabel, setSelectedLabel] = useState("all");
   const [searchValue, setSearchValue] = useState("");
-  const [stateFilter, setStateFilter] = useState("open");
+  const [stateOpenOrClosed, setStateOpenOrClosed] = useState("open");
   const { repoName, owner } = useParams();
   const navigate = useNavigate();
 
@@ -79,7 +79,7 @@ const IssuePage = () => {
   }, [navigate, owner, repoName]);
 
   const fetchDataAndUpdateUrl = useCallback(() => {
-    if (!owner || !repoName || !stateFilter) {
+    if (!owner || !repoName || !stateOpenOrClosed) {
       const errorMessage = "Repository owner, name, and state are required.";
       navigate("/error", { state: { errorMessage } });
       return;
@@ -90,9 +90,9 @@ const IssuePage = () => {
       const searchParams = new URLSearchParams();
 
       const state =
-        stateFilter === "open"
+        stateOpenOrClosed === "open"
           ? "is:issue is:open"
-          : `is:issue is:${stateFilter}`;
+          : `is:issue is:${stateOpenOrClosed}`;
       const author = selectedAuthor !== "all" ? `author:${selectedAuthor}` : "";
       const label = selectedLabel !== "all" ? `${selectedLabel}` : "";
       const searchResult = searchValue || "";
@@ -125,7 +125,7 @@ const IssuePage = () => {
           repoName,
           authorFilter,
           labelFilter,
-          stateFilter,
+          stateOpenOrClosed,
           searchResult
         );
 
@@ -145,7 +145,7 @@ const IssuePage = () => {
     searchValue,
     selectedAuthor,
     selectedLabel,
-    stateFilter,
+    stateOpenOrClosed,
   ]);
 
   useEffect(() => {
@@ -153,7 +153,7 @@ const IssuePage = () => {
     setSelectedAuthor(author);
     setSelectedLabel(labels.join(" "));
     setSearchValue(searchResult);
-    setStateFilter(state);
+    setStateOpenOrClosed(state);
     fetchInitialData();
   }, [fetchInitialData]);
 
@@ -168,7 +168,7 @@ const IssuePage = () => {
     searchValue,
     selectedAuthor,
     selectedLabel,
-    stateFilter,
+    stateOpenOrClosed,
   ]);
 
   const handleFilterChange = (type, value) => {
@@ -210,8 +210,8 @@ const IssuePage = () => {
         <IssuePageHeader
           openCount={allIssues.openCount}
           closedCount={allIssues.closedCount}
-          stateFilter={stateFilter}
-          setStateFilter={setStateFilter}
+          stateOpenOrClosed={stateOpenOrClosed}
+          setStateOpenOrClosed={setStateOpenOrClosed}
           authors={authors}
           labels={labels}
           handleAuthorChange={handleAuthorChange}
@@ -219,7 +219,7 @@ const IssuePage = () => {
         />
         <IssuePageList
           issuesToDisplay={apiResult}
-          stateFilter={stateFilter}
+          stateOpenOrClosed={stateOpenOrClosed}
           repoName={repoName}
           handleCheckboxChange={handleCheckboxChange}
           owner={owner}
