@@ -7,6 +7,9 @@ import IssuePageHeader from "./IssuePageHeader";
 import IssuePageList from "./IssuePageList";
 import { IssueAllContainer } from "../../style/IssuePage.styled";
 
+import { Button } from "@primer/react";
+import { XCircleFillIcon } from "@primer/octicons-react";
+
 const IssuePage = () => {
   const [apiResult, setApiResult] = useState([]);
   const [allIssues, setAllIssues] = useState({ openCount: 0, closedCount: 0 });
@@ -200,6 +203,30 @@ const IssuePage = () => {
     console.log(`Checkbox for issue ${issueId} changed.`);
   };
 
+  const handleClearAll = () => {
+    setSelectedAuthor("all");
+    setSelectedLabel("all");
+    setSearchValue("");
+    setStateOpenOrClosed("open");
+
+    const url = new URL(window.location.href);
+    const searchParams = new URLSearchParams();
+    searchParams.delete("q");
+    url.search = searchParams.toString();
+    window.history.pushState({}, "", url);
+
+    fetchInitialData();
+  };
+
+  const isDefaultState = () => {
+    return (
+      selectedAuthor === "all" &&
+      selectedLabel === "all" &&
+      searchValue === "" &&
+      stateOpenOrClosed === "open"
+    );
+  };
+
   return (
     <Center>
       <IssueSearch
@@ -207,6 +234,15 @@ const IssuePage = () => {
         labelNum={labels.length}
       />
       <IssueAllContainer>
+        {!isDefaultState() && (
+          <Button
+            leadingVisual={XCircleFillIcon}
+            variant="invisible"
+            onClick={handleClearAll}
+          >
+            Clear current search query, filters, and sorts
+          </Button>
+        )}
         <IssuePageHeader
           openCount={allIssues.openCount}
           closedCount={allIssues.closedCount}

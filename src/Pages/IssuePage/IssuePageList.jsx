@@ -34,7 +34,7 @@ const IssuePageList = ({
               <IssueCheckbox onChange={() => handleCheckboxChange(issue.id)} />
               <IconButton
                 aria-label={
-                  stateOpenOrClosed === "open" ? "Open issue" : "Closed issue"
+                  issue.state === "open" ? "Open issue" : "Closed issue"
                 }
                 variant="invisible"
                 size="small"
@@ -43,7 +43,7 @@ const IssuePageList = ({
                 }
                 unsafeDisableTooltip={false}
                 sx={{
-                  color: stateOpenOrClosed === "open" ? "green" : "purple", //TODO: 替換為 Primer 的官方顏色
+                  color: issue.state === "open" ? "green" : "purple", //TODO: 替換為 Primer 的官方顏色
                   cursor: "default",
                 }}
               />
@@ -99,7 +99,7 @@ const IssuePageList = ({
             <Box ml={7}>
               <Text color="fg.muted" fontSize={"12px"}>
                 {`#${issue.number} `}
-                {stateOpenOrClosed === "open" ? (
+                {issue.state === "open" ? (
                   <>
                     {`opened on `}
                     <RelativeTime date={new Date(issue.created_at)} />{" "}
