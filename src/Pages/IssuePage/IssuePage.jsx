@@ -106,7 +106,11 @@ const IssuePage = () => {
         .filter(Boolean)
         .join(" ");
 
-      searchParams.set("q", queryString);
+      if (queryString.trim() !== "") {
+        searchParams.set("q", queryString);
+      } else {
+        searchParams.delete("q");
+      }
       url.search = searchParams.toString();
       window.history.pushState({}, "", url);
     };
