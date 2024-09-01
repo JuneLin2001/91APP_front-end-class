@@ -83,7 +83,7 @@ const api = {
         `${queryBase} is:issue is:${stateFilter}`,
         labelFilter
           ? labelFilter
-              .match(/label:"[^"]+"|label:\S+/g)
+              .match(/label:"[^"]+"|label:[^\s+]+(?:\s[^\s+]+)*/g)
               ?.map((label) => label.trim())
               .join(" ")
           : "",

@@ -174,7 +174,7 @@ const IssuePage = () => {
   };
 
   const handleLabelChange = (labels) => {
-    const formattedString = labels.map((label) => `label:${label}`).join(" ");
+    const formattedString = labels.map((label) => `label:"${label}"`).join(" ");
     handleFilterChange("label", formattedString);
   };
 
