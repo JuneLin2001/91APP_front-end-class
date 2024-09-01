@@ -138,7 +138,7 @@ const api = {
 
   async getTimelineComments(owner, repo, issueNumber, timestamp, token) {
     const response = await fetch(
-      `${this.hostname}/repos/${owner}/${repo}/issues/${issueNumber}/timeline?t=${timestamp}`,
+      `${this.hostname}/repos/${owner}/${repo}/issues/${issueNumber}/timeline?t=${timestamp}&per_page=100`,
       {
         headers: {
           "X-GitHub-Api-Version": "2022-11-28",

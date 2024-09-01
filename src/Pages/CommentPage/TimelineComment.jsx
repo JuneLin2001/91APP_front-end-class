@@ -22,9 +22,17 @@ import {
   SkipIcon,
   PencilIcon,
 } from "@primer/octicons-react";
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { CommentContext } from "../../context/commentContext";
 import CommentBox from "./CommentBox";
+
+function getBrightness(hexColor) {
+  hexColor = hexColor.replace(/^#/, "");
+  let r = parseInt(hexColor.substring(0, 2), 16);
+  let g = parseInt(hexColor.substring(2, 4), 16);
+  let b = parseInt(hexColor.substring(4, 6), 16);
+  return (r * 299 + g * 587 + b * 114) / 1000;
+}
 
 const TimelineComment = () => {
   const {
@@ -74,10 +82,52 @@ const TimelineComment = () => {
       content: "changed the title ",
     },
   };
+  const processComments = (commentData) => {
+    const result = [];
+    let tempGroup = null;
+
+    for (let i = 0; i < commentData.length; i++) {
+      const comment = commentData[i];
+      const { actor, event, label } = comment;
+
+      if (
+        (event === "labeled" || event === "unlabeled") &&
+        tempGroup &&
+        tempGroup.actor.login === actor.login &&
+        tempGroup.event === event
+      ) {
+        tempGroup.labels.push(label);
+      } else {
+        if (tempGroup) {
+          result.push(tempGroup);
+        }
+        if (event === "labeled" || event === "unlabeled") {
+          tempGroup = {
+            actor,
+            event,
+            labels: [label],
+            created_at: comment.created_at,
+            id: comment.id,
+          };
+        } else {
+          result.push(comment);
+          tempGroup = null;
+        }
+      }
+    }
+
+    if (tempGroup) {
+      result.push(tempGroup);
+    }
+
+    return result;
+  };
+  const processedComments = processComments(commentData);
+  console.log(processedComments);
 
   return (
     <Timeline>
-      {commentData.map((comment) =>
+      {processedComments.map((comment) =>
         comment.event === "commented" ? (
           <Timeline.Item
             key={comment.id}
@@ -300,11 +350,32 @@ const TimelineComment = () => {
                       {comment.actor.login}
                     </Link>
                     {content}
-                    {comment.label && (
+                    {comment.labels && (
                       <>
-                        <Label ml={2} backgroundColor={comment.label.color}>
-                          {comment.label.name}
-                        </Label>
+                        {comment.labels.map((label, index) => {
+                          const labelColor = `#${label.color}`;
+                          const brightness = getBrightness(label.color);
+                          const textColor =
+                            brightness > 128 ? "black" : "white";
+                          const borderColor =
+                            brightness > 128 ? "border.default" : labelColor;
+
+                          return (
+                            <React.Fragment key={index}>
+                              <Label
+                                sx={{
+                                  marginRight: "4px",
+                                  backgroundColor: labelColor,
+                                  color: textColor,
+                                  borderColor: borderColor,
+                                }}
+                                key={index}
+                              >
+                                {label.name}
+                              </Label>
+                            </React.Fragment>
+                          );
+                        })}
                         <Text> labels </Text>
                       </>
                     )}
