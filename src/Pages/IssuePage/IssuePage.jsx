@@ -25,9 +25,7 @@ const IssuePage = () => {
 
     const params = query.split("+").reduce(
       (acc, param) => {
-        if (param.startsWith("repo:")) {
-          acc.repo = param.substring(5);
-        } else if (param.startsWith("is:")) {
+        if (param.startsWith("is:")) {
           acc.state = param.substring(3);
         } else if (param.startsWith("label:")) {
           acc.labels = acc.labels || [];
@@ -40,18 +38,12 @@ const IssuePage = () => {
       { labels: [] }
     );
 
-    const resultString = [
-      params.repo ? `repo:${params.repo}` : "error",
-      params.state ? `is:issue is:${params.state}` : "is:issue",
-      params.author ? `author:${params.author}` : "",
-      params.labels.length > 0
-        ? params.labels.map((label) => `${label}`).join(" ")
-        : "",
-    ]
-      .filter(Boolean)
-      .join(" ");
-
-    return resultString;
+    return {
+      state: params.state || "open",
+      author: params.author || "all",
+      labels: params.labels || [],
+      searchResult: query,
+    };
   };
 
   const fetchInitialData = useCallback(async () => {
@@ -84,13 +76,12 @@ const IssuePage = () => {
       const url = new URL(window.location.href);
       const searchParams = new URLSearchParams();
 
-      const repoInfo = `repo:${owner}/${repoName}`;
       const state = `is:issue is:${stateFilter}`;
       const author = selectedAuthor !== "all" ? `author:${selectedAuthor}` : "";
       const label = selectedLabel !== "all" ? `${selectedLabel}` : "";
       const searchResult = searchValue || "";
 
-      const queryString = [repoInfo, state, author, label, searchResult]
+      const queryString = [state, author, label, searchResult]
         .filter(Boolean)
         .join(" ");
 
@@ -109,7 +100,7 @@ const IssuePage = () => {
         const q = parseUrlParams();
 
         const response = await api.fetchFilteredIssues(
-          q,
+          q.searchResult,
           owner,
           repoName,
           authorFilter,
@@ -138,7 +129,11 @@ const IssuePage = () => {
   ]);
 
   useEffect(() => {
-    parseUrlParams();
+    const { state, author, labels, searchResult } = parseUrlParams();
+    setSelectedAuthor(author);
+    setSelectedLabel(labels.join(" "));
+    setSearchValue(searchResult);
+    setStateFilter(state);
     fetchInitialData();
   }, [fetchInitialData]);
 
@@ -167,13 +162,11 @@ const IssuePage = () => {
   };
 
   const handleAuthorChange = (selectedAuthor) => {
-    console.log("Selected author:", selectedAuthor);
     handleFilterChange("author", selectedAuthor);
   };
 
   const handleLabelChange = (labels) => {
     const formattedString = labels.map((label) => `label:${label}`).join(" ");
-    console.log("formattedString: ", formattedString);
     handleFilterChange("label", formattedString);
   };
 
@@ -182,8 +175,6 @@ const IssuePage = () => {
     setSearchValue(newSearchValue);
     fetchDataAndUpdateUrl();
   };
-
-  // const issuesToDisplay = apiResult;
 
   const handleCheckboxChange = (issueId) => {
     console.log(`Checkbox for issue ${issueId} changed.`);

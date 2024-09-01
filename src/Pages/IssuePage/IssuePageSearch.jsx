@@ -44,7 +44,11 @@ const IssueSearch = ({ handleSearchClick, labelNum }) => {
     }
 
     if (q) {
-      parts.push(q);
+      // Parse `q` and remove `repo` part if present
+      const qParts = q.split("+").filter((part) => !part.startsWith("repo:"));
+      if (qParts.length > 0) {
+        parts.push(qParts.join(" "));
+      }
     }
 
     return parts.join(" ");
