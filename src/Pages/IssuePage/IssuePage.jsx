@@ -32,17 +32,30 @@ const IssuePage = () => {
           acc.labels.push(param.substring(6));
         } else if (param.startsWith("author:")) {
           acc.author = param.substring(7);
+        } else if (param.startsWith("repo:")) {
+          acc.repo = param.substring(5);
         }
         return acc;
       },
       { labels: [] }
     );
 
+    const searchResult = query
+      .split("+")
+      .filter(
+        (param) =>
+          !param.startsWith("repo:") &&
+          !param.startsWith("is:") &&
+          !param.startsWith("label:") &&
+          !param.startsWith("author:")
+      )
+      .join(" ");
+
     return {
       state: params.state || "open",
       author: params.author || "all",
       labels: params.labels || [],
-      searchResult: query,
+      searchResult: searchResult,
     };
   };
 
