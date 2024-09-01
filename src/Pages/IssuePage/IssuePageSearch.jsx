@@ -60,22 +60,19 @@ const IssueSearch = ({ handleSearchClick, labelNum }) => {
 
   const options = [
     {
-      name: "Fast forward",
+      name: "Open issues and pull requests",
     },
     {
-      name: "Recursive",
+      name: "Your issues",
     },
     {
-      name: "Ours",
+      name: "Your pull requests",
     },
     {
-      name: "Octopus",
+      name: "Everything assigned to you",
     },
     {
-      name: "Resolve",
-    },
-    {
-      name: "Subtree",
+      name: "Everything mentioning to you",
     },
   ];
   const [selectedIndex, setSelectedIndex] = React.useState(0);
@@ -154,7 +151,9 @@ const IssueSearch = ({ handleSearchClick, labelNum }) => {
                       ":hover": { boxShadow: "none" },
                     }}
                   />
-                  <Text sx={{ fontSize: "12px" }}>External Link</Text>
+                  <Text sx={{ fontSize: "12px", fontWeight: "bold" }}>
+                    View advanced search syntax
+                  </Text>
                 </ActionList.Item>
               </ActionList>
             </ActionMenu.Overlay>

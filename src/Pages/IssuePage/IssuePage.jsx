@@ -97,16 +97,11 @@ const IssuePage = () => {
       const label = selectedLabel !== "all" ? `${selectedLabel}` : "";
       const searchResult = searchValue || "";
 
-      const queryString = [
-        stateFilter === "open" ? "" : state,
-        author,
-        label,
-        searchResult,
-      ]
+      const queryString = [state, author, label, searchResult]
         .filter(Boolean)
         .join(" ");
 
-      if (queryString.trim() !== "") {
+      if (queryString.trim() !== "is:issue is:open") {
         searchParams.set("q", queryString);
       } else {
         searchParams.delete("q");
