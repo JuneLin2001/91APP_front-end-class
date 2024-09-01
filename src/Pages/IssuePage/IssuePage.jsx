@@ -76,12 +76,20 @@ const IssuePage = () => {
       const url = new URL(window.location.href);
       const searchParams = new URLSearchParams();
 
-      const state = `is:issue is:${stateFilter}`;
+      const state =
+        stateFilter === "open"
+          ? "is:issue is:open"
+          : `is:issue is:${stateFilter}`;
       const author = selectedAuthor !== "all" ? `author:${selectedAuthor}` : "";
       const label = selectedLabel !== "all" ? `${selectedLabel}` : "";
       const searchResult = searchValue || "";
 
-      const queryString = [state, author, label, searchResult]
+      const queryString = [
+        stateFilter === "open" ? "" : state,
+        author,
+        label,
+        searchResult,
+      ]
         .filter(Boolean)
         .join(" ");
 

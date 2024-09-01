@@ -31,6 +31,14 @@ const IssueSearch = ({ handleSearchClick, labelNum }) => {
     const labelFilter = searchParams.get("label") || "all";
 
     const parts = [];
+    const qParts = q.split("+").filter((part) => !part.startsWith("repo:"));
+    const hasState = qParts.some(
+      (part) => part.startsWith("is:") && part.includes("issue")
+    );
+
+    if (!hasState) {
+      parts.push(`is:issue is:open`);
+    }
 
     if (authorFilter !== "all") {
       parts.push(`author:${authorFilter}`);
@@ -43,12 +51,8 @@ const IssueSearch = ({ handleSearchClick, labelNum }) => {
       });
     }
 
-    if (q) {
-      // Parse `q` and remove `repo` part if present
-      const qParts = q.split("+").filter((part) => !part.startsWith("repo:"));
-      if (qParts.length > 0) {
-        parts.push(qParts.join(" "));
-      }
+    if (qParts.length > 0) {
+      parts.push(qParts.join(" "));
     }
 
     return parts.join(" ");
@@ -75,8 +79,6 @@ const IssueSearch = ({ handleSearchClick, labelNum }) => {
     },
   ];
   const [selectedIndex, setSelectedIndex] = React.useState(0);
-  // const selectedType = options[selectedIndex];
-  // console.log("in filter that choose" + selectedType);
   return (
     <>
       <Box
