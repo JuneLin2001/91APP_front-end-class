@@ -25,15 +25,15 @@ const IssuePage = () => {
 
     const params = query.split("+").reduce(
       (acc, param) => {
-        if (param.startsWith("is:")) {
+        if (param.startsWith("repo:")) {
+          acc.repo = param.substring(5);
+        } else if (param.startsWith("is:")) {
           acc.state = param.substring(3);
         } else if (param.startsWith("label:")) {
           acc.labels = acc.labels || [];
           acc.labels.push(param.substring(6));
         } else if (param.startsWith("author:")) {
           acc.author = param.substring(7);
-        } else if (param.startsWith("repo:")) {
-          acc.repo = param.substring(5);
         }
         return acc;
       },
@@ -55,7 +55,7 @@ const IssuePage = () => {
       state: params.state || "open",
       author: params.author || "all",
       labels: params.labels || [],
-      searchResult: searchResult,
+      searchResult: searchResult.trim(),
     };
   };
 
