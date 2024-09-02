@@ -29,11 +29,13 @@ function App() {
             <Route
               path="/:owner/:repoName/issue/comment/:issueNumber"
               element={
-                <CommentContextProvider>
-                  <PrivateRoute>
-                    <CommentPage />
-                  </PrivateRoute>
-                </CommentContextProvider>
+                <IssueContextProvider>
+                  <CommentContextProvider>
+                    <PrivateRoute>
+                      <CommentPage />
+                    </PrivateRoute>
+                  </CommentContextProvider>
+                </IssueContextProvider>
               }
             />
             <Route path="/error" element={<ErrorComponent />} />

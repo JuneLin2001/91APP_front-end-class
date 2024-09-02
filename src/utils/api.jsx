@@ -75,25 +75,20 @@ const api = {
     const queryBase = `repo:${owner}/${repoName}`;
 
     let searchQuery;
-    if (q && q.includes(`repo:${owner}`) && q.includes(`repo:${repoName}`)) {
-      searchQuery = q;
-      console.log("have q " + searchQuery);
-    } else {
-      searchQuery = [
-        `${queryBase} is:issue is:${stateOpenOrClosed}`,
-        labelFilter
-          ? labelFilter
-              .match(/label:"[^"]+"|label:[^\s+]+(?:\s[^\s+]+)*/g)
-              ?.map((label) => label.trim())
-              .join(" ")
-          : "",
-        authorFilter !== "all" ? `author:${authorFilter}` : "",
-        searchResult || "",
-      ]
-        .filter(Boolean)
-        .join(" ");
-      console.log("don't have q " + searchQuery);
-    }
+
+    searchQuery = [
+      `${queryBase} is:issue is:${stateOpenOrClosed}`,
+      labelFilter
+        ? labelFilter
+            .match(/label:"[^"]+"|label:[^\s+]+(?:\s[^\s+]+)*/g)
+            ?.map((label) => label.trim())
+            .join(" ")
+        : "",
+      authorFilter !== "all" ? `author:${authorFilter}` : "",
+      searchResult || "",
+    ]
+      .filter(Boolean)
+      .join(" ");
 
     if (searchQuery) {
       const encodedQuery = encodeURIComponent(searchQuery);

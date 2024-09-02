@@ -7,6 +7,7 @@ import IssuePageList from "./IssuePageList";
 import { IssueAllContainer } from "../../style/IssuePage.styled";
 import { Button } from "@primer/react";
 import { XCircleFillIcon } from "@primer/octicons-react";
+import { useParams } from "react-router-dom";
 
 const IssuePage = () => {
   const {
@@ -18,14 +19,14 @@ const IssuePage = () => {
     selectedLabel,
     searchValue,
     stateOpenOrClosed,
-    owner,
-    repoName,
     setStateOpenOrClosed,
     handleFilterChange,
     handleSearchClick,
     handleCheckboxChange,
     handleClearAll,
   } = useContext(IssueContext);
+
+  const { owner, repoName } = useParams();
 
   const isDefaultState = () => {
     return (
@@ -35,6 +36,9 @@ const IssuePage = () => {
       stateOpenOrClosed === "open"
     );
   };
+
+  console.log("in IssuePage " + repoName);
+  console.log("in IssuePage " + owner);
 
   return (
     <Center>
