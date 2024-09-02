@@ -11,6 +11,7 @@ import {
   Link,
   PointerBox,
   Octicon,
+  Tooltip,
 } from "@primer/react";
 import {
   KebabHorizontalIcon,
@@ -304,6 +305,28 @@ const TimelineComment = () => {
                       {comment.actor.login}
                     </Link>
                     {content}
+                    {comment.event === "renamed" && (
+                      <>
+                        <Text
+                          sx={{
+                            textDecoration: "line-through",
+                            fontWeight:
+                              "var(--base-text-weight-semibold, 600) !important",
+                          }}
+                        >
+                          {" "}
+                          {comment.rename?.from}{" "}
+                        </Text>
+                        <Text
+                          sx={{
+                            fontWeight:
+                              "var(--base-text-weight-semibold, 600) !important",
+                          }}
+                        >
+                          {comment.rename?.to}{" "}
+                        </Text>
+                      </>
+                    )}
                     {comment.labeledLabels?.length > 0 && (
                       <>
                         <Text> added </Text>
@@ -317,17 +340,19 @@ const TimelineComment = () => {
 
                           return (
                             <React.Fragment key={index}>
-                              <Label
-                                sx={{
-                                  marginRight: "4px",
-                                  backgroundColor: labelColor,
-                                  color: textColor,
-                                  borderColor: borderColor,
-                                }}
-                                key={index}
-                              >
-                                {label.name}
-                              </Label>
+                              <Tooltip text={label.description} direction="s">
+                                <Label
+                                  sx={{
+                                    marginRight: "4px",
+                                    backgroundColor: labelColor,
+                                    color: textColor,
+                                    borderColor: borderColor,
+                                  }}
+                                  key={index}
+                                >
+                                  {label.name}
+                                </Label>
+                              </Tooltip>
                             </React.Fragment>
                           );
                         })}
