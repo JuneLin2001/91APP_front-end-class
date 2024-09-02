@@ -43,15 +43,14 @@ function CommentPage() {
             <PageHeader.TitleArea>
               <PageHeader.Title as="h1">
                 {issueData.title} &nbsp;
-                <Link
-                  href="https://github.com/github/primer/issues/1115"
+                <Text
                   sx={{
                     color: "fg.muted",
                     fontWeight: "light",
                   }}
                 >
                   #{issueData.number}
-                </Link>
+                </Text>
               </PageHeader.Title>
             </PageHeader.TitleArea>
             <PageHeader.ContextArea>
