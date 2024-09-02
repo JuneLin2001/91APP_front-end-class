@@ -22,9 +22,10 @@ import {
   SkipIcon,
   PencilIcon,
 } from "@primer/octicons-react";
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { CommentContext } from "../../context/commentContext";
 import CommentBox from "./CommentBox";
+import getBrightness from "../../utils/colorContrast";
 
 const TimelineComment = () => {
   const {
@@ -61,20 +62,14 @@ const TimelineComment = () => {
       iconColor: "var(--bgColor-default)",
       backgroundColor: "var(--bgColor-open-emphasis)",
     },
-    labeled: {
-      iconName: TagIcon,
-      content: " added ",
-    },
-    unlabeled: {
-      iconName: TagIcon,
-      content: "removed the ",
-    },
     renamed: {
       iconName: PencilIcon,
       content: "changed the title ",
     },
+    labeling: {
+      iconName: TagIcon,
+    },
   };
-
   return (
     <Timeline>
       {commentData.map((comment) =>
@@ -272,9 +267,17 @@ const TimelineComment = () => {
           </Timeline.Item>
         ) : (
           (() => {
-            const { iconName, content, iconColor, backgroundColor } =
+            const eventConfig =
               eventMapping[comment.event]?.[comment.state_reason] ||
               eventMapping[comment.event];
+
+            if (!eventConfig) {
+              return null;
+            }
+
+            const { iconName, content, iconColor, backgroundColor } =
+              eventConfig;
+
             return (
               <Box key={comment.id} ml={1}>
                 <Timeline.Item>
@@ -300,11 +303,69 @@ const TimelineComment = () => {
                       {comment.actor.login}
                     </Link>
                     {content}
-                    {comment.label && (
+                    {comment.labeledLabels?.length > 0 && (
                       <>
-                        <Label ml={2} backgroundColor={comment.label.color}>
-                          {comment.label.name}
-                        </Label>
+                        <Text> added </Text>
+                        {comment.labeledLabels.map((label, index) => {
+                          const labelColor = `#${label.color}`;
+                          const brightness = getBrightness(label.color);
+                          const textColor =
+                            brightness > 128 ? "black" : "white";
+                          const borderColor =
+                            brightness > 220 ? "border.default" : labelColor;
+
+                          return (
+                            <React.Fragment key={index}>
+                              <Label
+                                sx={{
+                                  marginRight: "4px",
+                                  backgroundColor: labelColor,
+                                  color: textColor,
+                                  borderColor: borderColor,
+                                }}
+                                key={index}
+                              >
+                                {label.name}
+                              </Label>
+                            </React.Fragment>
+                          );
+                        })}
+                        <Text>
+                          {comment.unlabeledLabels?.length === 0 && "labels "}
+                        </Text>
+                      </>
+                    )}
+                    {comment.unlabeledLabels?.length > 0 && (
+                      <>
+                        <Text>
+                          {" "}
+                          {comment.labeledLabels?.length > 0 &&
+                            "and "}removed{" "}
+                        </Text>
+                        {comment.unlabeledLabels.map((label, index) => {
+                          const labelColor = `#${label.color}`;
+                          const brightness = getBrightness(label.color);
+                          const textColor =
+                            brightness > 128 ? "black" : "white";
+                          const borderColor =
+                            brightness > 220 ? "border.default" : labelColor;
+
+                          return (
+                            <React.Fragment key={index}>
+                              <Label
+                                sx={{
+                                  marginRight: "4px",
+                                  backgroundColor: labelColor,
+                                  color: textColor,
+                                  borderColor: borderColor,
+                                }}
+                                key={index}
+                              >
+                                {label.name}
+                              </Label>
+                            </React.Fragment>
+                          );
+                        })}
                         <Text> labels </Text>
                       </>
                     )}

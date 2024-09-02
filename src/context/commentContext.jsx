@@ -34,6 +34,56 @@ export const CommentContextProvider = ({ children }) => {
 
   const repo = repoName ? repoName : "";
 
+  const processComments = (originalData) => {
+    const result = [];
+    let tempGroup = null;
+
+    for (let i = 0; i < originalData.length; i++) {
+      const comment = originalData[i];
+      const { actor, event, label } = comment;
+
+      if (
+        (event === "labeled" || event === "unlabeled") &&
+        tempGroup &&
+        tempGroup.actor.login === actor.login &&
+        tempGroup.event === "labeling"
+      ) {
+        if (event === "labeled") {
+          if (!tempGroup.labeledLabels.some((l) => l.name === label.name)) {
+            tempGroup.labeledLabels.push(label);
+          }
+        } else {
+          if (!tempGroup.unlabeledLabels.some((l) => l.name === label.name)) {
+            tempGroup.unlabeledLabels.push(label);
+          }
+        }
+      } else {
+        if (tempGroup) {
+          result.push(tempGroup);
+        }
+        if (event === "labeled" || event === "unlabeled") {
+          tempGroup = {
+            actor,
+            event: "labeling",
+            labeledLabels: event === "labeled" ? [label] : [],
+            unlabeledLabels: event === "unlabeled" ? [label] : [],
+            created_at: comment.created_at,
+            id: comment.id,
+          };
+        } else {
+          result.push(comment);
+          tempGroup = null;
+        }
+      }
+    }
+
+    if (tempGroup) {
+      result.push(tempGroup);
+    }
+
+    return result;
+  };
+
   useEffect(() => {
     if (!owner) return;
     const fetchInitData = async () => {
@@ -56,7 +106,9 @@ export const CommentContextProvider = ({ children }) => {
         console.log("fetch到timeline的資料", timelineCommentsData);
         console.log("fetch到的issueBodyData", { issueBodyData });
         setIssueData(issueBodyData);
-        setCommentData(timelineCommentsData);
+
+        const processedComments = processComments(timelineCommentsData);
+        setCommentData(processedComments);
       } catch (e) {
         setError(e.message);
         const errorMessage = e.message || "Something went wrong";
