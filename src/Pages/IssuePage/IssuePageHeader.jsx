@@ -22,10 +22,19 @@ const IssuePageHeader = ({
   labels,
   handleAuthorChange,
   handleLabelChange,
+  handleSelectAll,
+  isAllSelected,
 }) => {
+  const [allSelected, setAllSelected] = useState(isAllSelected);
+
+  const toggleSelectAll = () => {
+    setAllSelected(!allSelected);
+    handleSelectAll(!allSelected);
+  };
+
   return (
     <IssueHeader>
-      <IssueCheckbox />
+      <IssueCheckbox checked={allSelected} onChange={toggleSelectAll} />
       <SegmentedControl
         aria-label="File view"
         variant="invisible"
@@ -56,7 +65,6 @@ const IssuePageHeader = ({
           {`${closedCount} Closed`}
         </IssueOpenClosedButton>
       </SegmentedControl>
-
       <Box sx={{ ml: "auto" }}>
         <ButtonGroup>
           <SelectPanelAuthor authors={authors} onSelect={handleAuthorChange} />
