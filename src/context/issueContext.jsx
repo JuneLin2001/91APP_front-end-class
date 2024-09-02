@@ -52,26 +52,24 @@ export const IssueContextProvider = ({ children }) => {
     setCurrentTextareaValue(value);
   };
 
-  const handleCreateIssue = async (currentTextareaValue) => {
-    console.log("現在的create textarea: ", currentTextareaValue);
+  const handleCreateIssue = async () => {
     try {
-      // 調用 api.postIssue 方法來發送 POST 請求
       const newIssue = await api.postIssue(
-        owner, // 儲存庫的擁有者
-        repoName, // 儲存庫名稱
+        owner,
+        repoName,
         title, // Issue 的標題
         currentTextareaValue, // Issue 的內容描述
         CRUDtoken
       );
 
-      // 清空輸入欄位
       setTitle("");
       setCurrentTextareaValue("");
 
-      // 處理成功邏輯，例如通知使用者
-      console.log("Issue 成功建立:", newIssue);
-    } catch (e) {
-      console.error("錯誤:", e);
+      if (newIssue && newIssue.number) {
+        navigate(`/${owner}/${repoName}/issue/comment/${newIssue.number}`);
+      }
+    } catch (error) {
+      handleFetchError(error);
     }
   };
 
