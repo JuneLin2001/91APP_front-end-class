@@ -5,6 +5,8 @@ import {
   RelativeTime,
   IconButton,
   Button,
+  Label,
+  Tooltip,
 } from "@primer/react";
 import {
   IssueOpenedIcon,
@@ -14,13 +16,12 @@ import {
 import { Link } from "react-router-dom";
 import {
   IssueCheckbox,
-  IssueLabelBox,
   IssueCardContainer,
 } from "../../style/IssuePage.styled";
+import getBrightness from "../../utils/colorContrast";
 
 const IssuePageList = ({
   issuesToDisplay,
-  stateOpenOrClosed,
   repoName,
   handleCheckboxChange,
   owner,
@@ -59,18 +60,25 @@ const IssuePageList = ({
                 </Link>
               </Text>
               {issue.labels.map((label) => {
-                const isWhite = label.color === "ffffff";
+                const labelColor = `#${label.color}`;
+                const brightness = getBrightness(label.color);
+                const textColor = brightness > 128 ? "black" : "white";
+                const borderColor =
+                  brightness > 220 ? "border.default" : labelColor;
                 return (
-                  <IssueLabelBox
-                    key={label.id}
-                    bg={`#${label.color}`}
-                    color={isWhite ? "black" : "white"}
-                    border={isWhite ? "1px solid gray" : "0"}
-                    borderColor={isWhite ? "gray" : "transparent"}
-                    aria-label={label.description}
-                  >
-                    {label.name}
-                  </IssueLabelBox>
+                  <Tooltip key={label.id} text={label.description}>
+                    <Label
+                      sx={{
+                        backgroundColor: labelColor,
+                        color: textColor,
+                        marginLeft: "4px",
+                        borderColor: borderColor,
+                      }}
+                      key={label.id}
+                    >
+                      {label.name}
+                    </Label>
+                  </Tooltip>
                 );
               })}
               {issue.comments > 0 && (

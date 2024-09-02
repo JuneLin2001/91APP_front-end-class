@@ -57,17 +57,21 @@ const LabelSelectPanel = ({ labels = [], onSelect }) => {
         onOpenChange={setOpen}
         items={filteredItems}
         // renderItem={({ item }) => (
-        //   <span
-        //     style={{
-        //       display: "inline-block",
-        //       width: "12px",
-        //       height: "12px",
-        //       backgroundColor: item.color,
-        //       borderRadius: "50%",
-        //       marginRight: "8px",
-        //       border: "1px solid gray",
-        //     }}
-        //   ></span>
+        //   <div>
+        //     <span
+        //       style={{
+        //         display: "inline-block",
+        //         width: "12px",
+        //         height: "12px",
+        //         backgroundColor: item.color,
+        //         marginRight: "8px",
+        //         borderRadius: "50%",
+        //         border: "1px solid gray",
+        //       }}
+        //     ></span>
+        //     <span>{item.text}</span>
+        //     <span>{item.description}</span>
+        //   </div>
         // )}
         selected={filteredItems.filter((item) => selected.includes(item.text))}
         onSelectedChange={handleSelectedChange}

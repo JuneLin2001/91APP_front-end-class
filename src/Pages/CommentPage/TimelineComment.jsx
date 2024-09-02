@@ -249,7 +249,7 @@ const TimelineComment = () => {
                         <Timeline.Badge
                           variant="invisible"
                           sx={{
-                            fontSixe: "14px",
+                            fontSize: "14px",
                             display: "flex",
                             padding: "0px",
                             width: "26px",

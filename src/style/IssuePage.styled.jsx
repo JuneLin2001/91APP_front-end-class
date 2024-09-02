@@ -18,36 +18,6 @@ export const IssueCheckbox = styled(Checkbox)`
   margin-right: 8px;
 `;
 
-export const IssueLabelBox = styled.span`
-  display: inline-block;
-  background-color: ${({ bg }) => bg || "#f0f0f0"};
-  color: ${({ color }) => color || "black"};
-  border-radius: 100px;
-  margin-left: 4px;
-  padding: 0px 7px;
-  font-size: 12px;
-  font-weight: bold;
-  border: ${({ border }) => border || "0"};
-  border-color: ${({ borderColor }) => borderColor || "transparent"};
-  position: relative;
-
-  &:hover::after {
-    content: attr(aria-label);
-    position: absolute;
-    left: 50%;
-    bottom: 100%;
-    transform: translateX(-50%);
-    background-color: black;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 10px;
-    white-space: nowrap;
-    opacity: 0.75;
-    pointer-events: none;
-  }
-`;
-
 export const IssueOpenClosedButton = styled(Button)`
   color: #636c76;
   background-color: #f6f8fa;
