@@ -20,6 +20,7 @@ import CommentBox from "./CommentBox";
 import TimelineComment from "./TimelineComment";
 import IssueBody from "./IssueBody";
 import PageLayoutPane from "./PageLayoutPane";
+import { useParams, useNavigate } from "react-router-dom";
 
 function CommentPage() {
   const {
@@ -31,6 +32,13 @@ function CommentPage() {
     handleTextareaChange,
     handleCreateComment,
   } = useContext(CommentContext);
+
+  const navigate = useNavigate();
+  const { owner, repoName } = useParams();
+
+  const handleNewIssueClick = () => {
+    navigate(`/${owner}/${repoName}/issue/new`);
+  };
 
   if (loading) return <div>載入中...</div>;
   if (error) return <div>錯誤: {error}</div>;
@@ -70,7 +78,7 @@ function CommentPage() {
                 <Button
                   variant="primary"
                   onClick={() => {
-                    alert("New issue modal will open");
+                    handleNewIssueClick();
                   }}
                 >
                   New Issue

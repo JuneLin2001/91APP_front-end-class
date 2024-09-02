@@ -5,10 +5,17 @@ import {
   Box,
   PageLayout,
   TextInput,
+  Timeline,
+  Avatar,
+  Text,
+  Link,
 } from "@primer/react";
+import { InfoIcon } from "@primer/octicons-react";
 import { IssueContext } from "../../context/issueContext";
 import CommentBox from "../CommentPage/CommentBox";
 import PageLayoutPane from "../CommentPage/PageLayoutPane";
+import { AuthContext } from "../../context/authContext";
+
 function IssuePageNewIssue() {
   const {
     title, // 從 context 中獲取 title
@@ -17,6 +24,7 @@ function IssuePageNewIssue() {
     handleTextareaChange,
     handleCreateIssue,
   } = useContext(IssueContext);
+  const { user } = useContext(AuthContext);
 
   const isSubmitDisabled = !title.trim() || !currentTextareaValue.trim();
 
@@ -24,16 +32,29 @@ function IssuePageNewIssue() {
     <ThemeProvider>
       <PageLayout>
         <PageLayout.Content>
-          <Box
-          // ={7}
-          >
-            <h4>Add a title</h4>
-            <TextInput
-              placeholder="Enter the title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              sx={{ mb: 3 }}
-            />
+          <Box>
+            <Timeline.Badge
+              sx={{
+                position: "absolute",
+                left: "-40px",
+                top: "0px",
+                width: "40px",
+                height: "40px",
+              }}
+            >
+              <Avatar size={40} src={user.photoURL} alt={user.displayName} />
+            </Timeline.Badge>
+            <Box display="flex" flexDirection="column" sx={{ gap: "8px" }}>
+              <Text as="h4" m={0}>
+                Add a title
+              </Text>
+              <TextInput
+                placeholder="Enter the title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                sx={{ mb: 3, width: "100%" }}
+              />
+            </Box>
 
             {/* 內容輸入框 */}
             <h4>Write a comment</h4>
@@ -58,6 +79,7 @@ function IssuePageNewIssue() {
                 Submit new issue
               </Button>
             </Box>
+            <InfoBox />
           </Box>
         </PageLayout.Content>
         <PageLayoutPane />
@@ -65,5 +87,27 @@ function IssuePageNewIssue() {
     </ThemeProvider>
   );
 }
+
+const InfoBox = () => (
+  <Box
+    display="flex"
+    alignItems="center"
+    className="text-small color-fg-muted mt-3 mt-md-2 mb-2"
+    my={3}
+    color="var(--fgColor-muted, var(--color-fg-muted)) !important"
+  >
+    <InfoIcon size={16} />
+    <Text sx={{ fontSize: "12px", paddingLeft: "4px" }}>
+      Remember, contributions to this repository should follow our{" "}
+      <Link
+        href="https://docs.github.com/articles/github-community-guidelines"
+        sx={{ textDecoration: "underline" }}
+      >
+        GitHub Community Guidelines
+      </Link>
+      .
+    </Text>
+  </Box>
+);
 
 export default IssuePageNewIssue;
