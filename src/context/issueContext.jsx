@@ -1,5 +1,12 @@
-import { createContext, useState, useEffect, useCallback } from "react";
+import {
+  createContext,
+  useState,
+  useEffect,
+  useCallback,
+  useContext,
+} from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { AuthContext } from "./authContext";
 import api from "../utils/api";
 
 export const IssueContext = createContext({
@@ -11,20 +18,19 @@ export const IssueContext = createContext({
   selectedLabel: "all",
   searchValue: "",
   stateOpenOrClosed: "open",
-  repoName: "",
-  owner: "",
+  currentTextareaValue: "",
+  title: "",
   handleAuthorChange: () => {},
   handleLabelChange: () => {},
   handleSearchClick: () => {},
   handleClearAll: () => {},
-  fetchInitialData: () => {},
+  getInitialData: () => {},
   fetchDataAndUpdateUrl: () => {},
   handleCheckboxChange: () => {},
   handleFetchError: () => {},
-
-  currentTextareaValue: "",
   handleTextareaChange: () => {},
-  handleCreateComment: () => {},
+  setTitle: () => {},
+  handleCreateIssue: () => {},
 });
 
 export const IssueContextProvider = ({ children }) => {
@@ -37,29 +43,37 @@ export const IssueContextProvider = ({ children }) => {
   const [searchValue, setSearchValue] = useState("");
   const [stateOpenOrClosed, setStateOpenOrClosed] = useState("open");
   const { repoName, owner } = useParams();
+  const { CRUDtoken } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [title, setTitle] = useState(""); // 新增 title 狀態
   const [currentTextareaValue, setCurrentTextareaValue] = useState("");
 
-  const handleTextareaChange = useCallback((event) => {
-    setCurrentTextareaValue(event.target.value);
-  }, []);
+  const handleTextareaChange = (value) => {
+    setCurrentTextareaValue(value);
+  };
 
-  const handleCreateComment = useCallback(
-    async (text) => {
-      try {
-        if (owner && repoName) {
-          await api.createComment(owner, repoName, text);
-          setCurrentTextareaValue(""); // 發文後清空輸入框
-        }
-      } catch (error) {
-        console.error("Failed to create comment:", error);
-        navigate("/error", {
-          state: { errorMessage: "Failed to create comment" },
-        });
-      }
-    },
-    [owner, repoName, navigate]
-  );
+  const handleCreateIssue = async (currentTextareaValue) => {
+    console.log("現在的create textarea: ", currentTextareaValue);
+    try {
+      // 調用 api.postIssue 方法來發送 POST 請求
+      const newIssue = await api.postIssue(
+        owner, // 儲存庫的擁有者
+        repoName, // 儲存庫名稱
+        title, // Issue 的標題
+        currentTextareaValue, // Issue 的內容描述
+        CRUDtoken
+      );
+
+      // 清空輸入欄位
+      setTitle("");
+      setCurrentTextareaValue("");
+
+      // 處理成功邏輯，例如通知使用者
+      console.log("Issue 成功建立:", newIssue);
+    } catch (e) {
+      console.error("錯誤:", e);
+    }
+  };
 
   const handleCheckboxChange = useCallback((issueId, isSelected) => {
     setApiResult((prevResult) => {
@@ -118,10 +132,10 @@ export const IssueContextProvider = ({ children }) => {
     };
   }, []);
 
-  const fetchInitialData = useCallback(async () => {
+  const getInitialData = useCallback(async () => {
     try {
       if (owner && repoName) {
-        const response = await api.fetchInitialData(owner, repoName);
+        const response = await api.getInitialData(owner, repoName);
         setApiResult(response.issues);
         setLabels(response.labels);
         setAllIssues({
@@ -169,14 +183,14 @@ export const IssueContextProvider = ({ children }) => {
 
     updateUrlParams();
 
-    const fetchFilteredIssues = async () => {
+    const getFilteredIssues = async () => {
       try {
         const authorFilter = selectedAuthor || "all";
         const labelFilter = selectedLabel || "";
         const searchResult = searchValue || "";
         const q = parseUrlParams();
 
-        const response = await api.fetchFilteredIssues(
+        const response = await api.getFilteredIssues(
           q.searchResult,
           owner,
           repoName,
@@ -192,7 +206,7 @@ export const IssueContextProvider = ({ children }) => {
       }
     };
 
-    fetchFilteredIssues();
+    getFilteredIssues();
   }, [
     navigate,
     owner,
@@ -211,8 +225,8 @@ export const IssueContextProvider = ({ children }) => {
     setSelectedLabel(labels.join(" "));
     setSearchValue(searchResult);
     setStateOpenOrClosed(state);
-    fetchInitialData();
-  }, [fetchInitialData, parseUrlParams]);
+    getInitialData();
+  }, [getInitialData, parseUrlParams]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -239,13 +253,15 @@ export const IssueContextProvider = ({ children }) => {
         selectedLabel,
         searchValue,
         stateOpenOrClosed,
+        currentTextareaValue,
+        title,
+        setTitle,
+        handleTextareaChange,
+        handleCreateIssue,
         setSelectedAuthor,
         setSelectedLabel,
         setSearchValue,
         setStateOpenOrClosed,
-        currentTextareaValue,
-        handleTextareaChange,
-        handleCreateComment,
         handleFilterChange: (type, value) => {
           if (type === "label") {
             setSelectedLabel(value);
@@ -265,7 +281,7 @@ export const IssueContextProvider = ({ children }) => {
           setSelectedLabel("all");
           setSearchValue("");
           setStateOpenOrClosed("open");
-          fetchInitialData();
+          getInitialData();
         },
       }}
     >

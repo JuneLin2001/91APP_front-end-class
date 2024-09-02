@@ -19,7 +19,7 @@ const api = {
     return data;
   },
 
-  async fetchInitialData(username, repo) {
+  async getInitialData(username, repo) {
     const queryBase = `repo:${username}/${repo} is:issue`;
 
     try {
@@ -63,7 +63,7 @@ const api = {
     }
   },
 
-  async fetchFilteredIssues(
+  async getFilteredIssues(
     q,
     owner,
     repoName,
@@ -110,6 +110,33 @@ const api = {
         console.error("Failed to fetch filtered issues:", error);
         throw error;
       }
+    }
+  },
+
+  async postIssue(owner, repo, title, body, token) {
+    try {
+      const response = await fetch(
+        `${this.hostname}/repos/${owner}/${repo}/issues`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            title: title, // Issue 的標題
+            body: body, // Issue 的內容描述
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to create issue");
+      }
+      const newIssue = await response.json();
+      return newIssue;
+    } catch (e) {
+      console.error("Error:", e);
     }
   },
 
