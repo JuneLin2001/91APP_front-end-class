@@ -18,8 +18,8 @@ import { AuthContext } from "../../context/authContext";
 
 function IssuePageNewIssue() {
   const {
-    title, // 從 context 中獲取 title
-    setTitle, // 從 context 中獲取 setTitle 函數
+    title,
+    setTitle,
     currentTextareaValue,
     handleTextareaChange,
     handleCreateIssue,
@@ -56,7 +56,6 @@ function IssuePageNewIssue() {
               />
             </Box>
 
-            {/* 內容輸入框 */}
             <h4>Write a comment</h4>
             <CommentBox
               onTextareaChange={handleTextareaChange}
@@ -73,7 +72,7 @@ function IssuePageNewIssue() {
             >
               <Button
                 variant="primary"
-                onClick={() => handleCreateIssue(title, currentTextareaValue)} // 使用 handleCreateIssue
+                onClick={() => handleCreateIssue(title, currentTextareaValue)}
                 disabled={isSubmitDisabled}
               >
                 Submit new issue

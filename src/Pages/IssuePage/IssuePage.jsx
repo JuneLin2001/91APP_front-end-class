@@ -37,9 +37,6 @@ const IssuePage = () => {
     );
   };
 
-  console.log("in IssuePage " + repoName);
-  console.log("in IssuePage " + owner);
-
   return (
     <Center>
       <IssueSearch

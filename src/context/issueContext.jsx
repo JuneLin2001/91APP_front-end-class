@@ -134,7 +134,6 @@ export const IssueContextProvider = ({ children }) => {
     try {
       if (owner && repoName) {
         const response = await api.getInitialData(owner, repoName);
-        setApiResult(response.issues);
         setLabels(response.labels);
         setAllIssues({
           openCount: response.openCount,
