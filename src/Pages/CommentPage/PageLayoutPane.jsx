@@ -3,6 +3,9 @@ import { Text, Box, Link } from "@primer/react";
 import { CommentContext } from "../../context/commentContext";
 import styled from "styled-components";
 import IssueLabels from "../../components/IssueLabels";
+import IssuePageNewIssueAddLabel from "../../Pages/IssuePage/IssuePageNewIssueAddLabel";
+import { IssueContext } from "../../context/issueContext";
+
 // const Pane = styled(PageLayout.Pane)
 const Pane = styled.div`
   overflow: "visible";
@@ -21,9 +24,10 @@ const Pane = styled.div`
 
 const PageLayoutPane = ({ children }) => {
   const { issueData } = useContext(CommentContext);
+  const issueLabels = issueData.labels || [];
+  const { labels } = useContext(IssueContext);
+  const allLabels = labels;
 
-  const labels = issueData.labels || [];
-  console.log("issueData:", issueData.labels);
   return (
     <Pane>
       <Box
@@ -66,16 +70,7 @@ const PageLayoutPane = ({ children }) => {
           }}
         ></Box>
         <Box>
-          <Text
-            sx={{
-              fontSize: 0,
-              fontWeight: "bold",
-              display: "block",
-              color: "fg.muted",
-            }}
-          >
-            Labels
-          </Text>
+          <IssuePageNewIssueAddLabel labels={allLabels} />
           <Text
             sx={{
               fontSize: 0,
@@ -83,9 +78,9 @@ const PageLayoutPane = ({ children }) => {
               lineHeight: "condensed",
             }}
           >
-            {labels.length > 0 ? (
+            {issueLabels.length > 0 ? (
               <>
-                {labels.map((label, index) => (
+                {issueLabels.map((label, index) => (
                   <React.Fragment key={index}>
                     <IssueLabels
                       key={index}
@@ -97,7 +92,7 @@ const PageLayoutPane = ({ children }) => {
                 ))}
               </>
             ) : (
-              <Text>{labels === 0 && "None yet "}</Text>
+              <Text>{issueLabels === 0 && "None yet "}</Text>
             )}
           </Text>
         </Box>
