@@ -1,4 +1,11 @@
-import { ActionList, Box, Text, RelativeTime, IconButton } from "@primer/react";
+import {
+  ActionList,
+  Box,
+  Text,
+  RelativeTime,
+  IconButton,
+  Button,
+} from "@primer/react";
 import {
   IssueOpenedIcon,
   IssueClosedIcon,
@@ -13,7 +20,7 @@ import {
 
 const IssuePageList = ({
   issuesToDisplay,
-  stateFilter,
+  stateOpenOrClosed,
   repoName,
   handleCheckboxChange,
   owner,
@@ -27,21 +34,17 @@ const IssuePageList = ({
               <IssueCheckbox onChange={() => handleCheckboxChange(issue.id)} />
               <IconButton
                 aria-label={
-                  stateFilter === "open" ? "Open issue" : "Closed issue"
+                  issue.state === "open" ? "Open issue" : "Closed issue"
                 }
                 variant="invisible"
                 size="small"
                 icon={
-                  stateFilter === "open" ? IssueOpenedIcon : IssueClosedIcon
+                  issue.state === "open" ? IssueOpenedIcon : IssueClosedIcon
                 }
                 unsafeDisableTooltip={false}
                 sx={{
-                  color: stateFilter === "open" ? "green" : "purple", //TODO: 替換為 Primer 的官方顏色
+                  color: issue.state === "open" ? "green" : "purple", //TODO: 替換為 Primer 的官方顏色
                   cursor: "default",
-                  ":hover": {
-                    borderColor: "transparent",
-                    bg: "transparent",
-                  },
                 }}
               />
               <Text>
@@ -71,26 +74,32 @@ const IssuePageList = ({
                 );
               })}
               {issue.comments > 0 && (
-                <Box ml={"auto"} display={"flex"} alignItems={"center"}>
-                  <IconButton
-                    icon={CommentIcon}
+                <Box
+                  ml={"auto"}
+                  display={"flex"}
+                  alignItems={"center"}
+                  sx={{
+                    ":hover": {
+                      color: "#0969da", // TODO: 替換為 Primer 的官方顏色
+                    },
+                  }}
+                >
+                  <Button
+                    leadingVisual={CommentIcon}
                     variant="invisible"
-                    unsafeDisableTooltip={false}
-                    sx={{
-                      ":hover": {
-                        color: "blue", // TODO: 替換為 Primer 的官方顏色
-                      },
-                    }}
-                  />
-                  <Text fontSize={"12px"}>{issue.comments}</Text>
+                    onClick={() =>
+                      (window.location.href = `/${owner}/${repoName}/issue/comment/${issue.number}`)
+                    }
+                  >
+                    {issue.comments}
+                  </Button>
                 </Box>
               )}
             </Box>
-
             <Box ml={7}>
               <Text color="fg.muted" fontSize={"12px"}>
                 {`#${issue.number} `}
-                {stateFilter === "open" ? (
+                {issue.state === "open" ? (
                   <>
                     {`opened on `}
                     <RelativeTime date={new Date(issue.created_at)} />{" "}

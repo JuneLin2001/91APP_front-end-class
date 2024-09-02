@@ -7,6 +7,9 @@ import IssuePageHeader from "./IssuePageHeader";
 import IssuePageList from "./IssuePageList";
 import { IssueAllContainer } from "../../style/IssuePage.styled";
 
+import { Button } from "@primer/react";
+import { XCircleFillIcon } from "@primer/octicons-react";
+
 const IssuePage = () => {
   const [apiResult, setApiResult] = useState([]);
   const [allIssues, setAllIssues] = useState({ openCount: 0, closedCount: 0 });
@@ -15,7 +18,7 @@ const IssuePage = () => {
   const [selectedAuthor, setSelectedAuthor] = useState("all");
   const [selectedLabel, setSelectedLabel] = useState("all");
   const [searchValue, setSearchValue] = useState("");
-  const [stateFilter, setStateFilter] = useState("open");
+  const [stateOpenOrClosed, setStateOpenOrClosed] = useState("open");
   const { repoName, owner } = useParams();
   const navigate = useNavigate();
 
@@ -40,18 +43,23 @@ const IssuePage = () => {
       { labels: [] }
     );
 
-    const resultString = [
-      params.repo ? `repo:${params.repo}` : "error",
-      params.state ? `is:issue is:${params.state}` : "is:issue",
-      params.author ? `author:${params.author}` : "",
-      params.labels.length > 0
-        ? params.labels.map((label) => `${label}`).join(" ")
-        : "",
-    ]
-      .filter(Boolean)
+    const searchResult = query
+      .split("+")
+      .filter(
+        (param) =>
+          !param.startsWith("repo:") &&
+          !param.startsWith("is:") &&
+          !param.startsWith("label:") &&
+          !param.startsWith("author:")
+      )
       .join(" ");
 
-    return resultString;
+    return {
+      state: params.state || "open",
+      author: params.author || "all",
+      labels: params.labels || [],
+      searchResult: searchResult.trim(),
+    };
   };
 
   const fetchInitialData = useCallback(async () => {
@@ -74,7 +82,7 @@ const IssuePage = () => {
   }, [navigate, owner, repoName]);
 
   const fetchDataAndUpdateUrl = useCallback(() => {
-    if (!owner || !repoName || !stateFilter) {
+    if (!owner || !repoName || !stateOpenOrClosed) {
       const errorMessage = "Repository owner, name, and state are required.";
       navigate("/error", { state: { errorMessage } });
       return;
@@ -84,17 +92,23 @@ const IssuePage = () => {
       const url = new URL(window.location.href);
       const searchParams = new URLSearchParams();
 
-      const repoInfo = `repo:${owner}/${repoName}`;
-      const state = `is:issue is:${stateFilter}`;
+      const state =
+        stateOpenOrClosed === "open"
+          ? "is:issue is:open"
+          : `is:issue is:${stateOpenOrClosed}`;
       const author = selectedAuthor !== "all" ? `author:${selectedAuthor}` : "";
       const label = selectedLabel !== "all" ? `${selectedLabel}` : "";
       const searchResult = searchValue || "";
 
-      const queryString = [repoInfo, state, author, label, searchResult]
+      const queryString = [state, author, label, searchResult]
         .filter(Boolean)
         .join(" ");
 
-      searchParams.set("q", queryString);
+      if (queryString.trim() !== "is:issue is:open") {
+        searchParams.set("q", queryString);
+      } else {
+        searchParams.delete("q");
+      }
       url.search = searchParams.toString();
       window.history.pushState({}, "", url);
     };
@@ -109,12 +123,12 @@ const IssuePage = () => {
         const q = parseUrlParams();
 
         const response = await api.fetchFilteredIssues(
-          q,
+          q.searchResult,
           owner,
           repoName,
           authorFilter,
           labelFilter,
-          stateFilter,
+          stateOpenOrClosed,
           searchResult
         );
 
@@ -134,11 +148,15 @@ const IssuePage = () => {
     searchValue,
     selectedAuthor,
     selectedLabel,
-    stateFilter,
+    stateOpenOrClosed,
   ]);
 
   useEffect(() => {
-    parseUrlParams();
+    const { state, author, labels, searchResult } = parseUrlParams();
+    setSelectedAuthor(author);
+    setSelectedLabel(labels.join(" "));
+    setSearchValue(searchResult);
+    setStateOpenOrClosed(state);
     fetchInitialData();
   }, [fetchInitialData]);
 
@@ -153,7 +171,7 @@ const IssuePage = () => {
     searchValue,
     selectedAuthor,
     selectedLabel,
-    stateFilter,
+    stateOpenOrClosed,
   ]);
 
   const handleFilterChange = (type, value) => {
@@ -167,13 +185,14 @@ const IssuePage = () => {
   };
 
   const handleAuthorChange = (selectedAuthor) => {
-    console.log("Selected author:", selectedAuthor);
     handleFilterChange("author", selectedAuthor);
   };
 
   const handleLabelChange = (labels) => {
-    const formattedString = labels.map((label) => `label:${label}`).join(" ");
-    console.log("formattedString: ", formattedString);
+    const formattedString =
+      labels.length > 0
+        ? labels.map((label) => `label:"${label}"`).join(" ")
+        : "all";
     handleFilterChange("label", formattedString);
   };
 
@@ -183,10 +202,33 @@ const IssuePage = () => {
     fetchDataAndUpdateUrl();
   };
 
-  // const issuesToDisplay = apiResult;
-
   const handleCheckboxChange = (issueId) => {
     console.log(`Checkbox for issue ${issueId} changed.`);
+  };
+
+  const handleClearAll = () => {
+    setSelectedAuthor("all");
+    setSelectedLabel("all");
+    setSearchValue("");
+    setStateOpenOrClosed("open");
+    handleLabelChange([]);
+
+    const url = new URL(window.location.href);
+    const searchParams = new URLSearchParams();
+    searchParams.delete("q");
+    url.search = searchParams.toString();
+    window.history.pushState({}, "", url);
+
+    fetchInitialData();
+  };
+
+  const isDefaultState = () => {
+    return (
+      selectedAuthor === "all" &&
+      selectedLabel === "all" &&
+      searchValue === "" &&
+      stateOpenOrClosed === "open"
+    );
   };
 
   return (
@@ -196,11 +238,20 @@ const IssuePage = () => {
         labelNum={labels.length}
       />
       <IssueAllContainer>
+        {!isDefaultState() && (
+          <Button
+            leadingVisual={XCircleFillIcon}
+            variant="invisible"
+            onClick={handleClearAll}
+          >
+            Clear current search query, filters, and sorts
+          </Button>
+        )}
         <IssuePageHeader
           openCount={allIssues.openCount}
           closedCount={allIssues.closedCount}
-          stateFilter={stateFilter}
-          setStateFilter={setStateFilter}
+          stateOpenOrClosed={stateOpenOrClosed}
+          setStateOpenOrClosed={setStateOpenOrClosed}
           authors={authors}
           labels={labels}
           handleAuthorChange={handleAuthorChange}
@@ -208,7 +259,7 @@ const IssuePage = () => {
         />
         <IssuePageList
           issuesToDisplay={apiResult}
-          stateFilter={stateFilter}
+          stateOpenOrClosed={stateOpenOrClosed}
           repoName={repoName}
           handleCheckboxChange={handleCheckboxChange}
           owner={owner}

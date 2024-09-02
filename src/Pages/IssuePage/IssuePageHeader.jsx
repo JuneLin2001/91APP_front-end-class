@@ -16,8 +16,8 @@ import SelectPanelAuthor from "./IssuePageSelectPanelAuthor.jsx";
 const IssuePageHeader = ({
   openCount,
   closedCount,
-  stateFilter,
-  setStateFilter,
+  stateOpenOrClosed,
+  setStateOpenOrClosed,
   authors,
   labels,
   handleAuthorChange,
@@ -36,10 +36,10 @@ const IssuePageHeader = ({
           aria-label="Open Issues"
           leadingVisual={IssueOpenedIcon}
           sx={{
-            color: stateFilter === "open" ? "#000000" : "#84878b",
-            fontWeight: stateFilter === "open" ? "bold" : "normal",
+            color: stateOpenOrClosed === "open" ? "#000000" : "#84878b",
+            fontWeight: stateOpenOrClosed === "open" ? "bold" : "normal",
           }}
-          onClick={() => setStateFilter("open")}
+          onClick={() => setStateOpenOrClosed("open")}
         >
           {`${openCount} Open`}
         </IssueOpenClosedButton>
@@ -48,10 +48,10 @@ const IssuePageHeader = ({
           aria-label="Closed Issues"
           leadingVisual={CheckIcon}
           sx={{
-            color: stateFilter === "closed" ? "#000000" : "#84878b",
-            fontWeight: stateFilter === "closed" ? "bold" : "normal",
+            color: stateOpenOrClosed === "closed" ? "#000000" : "#84878b",
+            fontWeight: stateOpenOrClosed === "closed" ? "bold" : "normal",
           }}
-          onClick={() => setStateFilter("closed")}
+          onClick={() => setStateOpenOrClosed("closed")}
         >
           {`${closedCount} Closed`}
         </IssueOpenClosedButton>

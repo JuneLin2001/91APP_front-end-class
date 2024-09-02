@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { TriangleDownIcon } from "@primer/octicons-react";
 import { SelectPanel, Button } from "@primer/react";
 
@@ -19,21 +19,20 @@ const LabelSelectPanel = ({ labels = [], onSelect }) => {
       color: `#${label.color}`,
     }));
 
+  useEffect(() => {
+    const initialSelected = labels
+      .filter((label) => label.selected)
+      .map((label) => label.name);
+    setSelected(initialSelected);
+  }, [labels]);
+
   const handleSelectedChange = (selectedItems) => {
     const selectedNames = selectedItems.map((item) => item.text);
-    const newSelection = selectedNames.reduce((acc, name) => {
-      if (acc.includes(name)) {
-        return acc.filter((item) => item !== name);
-      } else {
-        return [...acc, name];
-      }
-    }, []);
-    setSelected(newSelection);
+    setSelected(selectedNames);
     if (onSelect) {
-      onSelect(newSelection);
+      onSelect(selectedNames);
     }
   };
-  // console.log("selected in SelectPanelLebels " + selected); //TODO:selected
 
   return (
     <>
@@ -44,6 +43,7 @@ const LabelSelectPanel = ({ labels = [], onSelect }) => {
           ...anchorProps
         }) => (
           <Button
+            ref={buttonRef}
             variant="invisible"
             trailingAction={TriangleDownIcon}
             aria-labelledby={` ${ariaLabelledBy}`}
@@ -52,7 +52,6 @@ const LabelSelectPanel = ({ labels = [], onSelect }) => {
             {"Label"}
           </Button>
         )}
-        anchorRef={buttonRef}
         placeholderText="Filter labels"
         open={open}
         onOpenChange={setOpen}

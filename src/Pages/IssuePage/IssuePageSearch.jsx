@@ -31,6 +31,14 @@ const IssueSearch = ({ handleSearchClick, labelNum }) => {
     const labelFilter = searchParams.get("label") || "all";
 
     const parts = [];
+    const qParts = q.split("+").filter((part) => !part.startsWith("repo:"));
+    const hasState = qParts.some(
+      (part) => part.startsWith("is:") && part.includes("issue")
+    );
+
+    if (!hasState) {
+      parts.push(`is:issue is:open`);
+    }
 
     if (authorFilter !== "all") {
       parts.push(`author:${authorFilter}`);
@@ -43,8 +51,8 @@ const IssueSearch = ({ handleSearchClick, labelNum }) => {
       });
     }
 
-    if (q) {
-      parts.push(q);
+    if (qParts.length > 0) {
+      parts.push(qParts.join(" "));
     }
 
     return parts.join(" ");
@@ -52,27 +60,22 @@ const IssueSearch = ({ handleSearchClick, labelNum }) => {
 
   const options = [
     {
-      name: "Fast forward",
+      name: "Open issues and pull requests",
     },
     {
-      name: "Recursive",
+      name: "Your issues",
     },
     {
-      name: "Ours",
+      name: "Your pull requests",
     },
     {
-      name: "Octopus",
+      name: "Everything assigned to you",
     },
     {
-      name: "Resolve",
-    },
-    {
-      name: "Subtree",
+      name: "Everything mentioning to you",
     },
   ];
   const [selectedIndex, setSelectedIndex] = React.useState(0);
-  // const selectedType = options[selectedIndex];
-  // console.log("in filter that choose" + selectedType);
   return (
     <>
       <Box
@@ -148,7 +151,9 @@ const IssueSearch = ({ handleSearchClick, labelNum }) => {
                       ":hover": { boxShadow: "none" },
                     }}
                   />
-                  <Text sx={{ fontSize: "12px" }}>External Link</Text>
+                  <Text sx={{ fontSize: "12px", fontWeight: "bold" }}>
+                    View advanced search syntax
+                  </Text>
                 </ActionList.Item>
               </ActionList>
             </ActionMenu.Overlay>

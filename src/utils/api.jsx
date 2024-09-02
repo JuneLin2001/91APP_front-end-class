@@ -23,27 +23,28 @@ const api = {
     const queryBase = `repo:${username}/${repo} is:issue`;
 
     try {
-      const response = await fetch(
-        `${this.hostname}/search/issues?q=${encodeURIComponent(queryBase)}`
-      );
-      if (!response.ok) {
+      const [issuesResponse, labelsResponse] = await Promise.all([
+        fetch(
+          `${this.hostname}/search/issues?q=${encodeURIComponent(queryBase)}`
+        ),
+        fetch(`${this.hostname}/repos/${username}/${repo}/labels`),
+      ]);
+
+      if (!issuesResponse.ok) {
         throw new Error("Failed to fetch issues");
       }
-      const data = await response.json();
-      const issues = data.items;
+      if (!labelsResponse.ok) {
+        throw new Error("Failed to fetch labels");
+      }
+
+      const issuesData = await issuesResponse.json();
+      const issues = issuesData.items;
+      const labels = await labelsResponse.json();
 
       const openCount = issues.filter((issue) => issue.state === "open").length;
       const closedCount = issues.filter(
         (issue) => issue.state === "closed"
       ).length;
-
-      const labelsResponse = await fetch(
-        `${this.hostname}/repos/${username}/${repo}/labels`
-      );
-      if (!labelsResponse.ok) {
-        throw new Error("Failed to fetch labels");
-      }
-      const labels = await labelsResponse.json();
 
       const uniqueAuthors = Array.from(
         new Set(issues.map((issue) => issue.user.login))
@@ -68,7 +69,7 @@ const api = {
     repoName,
     authorFilter,
     labelFilter,
-    stateFilter,
+    stateOpenOrClosed,
     searchResult
   ) {
     const queryBase = `repo:${owner}/${repoName}`;
@@ -79,10 +80,10 @@ const api = {
       console.log("have q " + searchQuery);
     } else {
       searchQuery = [
-        `${queryBase} is:issue is:${stateFilter}`,
+        `${queryBase} is:issue is:${stateOpenOrClosed}`,
         labelFilter
           ? labelFilter
-              .match(/label:"[^"]+"|label:\S+/g)
+              .match(/label:"[^"]+"|label:[^\s+]+(?:\s[^\s+]+)*/g)
               ?.map((label) => label.trim())
               .join(" ")
           : "",
