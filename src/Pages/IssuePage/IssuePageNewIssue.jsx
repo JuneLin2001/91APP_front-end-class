@@ -8,7 +8,7 @@ import {
 } from "@primer/react";
 import { IssueContext } from "../../context/issueContext";
 import CommentBox from "../CommentPage/CommentBox";
-
+import PageLayoutPane from "../CommentPage/PageLayoutPane";
 function IssuePageNewIssue() {
   const {
     title, // 從 context 中獲取 title
@@ -60,6 +60,7 @@ function IssuePageNewIssue() {
             </Box>
           </Box>
         </PageLayout.Content>
+        <PageLayoutPane />
       </PageLayout>
     </ThemeProvider>
   );

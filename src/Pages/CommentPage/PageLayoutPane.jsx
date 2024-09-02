@@ -23,7 +23,7 @@ const Pane = styled.div`
 const PageLayoutPane = ({ children }) => {
   const { issueData } = useContext(CommentContext);
 
-  const labels = issueData.labels;
+  const labels = issueData.labels || [];
   console.log("issueData:", issueData.labels);
   return (
     <Pane>
@@ -84,7 +84,7 @@ const PageLayoutPane = ({ children }) => {
               lineHeight: "condensed",
             }}
           >
-            {labels.length > 0 && (
+            {labels.length > 0 ? (
               <>
                 {labels.map((label, index) => {
                   const labelColor = `#${label.color}`;
@@ -112,8 +112,9 @@ const PageLayoutPane = ({ children }) => {
                     </React.Fragment>
                   );
                 })}
-                <Text>{labels === 0 && "None yet "}</Text>
               </>
+            ) : (
+              <Text>{labels === 0 && "None yet "}</Text>
             )}
           </Text>
         </Box>
