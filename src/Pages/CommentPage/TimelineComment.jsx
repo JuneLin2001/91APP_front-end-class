@@ -25,14 +25,7 @@ import {
 import React, { useContext } from "react";
 import { CommentContext } from "../../context/commentContext";
 import CommentBox from "./CommentBox";
-
-function getBrightness(hexColor) {
-  hexColor = hexColor.replace(/^#/, "");
-  let r = parseInt(hexColor.substring(0, 2), 16);
-  let g = parseInt(hexColor.substring(2, 4), 16);
-  let b = parseInt(hexColor.substring(4, 6), 16);
-  return (r * 299 + g * 587 + b * 114) / 1000;
-}
+import getBrightness from "../../utils/colorContrast";
 
 const TimelineComment = () => {
   const {
@@ -69,65 +62,17 @@ const TimelineComment = () => {
       iconColor: "var(--bgColor-default)",
       backgroundColor: "var(--bgColor-open-emphasis)",
     },
-    labeled: {
-      iconName: TagIcon,
-      content: " added ",
-    },
-    unlabeled: {
-      iconName: TagIcon,
-      content: "removed the ",
-    },
     renamed: {
       iconName: PencilIcon,
       content: "changed the title ",
     },
+    labeling: {
+      iconName: TagIcon,
+    },
   };
-  const processComments = (commentData) => {
-    const result = [];
-    let tempGroup = null;
-
-    for (let i = 0; i < commentData.length; i++) {
-      const comment = commentData[i];
-      const { actor, event, label } = comment;
-
-      if (
-        (event === "labeled" || event === "unlabeled") &&
-        tempGroup &&
-        tempGroup.actor.login === actor.login &&
-        tempGroup.event === event
-      ) {
-        tempGroup.labels.push(label);
-      } else {
-        if (tempGroup) {
-          result.push(tempGroup);
-        }
-        if (event === "labeled" || event === "unlabeled") {
-          tempGroup = {
-            actor,
-            event,
-            labels: [label],
-            created_at: comment.created_at,
-            id: comment.id,
-          };
-        } else {
-          result.push(comment);
-          tempGroup = null;
-        }
-      }
-    }
-
-    if (tempGroup) {
-      result.push(tempGroup);
-    }
-
-    return result;
-  };
-  const processedComments = processComments(commentData);
-  console.log(processedComments);
-
   return (
     <Timeline>
-      {processedComments.map((comment) =>
+      {commentData.map((comment) =>
         comment.event === "commented" ? (
           <Timeline.Item
             key={comment.id}
@@ -322,9 +267,17 @@ const TimelineComment = () => {
           </Timeline.Item>
         ) : (
           (() => {
-            const { iconName, content, iconColor, backgroundColor } =
+            const eventConfig =
               eventMapping[comment.event]?.[comment.state_reason] ||
               eventMapping[comment.event];
+
+            if (!eventConfig) {
+              return null;
+            }
+
+            const { iconName, content, iconColor, backgroundColor } =
+              eventConfig;
+
             return (
               <Box key={comment.id} ml={1}>
                 <Timeline.Item>
@@ -350,15 +303,52 @@ const TimelineComment = () => {
                       {comment.actor.login}
                     </Link>
                     {content}
-                    {comment.labels && (
+                    {comment.labeledLabels?.length > 0 && (
                       <>
-                        {comment.labels.map((label, index) => {
+                        <Text> added </Text>
+                        {comment.labeledLabels.map((label, index) => {
                           const labelColor = `#${label.color}`;
                           const brightness = getBrightness(label.color);
                           const textColor =
                             brightness > 128 ? "black" : "white";
                           const borderColor =
-                            brightness > 128 ? "border.default" : labelColor;
+                            brightness > 220 ? "border.default" : labelColor;
+
+                          return (
+                            <React.Fragment key={index}>
+                              <Label
+                                sx={{
+                                  marginRight: "4px",
+                                  backgroundColor: labelColor,
+                                  color: textColor,
+                                  borderColor: borderColor,
+                                }}
+                                key={index}
+                              >
+                                {label.name}
+                              </Label>
+                            </React.Fragment>
+                          );
+                        })}
+                        <Text>
+                          {comment.unlabeledLabels?.length === 0 && "labels "}
+                        </Text>
+                      </>
+                    )}
+                    {comment.unlabeledLabels?.length > 0 && (
+                      <>
+                        <Text>
+                          {" "}
+                          {comment.labeledLabels?.length > 0 &&
+                            "and "}removed{" "}
+                        </Text>
+                        {comment.unlabeledLabels.map((label, index) => {
+                          const labelColor = `#${label.color}`;
+                          const brightness = getBrightness(label.color);
+                          const textColor =
+                            brightness > 128 ? "black" : "white";
+                          const borderColor =
+                            brightness > 220 ? "border.default" : labelColor;
 
                           return (
                             <React.Fragment key={index}>
