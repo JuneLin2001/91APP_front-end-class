@@ -6,8 +6,6 @@ import {
   RelativeTime,
   IconButton,
   Button,
-  Label,
-  Tooltip,
 } from "@primer/react";
 import {
   IssueOpenedIcon,
@@ -20,7 +18,7 @@ import {
   IssueCheckbox,
   IssueCardContainer,
 } from "../../style/IssuePage.styled";
-import getBrightness from "../../utils/colorContrast";
+import IssueLabels from "../../components/IssueLabels";
 import { IssueContext } from "../../context/issueContext";
 
 const IssuePageList = ({ issuesToDisplay, repoName, owner }) => {
@@ -76,28 +74,20 @@ const IssuePageList = ({ issuesToDisplay, repoName, owner }) => {
                   {issue.title}
                 </Link>
               </Text>
-              {issue.labels.map((label) => {
-                const labelColor = `#${label.color}`;
-                const brightness = getBrightness(label.color);
-                const textColor = brightness > 128 ? "black" : "white";
-                const borderColor =
-                  brightness > 220 ? "border.default" : labelColor;
-                return (
-                  <Tooltip key={label.id} text={label.description}>
-                    <Label
-                      sx={{
-                        backgroundColor: labelColor,
-                        color: textColor,
-                        marginLeft: "4px",
-                        borderColor: borderColor,
-                      }}
-                      key={label.id}
-                    >
-                      {label.name}
-                    </Label>
-                  </Tooltip>
-                );
-              })}
+              {issue.labels.length > 0 && (
+                <React.Fragment>
+                  {issue.labels.map((label) => (
+                    <React.Fragment key={label.id}>
+                      <IssueLabels
+                        key={label.id}
+                        name={label.name}
+                        color={label.color}
+                        description={label.description}
+                      />
+                    </React.Fragment>
+                  ))}
+                </React.Fragment>
+              )}
               {issue.comments > 0 && (
                 <Box
                   ml={"auto"}
