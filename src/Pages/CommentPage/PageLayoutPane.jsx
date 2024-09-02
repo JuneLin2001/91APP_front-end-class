@@ -102,6 +102,7 @@ const PageLayoutPane = ({ children }) => {
                             backgroundColor: labelColor,
                             color: textColor,
                             borderColor: borderColor,
+                            cursor: "pointer",
                           }}
                           key={index}
                         >

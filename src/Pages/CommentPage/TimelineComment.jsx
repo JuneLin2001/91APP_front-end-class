@@ -25,6 +25,7 @@ import {
 } from "@primer/octicons-react";
 import React, { useContext } from "react";
 import { CommentContext } from "../../context/commentContext";
+import { IssueContext } from "../../context/issueContext";
 import CommentBox from "./CommentBox";
 import getBrightness from "../../utils/colorContrast";
 
@@ -39,6 +40,7 @@ const TimelineComment = () => {
     setEditingCommentId,
     getHeaderColor,
   } = useContext(CommentContext);
+  const { labels } = useContext(IssueContext);
 
   const eventMapping = {
     comment_deleted: {
@@ -338,21 +340,39 @@ const TimelineComment = () => {
                           const borderColor =
                             brightness > 220 ? "border.default" : labelColor;
 
+                          const matchingLabel = labels.find(
+                            (labels) => labels.name === label.name
+                          );
+                          const description = matchingLabel
+                            ? matchingLabel.description
+                            : "";
+
+                          console.log(label.name, "description", description);
+
+                          const labelElement = (
+                            <Label
+                              sx={{
+                                marginRight: "4px",
+                                backgroundColor: labelColor,
+                                color: textColor,
+                                borderColor: borderColor,
+                                cursor: "pointer",
+                              }}
+                              key={index}
+                            >
+                              {label.name}
+                            </Label>
+                          );
+
                           return (
                             <React.Fragment key={index}>
-                              <Tooltip text={label.description} direction="s">
-                                <Label
-                                  sx={{
-                                    marginRight: "4px",
-                                    backgroundColor: labelColor,
-                                    color: textColor,
-                                    borderColor: borderColor,
-                                  }}
-                                  key={index}
-                                >
-                                  {label.name}
-                                </Label>
-                              </Tooltip>
+                              {description ? (
+                                <Tooltip text={description} direction="s">
+                                  {labelElement}
+                                </Tooltip>
+                              ) : (
+                                labelElement
+                              )}
                             </React.Fragment>
                           );
                         })}
@@ -376,19 +396,37 @@ const TimelineComment = () => {
                           const borderColor =
                             brightness > 220 ? "border.default" : labelColor;
 
+                          const matchingLabel = labels.find(
+                            (labels) => labels.name === label.name
+                          );
+                          const description = matchingLabel
+                            ? matchingLabel.description
+                            : "";
+
+                          const labelElement = (
+                            <Label
+                              sx={{
+                                marginRight: "4px",
+                                backgroundColor: labelColor,
+                                color: textColor,
+                                borderColor: borderColor,
+                                cursor: "pointer",
+                              }}
+                              key={index}
+                            >
+                              {label.name}
+                            </Label>
+                          );
+
                           return (
                             <React.Fragment key={index}>
-                              <Label
-                                sx={{
-                                  marginRight: "4px",
-                                  backgroundColor: labelColor,
-                                  color: textColor,
-                                  borderColor: borderColor,
-                                }}
-                                key={index}
-                              >
-                                {label.name}
-                              </Label>
+                              {description ? (
+                                <Tooltip text={description} direction="s">
+                                  {labelElement}
+                                </Tooltip>
+                              ) : (
+                                labelElement
+                              )}
                             </React.Fragment>
                           );
                         })}
