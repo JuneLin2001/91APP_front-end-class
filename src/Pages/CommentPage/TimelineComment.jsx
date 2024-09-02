@@ -81,6 +81,7 @@ const TimelineComment = () => {
         comment.event === "commented" ? (
           <Timeline.Item
             key={comment.id}
+            id={`event-${comment.id}`}
             sx={{
               marginLeft: "0px",
               "::before": {
@@ -134,7 +135,7 @@ const TimelineComment = () => {
                       {comment.actor.login} commented{" "}
                     </Text>
                     {comment.updated_at && (
-                      <Link href={comment.html_url}>
+                      <Link href={`#event-${comment.id}`}>
                         <RelativeTime date={new Date(comment.updated_at)} />
                       </Link>
                     )}
@@ -276,7 +277,7 @@ const TimelineComment = () => {
               eventMapping[comment.event]?.[comment.state_reason] ||
               eventMapping[comment.event];
             return (
-              <Box key={comment.id} ml={1}>
+              <Box key={comment.id} id={`event-${comment.id}`} ml={1}>
                 <Timeline.Item>
                   <Timeline.Badge sx={{ backgroundColor: backgroundColor }}>
                     <Octicon icon={iconName} color={iconColor} />
@@ -308,7 +309,7 @@ const TimelineComment = () => {
                         <Text> labels </Text>
                       </>
                     )}
-                    <Link href={comment.html_url}>
+                    <Link href={`#event-${comment.id}`}>
                       <RelativeTime date={new Date(comment.created_at)} />
                     </Link>
                   </Timeline.Body>
