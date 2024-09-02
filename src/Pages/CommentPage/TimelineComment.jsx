@@ -11,6 +11,7 @@ import {
   Link,
   PointerBox,
   Octicon,
+  Tooltip,
 } from "@primer/react";
 import {
   KebabHorizontalIcon,
@@ -24,6 +25,7 @@ import {
 } from "@primer/octicons-react";
 import React, { useContext } from "react";
 import { CommentContext } from "../../context/commentContext";
+import { IssueContext } from "../../context/issueContext";
 import CommentBox from "./CommentBox";
 import getBrightness from "../../utils/colorContrast";
 
@@ -38,6 +40,7 @@ const TimelineComment = () => {
     setEditingCommentId,
     getHeaderColor,
   } = useContext(CommentContext);
+  const { labels } = useContext(IssueContext);
 
   const eventMapping = {
     comment_deleted: {
@@ -304,6 +307,28 @@ const TimelineComment = () => {
                       {comment.actor.login}
                     </Link>
                     {content}
+                    {comment.event === "renamed" && (
+                      <>
+                        <Text
+                          sx={{
+                            textDecoration: "line-through",
+                            fontWeight:
+                              "var(--base-text-weight-semibold, 600) !important",
+                          }}
+                        >
+                          {" "}
+                          {comment.rename?.from}{" "}
+                        </Text>
+                        <Text
+                          sx={{
+                            fontWeight:
+                              "var(--base-text-weight-semibold, 600) !important",
+                          }}
+                        >
+                          {comment.rename?.to}{" "}
+                        </Text>
+                      </>
+                    )}
                     {comment.labeledLabels?.length > 0 && (
                       <>
                         <Text> added </Text>
@@ -315,19 +340,39 @@ const TimelineComment = () => {
                           const borderColor =
                             brightness > 220 ? "border.default" : labelColor;
 
+                          const matchingLabel = labels.find(
+                            (labels) => labels.name === label.name
+                          );
+                          const description = matchingLabel
+                            ? matchingLabel.description
+                            : "";
+
+                          console.log(label.name, "description", description);
+
+                          const labelElement = (
+                            <Label
+                              sx={{
+                                marginRight: "4px",
+                                backgroundColor: labelColor,
+                                color: textColor,
+                                borderColor: borderColor,
+                                cursor: "pointer",
+                              }}
+                              key={index}
+                            >
+                              {label.name}
+                            </Label>
+                          );
+
                           return (
                             <React.Fragment key={index}>
-                              <Label
-                                sx={{
-                                  marginRight: "4px",
-                                  backgroundColor: labelColor,
-                                  color: textColor,
-                                  borderColor: borderColor,
-                                }}
-                                key={index}
-                              >
-                                {label.name}
-                              </Label>
+                              {description ? (
+                                <Tooltip text={description} direction="s">
+                                  {labelElement}
+                                </Tooltip>
+                              ) : (
+                                labelElement
+                              )}
                             </React.Fragment>
                           );
                         })}
@@ -351,19 +396,37 @@ const TimelineComment = () => {
                           const borderColor =
                             brightness > 220 ? "border.default" : labelColor;
 
+                          const matchingLabel = labels.find(
+                            (labels) => labels.name === label.name
+                          );
+                          const description = matchingLabel
+                            ? matchingLabel.description
+                            : "";
+
+                          const labelElement = (
+                            <Label
+                              sx={{
+                                marginRight: "4px",
+                                backgroundColor: labelColor,
+                                color: textColor,
+                                borderColor: borderColor,
+                                cursor: "pointer",
+                              }}
+                              key={index}
+                            >
+                              {label.name}
+                            </Label>
+                          );
+
                           return (
                             <React.Fragment key={index}>
-                              <Label
-                                sx={{
-                                  marginRight: "4px",
-                                  backgroundColor: labelColor,
-                                  color: textColor,
-                                  borderColor: borderColor,
-                                }}
-                                key={index}
-                              >
-                                {label.name}
-                              </Label>
+                              {description ? (
+                                <Tooltip text={description} direction="s">
+                                  {labelElement}
+                                </Tooltip>
+                              ) : (
+                                labelElement
+                              )}
                             </React.Fragment>
                           );
                         })}
