@@ -11,7 +11,6 @@ import {
   Link,
   PointerBox,
   Octicon,
-  Tooltip,
 } from "@primer/react";
 import {
   KebabHorizontalIcon,
@@ -27,7 +26,7 @@ import React, { useContext } from "react";
 import { CommentContext } from "../../context/commentContext";
 import { IssueContext } from "../../context/issueContext";
 import CommentBox from "./CommentBox";
-import getBrightness from "../../utils/colorContrast";
+import IssueLabels from "../../components/IssueLabels";
 
 const TimelineComment = () => {
   const {
@@ -329,109 +328,35 @@ const TimelineComment = () => {
                         </Text>
                       </>
                     )}
+
                     {comment.labeledLabels?.length > 0 && (
-                      <>
-                        <Text> added </Text>
-                        {comment.labeledLabels.map((label, index) => {
-                          const labelColor = `#${label.color}`;
-                          const brightness = getBrightness(label.color);
-                          const textColor =
-                            brightness > 128 ? "black" : "white";
-                          const borderColor =
-                            brightness > 220 ? "border.default" : labelColor;
-
-                          const matchingLabel = labels.find(
-                            (labels) => labels.name === label.name
-                          );
-                          const description = matchingLabel
-                            ? matchingLabel.description
-                            : "";
-
-                          console.log(label.name, "description", description);
-
-                          const labelElement = (
-                            <Label
-                              sx={{
-                                marginRight: "4px",
-                                backgroundColor: labelColor,
-                                color: textColor,
-                                borderColor: borderColor,
-                                cursor: "pointer",
-                              }}
+                      <React.Fragment>
+                        {comment.labeledLabels.map((label, index) => (
+                          <React.Fragment key={index}>
+                            <IssueLabels
                               key={index}
-                            >
-                              {label.name}
-                            </Label>
-                          );
-
-                          return (
-                            <React.Fragment key={index}>
-                              {description ? (
-                                <Tooltip text={description} direction="s">
-                                  {labelElement}
-                                </Tooltip>
-                              ) : (
-                                labelElement
-                              )}
-                            </React.Fragment>
-                          );
-                        })}
-                        <Text>
-                          {comment.unlabeledLabels?.length === 0 && "labels "}
-                        </Text>
-                      </>
+                              name={label.name}
+                              color={label.color}
+                              description={label.description}
+                            />
+                          </React.Fragment>
+                        ))}
+                      </React.Fragment>
                     )}
+
                     {comment.unlabeledLabels?.length > 0 && (
-                      <>
-                        <Text>
-                          {" "}
-                          {comment.labeledLabels?.length > 0 &&
-                            "and "}removed{" "}
-                        </Text>
-                        {comment.unlabeledLabels.map((label, index) => {
-                          const labelColor = `#${label.color}`;
-                          const brightness = getBrightness(label.color);
-                          const textColor =
-                            brightness > 128 ? "black" : "white";
-                          const borderColor =
-                            brightness > 220 ? "border.default" : labelColor;
-
-                          const matchingLabel = labels.find(
-                            (labels) => labels.name === label.name
-                          );
-                          const description = matchingLabel
-                            ? matchingLabel.description
-                            : "";
-
-                          const labelElement = (
-                            <Label
-                              sx={{
-                                marginRight: "4px",
-                                backgroundColor: labelColor,
-                                color: textColor,
-                                borderColor: borderColor,
-                                cursor: "pointer",
-                              }}
+                      <React.Fragment>
+                        {comment.unlabeledLabels.map((label, index) => (
+                          <React.Fragment key={index}>
+                            <IssueLabels
                               key={index}
-                            >
-                              {label.name}
-                            </Label>
-                          );
-
-                          return (
-                            <React.Fragment key={index}>
-                              {description ? (
-                                <Tooltip text={description} direction="s">
-                                  {labelElement}
-                                </Tooltip>
-                              ) : (
-                                labelElement
-                              )}
-                            </React.Fragment>
-                          );
-                        })}
-                        <Text> labels </Text>
-                      </>
+                              name={label.name}
+                              color={label.color}
+                              description={label.description}
+                            />
+                          </React.Fragment>
+                        ))}
+                      </React.Fragment>
                     )}
                     <Link href={`#event-${comment.id}`}>
                       <RelativeTime date={new Date(comment.created_at)} />

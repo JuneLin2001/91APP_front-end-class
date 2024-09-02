@@ -1,9 +1,8 @@
 import React, { useContext } from "react";
-import { Text, Box, PageLayout, Link, Label, Tooltip } from "@primer/react";
+import { Text, Box, Link } from "@primer/react";
 import { CommentContext } from "../../context/commentContext";
-import getBrightness from "../../utils/colorContrast";
 import styled from "styled-components";
-
+import IssueLabels from "../../components/IssueLabels";
 // const Pane = styled(PageLayout.Pane)
 const Pane = styled.div`
   overflow: "visible";
@@ -86,32 +85,16 @@ const PageLayoutPane = ({ children }) => {
           >
             {labels.length > 0 ? (
               <>
-                {labels.map((label, index) => {
-                  const labelColor = `#${label.color}`;
-                  const brightness = getBrightness(label.color);
-                  const textColor = brightness > 128 ? "black" : "white";
-                  const borderColor =
-                    brightness > 220 ? "border.default" : labelColor;
-
-                  return (
-                    <React.Fragment key={index}>
-                      <Tooltip text={label.description} direction="s">
-                        <Label
-                          sx={{
-                            marginRight: "4px",
-                            backgroundColor: labelColor,
-                            color: textColor,
-                            borderColor: borderColor,
-                            cursor: "pointer",
-                          }}
-                          key={index}
-                        >
-                          {label.name}
-                        </Label>
-                      </Tooltip>
-                    </React.Fragment>
-                  );
-                })}
+                {labels.map((label, index) => (
+                  <React.Fragment key={index}>
+                    <IssueLabels
+                      key={index}
+                      name={label.name}
+                      color={label.color}
+                      description={label.description}
+                    />
+                  </React.Fragment>
+                ))}
               </>
             ) : (
               <Text>{labels === 0 && "None yet "}</Text>
