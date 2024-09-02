@@ -7,6 +7,7 @@ import { AuthContextProvider } from "./context/authContext";
 import { CommentContextProvider } from "./context/commentContext.jsx";
 import { IssueContextProvider } from "./context/issueContext";
 import { ThemeProvider, BaseStyles } from "@primer/react";
+import IssuePageNewIssue from "./Pages/IssuePage/IssuePageNewIssue.jsx";
 import PrivateRoute from "./utils/PrivateRoute.jsx";
 
 function App() {
@@ -22,6 +23,16 @@ function App() {
                 <IssueContextProvider>
                   <PrivateRoute>
                     <IssuePage />
+                  </PrivateRoute>
+                </IssueContextProvider>
+              }
+            />
+            <Route
+              path="/:owner/:repoName/issue/new"
+              element={
+                <IssueContextProvider>
+                  <PrivateRoute>
+                    <IssuePageNewIssue />
                   </PrivateRoute>
                 </IssueContextProvider>
               }

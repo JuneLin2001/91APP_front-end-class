@@ -45,6 +45,8 @@ const IssuePage = () => {
       <IssueSearch
         handleSearchClick={handleSearchClick}
         labelNum={labels.length}
+        owner={owner}
+        repoName={repoName}
       />
       <IssueAllContainer>
         {!isDefaultState() && (

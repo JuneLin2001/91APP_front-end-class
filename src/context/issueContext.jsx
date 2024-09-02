@@ -21,6 +21,10 @@ export const IssueContext = createContext({
   fetchDataAndUpdateUrl: () => {},
   handleCheckboxChange: () => {},
   handleFetchError: () => {},
+
+  currentTextareaValue: "",
+  handleTextareaChange: () => {},
+  handleCreateComment: () => {},
 });
 
 export const IssueContextProvider = ({ children }) => {
@@ -34,6 +38,28 @@ export const IssueContextProvider = ({ children }) => {
   const [stateOpenOrClosed, setStateOpenOrClosed] = useState("open");
   const { repoName, owner } = useParams();
   const navigate = useNavigate();
+  const [currentTextareaValue, setCurrentTextareaValue] = useState("");
+
+  const handleTextareaChange = useCallback((event) => {
+    setCurrentTextareaValue(event.target.value);
+  }, []);
+
+  const handleCreateComment = useCallback(
+    async (text) => {
+      try {
+        if (owner && repoName) {
+          await api.createComment(owner, repoName, text);
+          setCurrentTextareaValue(""); // 發文後清空輸入框
+        }
+      } catch (error) {
+        console.error("Failed to create comment:", error);
+        navigate("/error", {
+          state: { errorMessage: "Failed to create comment" },
+        });
+      }
+    },
+    [owner, repoName, navigate]
+  );
 
   const handleCheckboxChange = useCallback((issueId, isSelected) => {
     setApiResult((prevResult) => {
@@ -217,6 +243,9 @@ export const IssueContextProvider = ({ children }) => {
         setSelectedLabel,
         setSearchValue,
         setStateOpenOrClosed,
+        currentTextareaValue,
+        handleTextareaChange,
+        handleCreateComment,
         handleFilterChange: (type, value) => {
           if (type === "label") {
             setSelectedLabel(value);

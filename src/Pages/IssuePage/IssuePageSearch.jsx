@@ -16,9 +16,15 @@ import {
   MilestoneIcon,
 } from "@primer/octicons-react";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const IssueSearch = ({ handleSearchClick, labelNum }) => {
+const IssueSearch = ({ handleSearchClick, labelNum, owner, repoName }) => {
   const [searchValue, setSearchValue] = useState("");
+  const navigate = useNavigate();
+
+  const handleNewIssueClick = () => {
+    navigate(`/${owner}/${repoName}/issue/new`);
+  };
 
   const handleSearchChange = (e) => {
     setSearchValue(e.target.value);
@@ -76,6 +82,7 @@ const IssueSearch = ({ handleSearchClick, labelNum }) => {
     },
   ];
   const [selectedIndex, setSelectedIndex] = React.useState(0);
+
   return (
     <>
       <Box
@@ -208,7 +215,7 @@ const IssueSearch = ({ handleSearchClick, labelNum }) => {
             Milestones{" "}
           </Button>
         </ButtonGroup>
-        <Button variant="primary" ml={3}>
+        <Button variant="primary" ml={3} onClick={handleNewIssueClick}>
           New Issue
         </Button>
       </Box>
