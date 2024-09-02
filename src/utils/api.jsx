@@ -124,8 +124,8 @@ const api = {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            title: title, // Issue 的標題
-            body: body, // Issue 的內容描述
+            title: title,
+            body: body,
           }),
         }
       );
@@ -135,8 +135,34 @@ const api = {
       }
       const newIssue = await response.json();
       return newIssue;
-    } catch (e) {
-      console.error("Error:", e);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  },
+
+  async putLabels(owner, repo, issueNumber, labels, token) {
+    try {
+      const response = await fetch(
+        `${this.hostname}/repos/${owner}/${repo}/issues/${issueNumber}/labels`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            labels: labels, // 傳入新標籤的數組
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update labels on issue");
+      }
+      const updatedLabels = await response.json();
+      return updatedLabels;
+    } catch (error) {
+      console.error("Error:", error);
     }
   },
 
