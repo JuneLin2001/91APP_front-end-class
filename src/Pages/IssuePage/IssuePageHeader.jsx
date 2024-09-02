@@ -1,10 +1,11 @@
+import React, { useContext } from "react";
 import { Box, SegmentedControl, Button, ButtonGroup } from "@primer/react";
 import {
   IssueOpenedIcon,
   CheckIcon,
   TriangleDownIcon,
 } from "@primer/octicons-react";
-
+import { IssueContext } from "../../context/issueContext";
 import {
   IssueHeader,
   IssueCheckbox,
@@ -22,19 +23,31 @@ const IssuePageHeader = ({
   labels,
   handleAuthorChange,
   handleLabelChange,
-  handleSelectAll,
-  isAllSelected,
 }) => {
-  const [allSelected, setAllSelected] = useState(isAllSelected);
+  const { apiResult, handleCheckboxChange } = useContext(IssueContext);
+  const [isAllSelected, setIsAllSelected] = React.useState(false);
 
-  const toggleSelectAll = () => {
-    setAllSelected(!allSelected);
-    handleSelectAll(!allSelected);
+  // 更新全選狀態
+  React.useEffect(() => {
+    setIsAllSelected(
+      apiResult.length > 0 && apiResult.every((issue) => issue.isSelected)
+    );
+  }, [apiResult]);
+
+  const handleSelectAll = () => {
+    setIsAllSelected((prevState) => {
+      const newValue = !prevState;
+      apiResult.forEach((issue) => handleCheckboxChange(issue.id, newValue));
+      return newValue;
+    });
   };
 
   return (
     <IssueHeader>
-      <IssueCheckbox checked={allSelected} onChange={toggleSelectAll} />
+      <IssueCheckbox
+        checked={isAllSelected}
+        onChange={() => handleSelectAll()}
+      />
       <SegmentedControl
         aria-label="File view"
         variant="invisible"
@@ -65,6 +78,7 @@ const IssuePageHeader = ({
           {`${closedCount} Closed`}
         </IssueOpenClosedButton>
       </SegmentedControl>
+
       <Box sx={{ ml: "auto" }}>
         <ButtonGroup>
           <SelectPanelAuthor authors={authors} onSelect={handleAuthorChange} />

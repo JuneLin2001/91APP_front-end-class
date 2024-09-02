@@ -35,6 +35,14 @@ export const IssueContextProvider = ({ children }) => {
   const { repoName, owner } = useParams();
   const navigate = useNavigate();
 
+  const handleCheckboxChange = useCallback((issueId, isSelected) => {
+    setApiResult((prevResult) => {
+      return prevResult.map((issue) =>
+        issue.id === issueId ? { ...issue, isSelected: isSelected } : issue
+      );
+    });
+  }, []);
+
   const handleFetchError = useCallback(
     (error) => {
       console.error("Failed to fetch data:", error);
@@ -222,9 +230,7 @@ export const IssueContextProvider = ({ children }) => {
           setSearchValue(newSearchValue);
           fetchDataAndUpdateUrl();
         },
-        handleCheckboxChange: (issueId) => {
-          console.log(`Checkbox for issue ${issueId} changed.`);
-        },
+        handleCheckboxChange,
         handleClearAll: () => {
           setSelectedAuthor("all");
           setSelectedLabel("all");

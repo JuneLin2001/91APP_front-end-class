@@ -1,6 +1,7 @@
+import React, { useContext } from "react";
 import {
-  ActionList,
   Box,
+  ActionList,
   Text,
   RelativeTime,
   IconButton,
@@ -20,130 +21,128 @@ import {
   IssueCardContainer,
 } from "../../style/IssuePage.styled";
 import getBrightness from "../../utils/colorContrast";
+import { IssueContext } from "../../context/issueContext";
 
-const IssuePageList = ({
-  issuesToDisplay,
-  repoName,
-  handleCheckboxChange,
-  owner,
-}) => {
+const IssuePageList = ({ issuesToDisplay, repoName, owner }) => {
+  const { handleCheckboxChange } = useContext(IssueContext);
+
   return (
-    <>
-      <ActionList sx={{ p: 0 }}>
-        {issuesToDisplay.map((issue) => {
-          let issueStateIcon;
-          let issueStateColor;
-          let ariaLabel;
+    <ActionList sx={{ p: 0 }}>
+      {issuesToDisplay.map((issue) => {
+        let issueStateIcon;
+        let issueStateColor;
+        let ariaLabel;
 
-          if (issue.state === "open") {
-            issueStateIcon = IssueOpenedIcon;
-            issueStateColor = "green"; // TODO: 替換為 Primer 的官方顏色
-            ariaLabel = "Open issue";
-          } else if (issue.state_reason === "not_planned") {
-            issueStateIcon = SkipIcon;
-            issueStateColor = "#59636e"; // TODO: 替換為 Primer 的官方顏色
-            ariaLabel = "Closed as not planned issue";
-          } else {
-            issueStateIcon = IssueClosedIcon;
-            issueStateColor = "purple"; // TODO: 替換為 Primer 的官方顏色
-            ariaLabel = "Closed issue";
-          }
+        if (issue.state === "open") {
+          issueStateIcon = IssueOpenedIcon;
+          issueStateColor = "green"; // TODO: 替換為 Primer 的官方顏色
+          ariaLabel = "Open issue";
+        } else if (issue.state_reason === "not_planned") {
+          issueStateIcon = SkipIcon;
+          issueStateColor = "#59636e"; // TODO: 替換為 Primer 的官方顏色
+          ariaLabel = "Closed as not planned issue";
+        } else {
+          issueStateIcon = IssueClosedIcon;
+          issueStateColor = "purple"; // TODO: 替換為 Primer 的官方顏色
+          ariaLabel = "Closed issue";
+        }
 
-          return (
-            <IssueCardContainer key={issue.id}>
-              <Box display="flex" alignItems="center">
-                <IssueCheckbox
-                  onChange={() => handleCheckboxChange(issue.id)}
-                />
-                <IconButton
-                  aria-label={ariaLabel}
-                  variant="invisible"
-                  size="small"
-                  icon={issueStateIcon}
-                  unsafeDisableTooltip={false}
-                  sx={{
-                    color: issueStateColor,
-                    cursor: "default",
+        return (
+          <IssueCardContainer key={issue.id}>
+            <Box display="flex" alignItems="center">
+              <IssueCheckbox
+                checked={issue.isSelected}
+                onChange={() => handleCheckboxChange(issue.id)}
+              />
+              <IconButton
+                aria-label={ariaLabel}
+                variant="invisible"
+                size="small"
+                icon={issueStateIcon}
+                unsafeDisableTooltip={false}
+                sx={{
+                  color: issueStateColor,
+                  cursor: "default",
+                }}
+              />
+              <Text>
+                <Link
+                  to={`/${owner}/${repoName}/issue/comment/${issue.number}`}
+                  style={{
+                    color: "black",
+                    fontSize: "16px",
                   }}
-                />
-                <Text>
-                  <Link
-                    to={`/${owner}/${repoName}/issue/comment/${issue.number}`}
-                    style={{
-                      color: "black",
-                      fontSize: "16px",
-                    }}
-                  >
-                    {issue.title}
-                  </Link>
-                </Text>
-                {issue.labels.map((label) => {
-                  const labelColor = `#${label.color}`;
-                  const brightness = getBrightness(label.color);
-                  const textColor = brightness > 128 ? "black" : "white";
-                  const borderColor =
-                    brightness > 220 ? "border.default" : labelColor;
-                  return (
-                    <Tooltip key={label.id} text={label.description}>
-                      <Label
-                        sx={{
-                          backgroundColor: labelColor,
-                          color: textColor,
-                          marginLeft: "4px",
-                          borderColor: borderColor,
-                        }}
-                      >
-                        {label.name}
-                      </Label>
-                    </Tooltip>
-                  );
-                })}
-                {issue.comments > 0 && (
-                  <Box
-                    ml={"auto"}
-                    display={"flex"}
-                    alignItems={"center"}
-                    sx={{
-                      ":hover": {
-                        color: "#0969da", // TODO: 替換為 Primer 的官方顏色
-                      },
-                    }}
-                  >
-                    <Button
-                      leadingVisual={CommentIcon}
-                      variant="invisible"
-                      onClick={() =>
-                        (window.location.href = `/${owner}/${repoName}/issue/comment/${issue.number}`)
-                      }
+                >
+                  {issue.title}
+                </Link>
+              </Text>
+              {issue.labels.map((label) => {
+                const labelColor = `#${label.color}`;
+                const brightness = getBrightness(label.color);
+                const textColor = brightness > 128 ? "black" : "white";
+                const borderColor =
+                  brightness > 220 ? "border.default" : labelColor;
+                return (
+                  <Tooltip key={label.id} text={label.description}>
+                    <Label
+                      sx={{
+                        backgroundColor: labelColor,
+                        color: textColor,
+                        marginLeft: "4px",
+                        borderColor: borderColor,
+                      }}
+                      key={label.id}
                     >
-                      {issue.comments}
-                    </Button>
-                  </Box>
+                      {label.name}
+                    </Label>
+                  </Tooltip>
+                );
+              })}
+              {issue.comments > 0 && (
+                <Box
+                  ml={"auto"}
+                  display={"flex"}
+                  alignItems={"center"}
+                  sx={{
+                    ":hover": {
+                      color: "#0969da", // TODO: 替換為 Primer 的官方顏色
+                    },
+                  }}
+                >
+                  <Button
+                    leadingVisual={CommentIcon}
+                    variant="invisible"
+                    onClick={() =>
+                      (window.location.href = `/${owner}/${repoName}/issue/comment/${issue.number}`)
+                    }
+                  >
+                    {issue.comments}
+                  </Button>
+                </Box>
+              )}
+            </Box>
+            <Box ml={7}>
+              <Text color="fg.muted" fontSize={"12px"}>
+                {`#${issue.number} `}
+                {issue.state === "open" ? (
+                  <>
+                    {`opened on `}
+                    <RelativeTime date={new Date(issue.created_at)} />{" "}
+                    {` by ${issue.user.login}`}
+                  </>
+                ) : (
+                  <>
+                    {` by ${issue.user.login}`}
+                    {` was closed `}
+                    <RelativeTime date={new Date(issue.closed_at)} />
+                  </>
                 )}
-              </Box>
-              <Box ml={7}>
-                <Text color="fg.muted" fontSize={"12px"}>
-                  {`#${issue.number} `}
-                  {issue.state === "open" ? (
-                    <>
-                      {`opened on `}
-                      <RelativeTime date={new Date(issue.created_at)} />{" "}
-                      {` by ${issue.user.login}`}
-                    </>
-                  ) : (
-                    <>
-                      {` by ${issue.user.login}`}
-                      {` was closed `}
-                      <RelativeTime date={new Date(issue.closed_at)} />
-                    </>
-                  )}
-                </Text>
-              </Box>
-            </IssueCardContainer>
-          );
-        })}
-      </ActionList>
-    </>
+              </Text>
+            </Box>
+          </IssueCardContainer>
+        );
+      })}
+    </ActionList>
   );
 };
 
