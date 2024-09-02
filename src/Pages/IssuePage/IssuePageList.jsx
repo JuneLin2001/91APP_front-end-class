@@ -1,6 +1,7 @@
+import React, { useContext } from "react";
 import {
-  ActionList,
   Box,
+  ActionList,
   Text,
   RelativeTime,
   IconButton,
@@ -12,6 +13,7 @@ import {
   IssueOpenedIcon,
   IssueClosedIcon,
   CommentIcon,
+  SkipIcon,
 } from "@primer/octicons-react";
 import { Link } from "react-router-dom";
 import {
@@ -19,32 +21,47 @@ import {
   IssueCardContainer,
 } from "../../style/IssuePage.styled";
 import getBrightness from "../../utils/colorContrast";
+import { IssueContext } from "../../context/issueContext";
 
-const IssuePageList = ({
-  issuesToDisplay,
-  repoName,
-  handleCheckboxChange,
-  owner,
-}) => {
+const IssuePageList = ({ issuesToDisplay, repoName, owner }) => {
+  const { handleCheckboxChange } = useContext(IssueContext);
+
   return (
-    <>
-      <ActionList sx={{ p: 0 }}>
-        {issuesToDisplay.map((issue) => (
+    <ActionList sx={{ p: 0 }}>
+      {issuesToDisplay.map((issue) => {
+        let issueStateIcon;
+        let issueStateColor;
+        let ariaLabel;
+
+        if (issue.state === "open") {
+          issueStateIcon = IssueOpenedIcon;
+          issueStateColor = "green"; // TODO: 替換為 Primer 的官方顏色
+          ariaLabel = "Open issue";
+        } else if (issue.state_reason === "not_planned") {
+          issueStateIcon = SkipIcon;
+          issueStateColor = "#59636e"; // TODO: 替換為 Primer 的官方顏色
+          ariaLabel = "Closed as not planned issue";
+        } else {
+          issueStateIcon = IssueClosedIcon;
+          issueStateColor = "purple"; // TODO: 替換為 Primer 的官方顏色
+          ariaLabel = "Closed issue";
+        }
+
+        return (
           <IssueCardContainer key={issue.id}>
             <Box display="flex" alignItems="center">
-              <IssueCheckbox onChange={() => handleCheckboxChange(issue.id)} />
+              <IssueCheckbox
+                checked={issue.isSelected}
+                onChange={() => handleCheckboxChange(issue.id)}
+              />
               <IconButton
-                aria-label={
-                  issue.state === "open" ? "Open issue" : "Closed issue"
-                }
+                aria-label={ariaLabel}
                 variant="invisible"
                 size="small"
-                icon={
-                  issue.state === "open" ? IssueOpenedIcon : IssueClosedIcon
-                }
+                icon={issueStateIcon}
                 unsafeDisableTooltip={false}
                 sx={{
-                  color: issue.state === "open" ? "green" : "purple", //TODO: 替換為 Primer 的官方顏色
+                  color: issueStateColor,
                   cursor: "default",
                 }}
               />
@@ -116,16 +133,16 @@ const IssuePageList = ({
                 ) : (
                   <>
                     {` by ${issue.user.login}`}
-                    {`was closed `}
+                    {` was closed `}
                     <RelativeTime date={new Date(issue.closed_at)} />
                   </>
                 )}
               </Text>
             </Box>
           </IssueCardContainer>
-        ))}
-      </ActionList>
-    </>
+        );
+      })}
+    </ActionList>
   );
 };
 

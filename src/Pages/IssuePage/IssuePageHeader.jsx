@@ -1,10 +1,11 @@
+import React, { useContext } from "react";
 import { Box, SegmentedControl, Button, ButtonGroup } from "@primer/react";
 import {
   IssueOpenedIcon,
   CheckIcon,
   TriangleDownIcon,
 } from "@primer/octicons-react";
-
+import { IssueContext } from "../../context/issueContext";
 import {
   IssueHeader,
   IssueCheckbox,
@@ -23,9 +24,30 @@ const IssuePageHeader = ({
   handleAuthorChange,
   handleLabelChange,
 }) => {
+  const { apiResult, handleCheckboxChange } = useContext(IssueContext);
+  const [isAllSelected, setIsAllSelected] = React.useState(false);
+
+  // 更新全選狀態
+  React.useEffect(() => {
+    setIsAllSelected(
+      apiResult.length > 0 && apiResult.every((issue) => issue.isSelected)
+    );
+  }, [apiResult]);
+
+  const handleSelectAll = () => {
+    setIsAllSelected((prevState) => {
+      const newValue = !prevState;
+      apiResult.forEach((issue) => handleCheckboxChange(issue.id, newValue));
+      return newValue;
+    });
+  };
+
   return (
     <IssueHeader>
-      <IssueCheckbox />
+      <IssueCheckbox
+        checked={isAllSelected}
+        onChange={() => handleSelectAll()}
+      />
       <SegmentedControl
         aria-label="File view"
         variant="invisible"
