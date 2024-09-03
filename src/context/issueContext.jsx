@@ -21,6 +21,10 @@ export const IssueContext = createContext({
   currentTextareaValue: "",
   title: "",
   selectedLabels: [],
+  currentPage: 1,
+  pageCount: 1,
+  setCurrentPage: () => {},
+  setPageCount: () => {},
   handleAuthorChange: () => {},
   handleLabelChange: () => {},
   handleSearchClick: () => {},
@@ -44,10 +48,12 @@ export const IssueContextProvider = ({ children }) => {
   const [selectedLabel, setSelectedLabel] = useState("all");
   const [searchValue, setSearchValue] = useState("");
   const [stateOpenOrClosed, setStateOpenOrClosed] = useState("open");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageCount, setPageCount] = useState(1);
   const { repoName, owner } = useParams();
   const { CRUDtoken } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [title, setTitle] = useState(""); // 新增 title 狀態
+  const [title, setTitle] = useState("");
   const [currentTextareaValue, setCurrentTextareaValue] = useState("");
   const [selectedLabels, setSelectedLabels] = useState([]);
 
@@ -190,19 +196,23 @@ export const IssueContextProvider = ({ children }) => {
         const authorFilter = selectedAuthor || "all";
         const labelFilter = selectedLabel || "";
         const searchResult = searchValue || "";
-        const q = parseUrlParams();
 
         const response = await api.getFilteredIssues(
-          q.searchResult,
           owner,
           repoName,
           authorFilter,
           labelFilter,
           stateOpenOrClosed,
-          searchResult
+          searchResult,
+          currentPage
         );
 
-        setApiResult(response);
+        const totalCount = response.totalCount;
+        const issues = response.issues;
+        const totalPages = Math.ceil(totalCount / 10);
+
+        setApiResult(issues);
+        setPageCount(totalPages);
       } catch (error) {
         handleFetchError(error);
       }
@@ -210,14 +220,14 @@ export const IssueContextProvider = ({ children }) => {
 
     getFilteredIssues();
   }, [
-    navigate,
     owner,
     repoName,
-    searchValue,
+    stateOpenOrClosed,
+    navigate,
     selectedAuthor,
     selectedLabel,
-    stateOpenOrClosed,
-    parseUrlParams,
+    searchValue,
+    currentPage,
     handleFetchError,
   ]);
 
@@ -257,6 +267,10 @@ export const IssueContextProvider = ({ children }) => {
         stateOpenOrClosed,
         currentTextareaValue,
         title,
+        currentPage,
+        setCurrentPage,
+        pageCount,
+        setPageCount,
         setTitle,
         handleTextareaChange,
         handleCreateIssue,

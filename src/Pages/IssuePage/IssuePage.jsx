@@ -4,6 +4,7 @@ import { Center } from "../../style/Center.styled";
 import IssueSearch from "./IssuePageSearch";
 import IssuePageHeader from "./IssuePageHeader";
 import IssuePageList from "./IssuePageList";
+import IssuePagePagination from "./IssuePagePagination";
 import { IssueAllContainer } from "../../style/IssuePage.styled";
 import { Button } from "@primer/react";
 import { XCircleFillIcon } from "@primer/octicons-react";
@@ -30,10 +31,10 @@ const IssuePage = () => {
 
   const isDefaultState = () => {
     return (
-      selectedAuthor === "all" &&
-      selectedLabel === "all" &&
+      (selectedAuthor === "all" || selectedAuthor == "") &&
+      (selectedLabel === "all" || selectedLabel == "") &&
       searchValue === "" &&
-      stateOpenOrClosed === "open"
+      (stateOpenOrClosed === "open" || stateOpenOrClosed == "")
     );
   };
 
@@ -78,6 +79,7 @@ const IssuePage = () => {
           handleCheckboxChange={handleCheckboxChange}
           owner={owner}
         />
+        <IssuePagePagination />
       </IssueAllContainer>
     </Center>
   );
