@@ -26,7 +26,6 @@ import CommentBox from "./CommentBox";
 import TimelineComment from "./TimelineComment";
 import IssueBody from "./IssueBody";
 import PageLayoutPane from "../../components/PageLayoutPane";
-import { useParams, useNavigate } from "react-router-dom";
 
 function CommentPage() {
   const {
@@ -39,14 +38,8 @@ function CommentPage() {
     handleCreateComment,
     handleIssueState,
     handleTitleEdit,
+    handleNewIssueClick,
   } = useContext(CommentContext);
-
-  const navigate = useNavigate();
-  const { owner, repoName } = useParams();
-
-  const handleNewIssueClick = () => {
-    navigate(`/${owner}/${repoName}/issue/new`);
-  };
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [issueTitle, setIssueTitle] = useState(
