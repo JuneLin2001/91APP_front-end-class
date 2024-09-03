@@ -135,10 +135,13 @@ function CommentPage() {
                   </Text>
                 </PageHeader.Title>
               </PageHeader.TitleArea>
-              <PageHeader.ContextArea>
+              <PageHeader.Actions>
                 <PageHeader.ContextBar
                   sx={{
                     gap: "8px",
+                    "@media screen and (min-width: 768px)": {
+                      display: "visible",
+                    },
                   }}
                 >
                   <Button
@@ -151,27 +154,13 @@ function CommentPage() {
                   <Button
                     variant="primary"
                     onClick={() => {
-                      alert("New issue modal will open");
+                      handleNewIssueClick();
                     }}
                   >
                     New Issue
                   </Button>
                 </PageHeader.ContextBar>
-                <PageHeader.ContextAreaActions>
-                  <IconButton
-                    aria-label="Copy permalink"
-                    icon={CopyIcon}
-                    variant="invisible"
-                    unsafeDisableTooltip={false}
-                    onClick={() => {
-                      alert(
-                        "This button copies the permalink to the clipboard"
-                      );
-                    }}
-                  />
-                </PageHeader.ContextAreaActions>
-              </PageHeader.ContextArea>
-              <PageHeader.Actions></PageHeader.Actions>
+              </PageHeader.Actions>
 
               <PageHeader.Description
                 sx={{
