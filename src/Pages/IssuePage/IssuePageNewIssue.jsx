@@ -13,7 +13,7 @@ import {
 import { InfoIcon } from "@primer/octicons-react";
 import { IssueContext } from "../../context/issueContext";
 import CommentBox from "../CommentPage/CommentBox";
-import PageLayoutPane from "../CommentPage/PageLayoutPane";
+import PageLayoutPane from "../../components/PageLayoutPane";
 import { AuthContext } from "../../context/authContext";
 
 function IssuePageNewIssue() {

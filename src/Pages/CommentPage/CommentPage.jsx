@@ -19,7 +19,7 @@ import { CommentContext } from "../../context/commentContext";
 import CommentBox from "./CommentBox";
 import TimelineComment from "./TimelineComment";
 import IssueBody from "./IssueBody";
-import PageLayoutPane from "./PageLayoutPane";
+import PageLayoutPane from "../../components/PageLayoutPane";
 import { useParams, useNavigate } from "react-router-dom";
 
 function CommentPage() {

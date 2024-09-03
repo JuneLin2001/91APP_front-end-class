@@ -1,13 +1,13 @@
 import React, { useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { Text, Box, Link } from "@primer/react";
-import { CommentContext } from "../../context/commentContext";
+import { CommentContext } from "../context/commentContext";
 import styled from "styled-components";
-import IssueLabels from "../../components/IssueLabels";
-import IssuePageNewIssueAddLabel from "../../Pages/IssuePage/IssuePageNewIssueAddLabel";
-import { IssueContext } from "../../context/issueContext";
-import { AuthContext } from "../../context/authContext";
-import api from "../../utils/api";
+import IssueLabels from "./IssueLabels";
+import IssuePageNewIssueAddLabel from "./IssuePageNewIssueAddLabel";
+import { IssueContext } from "../context/issueContext";
+import { AuthContext } from "../context/authContext";
+import api from "../utils/api";
 
 // const Pane = styled(PageLayout.Pane)
 const Pane = styled.div`
