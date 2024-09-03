@@ -145,7 +145,7 @@ const api = {
 
         const data = await response.json();
         const issues = data.items;
-        const totalCount = data.total_count;
+        const totalCount = data.total_count ? data.total_count : 1;
 
         return { issues, totalCount };
       } catch (error) {
