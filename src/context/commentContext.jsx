@@ -1,4 +1,10 @@
-import { useState, createContext, useEffect, useContext } from "react";
+import {
+  useState,
+  createContext,
+  useEffect,
+  useContext,
+  useCallback,
+} from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AuthContext } from "./authContext";
 import api from "../utils/api";
@@ -14,7 +20,7 @@ export const CommentContext = createContext({
   setComments: () => {},
   handleDelete: () => {},
   handleEdit: () => {},
-  handleUpdate: () => {},
+  handleUpdateComment: () => {},
   handleTextareaChange: () => {},
   handleCreateComment: () => {},
   setEditingCommentId: () => {},
@@ -88,62 +94,7 @@ export const CommentContextProvider = ({ children }) => {
     return result;
   };
 
-  useEffect(() => {
-    if (!owner) return;
-    const fetchInitData = async () => {
-      try {
-        setLoading(true);
-        const timestamp = new Date().getTime();
-        const issueBodyData = await api.getIssueBody(
-          owner,
-          repo,
-          issueNumber,
-          timestamp,
-          CRUDtoken
-        );
-        const timelineCommentsData = await api.getTimelineComments(
-          owner,
-          repo,
-          issueNumber,
-          timestamp,
-          CRUDtoken
-        );
-        console.log("fetch到timeline的資料", timelineCommentsData);
-        console.log("fetch到的issueBodyData", { issueBodyData });
-        setIssueData(issueBodyData);
-
-        const processedComments = processComments(timelineCommentsData);
-        setCommentData(processedComments);
-      } catch (e) {
-        setError(e.message);
-        const errorMessage = e.message || "Something went wrong";
-        navigate("/error", { state: { errorMessage } });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchInitData();
-  }, [issueNumber, CRUDtoken, user, repo, owner, navigate]);
-
-  const fetchData = async () => {
-    try {
-      const timestamp = new Date().getTime();
-      const timelineCommentsData = await api.getTimelineComments(
-        owner,
-        repo,
-        issueNumber,
-        timestamp,
-        CRUDtoken
-      );
-      console.log("不是首次fetch到的資料", timelineCommentsData);
-      setCommentData(timelineCommentsData);
-    } catch (e) {
-      setError(e.message);
-    }
-  };
-
-  const fetchIssueBody = async () => {
+  const fetchIssueBody = useCallback(async () => {
     try {
       const timestamp = new Date().getTime();
       const issueBodyData = await api.getIssueBody(
@@ -154,12 +105,13 @@ export const CommentContextProvider = ({ children }) => {
         CRUDtoken
       );
       setIssueData(issueBodyData);
+      return issueBodyData;
     } catch (e) {
       setError(e.message);
     }
-  };
+  }, [CRUDtoken, owner, repo, issueNumber]);
 
-  const fetchTimelineComments = async () => {
+  const fetchTimelineComments = useCallback(async () => {
     try {
       const timestamp = new Date().getTime();
       const timelineCommentsData = await api.getTimelineComments(
@@ -169,31 +121,53 @@ export const CommentContextProvider = ({ children }) => {
         timestamp,
         CRUDtoken
       );
-      setCommentData(timelineCommentsData);
-      console.log("11111拆開的fetch到timeline的資料", timelineCommentsData);
+      const processedComments = processComments(timelineCommentsData);
+      setCommentData(processedComments);
+      console.log("整理過的timeline的資料", timelineCommentsData);
+      return timelineCommentsData;
     } catch (e) {
       setError(e.message);
     }
-  };
+  }, [CRUDtoken, owner, repo, issueNumber]);
+
+  useEffect(() => {
+    if (!owner) return;
+    const fetchInitData = async () => {
+      try {
+        setLoading(true);
+        await fetchIssueBody();
+        await fetchTimelineComments();
+      } catch (e) {
+        setError(e.message);
+        const errorMessage = e.message || "Something went wrong";
+        navigate("/error", { state: { errorMessage } });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInitData();
+  }, [fetchIssueBody, fetchTimelineComments, owner, navigate]);
 
   const handleDelete = async (commentId) => {
     try {
       const userConfirmed = confirm("Are you sure you want to delete this?");
       if (userConfirmed) {
         await api.deleteComment(owner, repo, commentId, CRUDtoken);
-        fetchData();
+        fetchTimelineComments();
+        fetchIssueBody();
       }
     } catch (e) {
       console.error("删除失敗", e.message);
     }
   };
 
-  const handleUpdate = async (commentId, newContent) => {
+  const handleUpdateComment = async (commentId, newContent) => {
     try {
       console.log("新的內容：", newContent);
       await api.updateComment(owner, repo, commentId, newContent, CRUDtoken);
       setEditingCommentId(null);
-      fetchData();
+      fetchTimelineComments();
     } catch (e) {
       console.error("修改失敗", e.message);
     }
@@ -213,7 +187,8 @@ export const CommentContextProvider = ({ children }) => {
       CRUDtoken
     );
     setCurrentTextareaValue("");
-    fetchData();
+    fetchTimelineComments();
+    fetchIssueBody();
   };
 
   const getHeaderColor = (userLogin) => {
@@ -237,6 +212,7 @@ export const CommentContextProvider = ({ children }) => {
       CRUDtoken
     );
     fetchIssueBody();
+    fetchTimelineComments();
   };
 
   const handleTitleEdit = async (title) => {
@@ -249,6 +225,8 @@ export const CommentContextProvider = ({ children }) => {
       issueData.state_reason,
       CRUDtoken
     );
+    fetchIssueBody();
+    fetchTimelineComments();
   };
 
   return (
@@ -261,7 +239,7 @@ export const CommentContextProvider = ({ children }) => {
         editingCommentId,
         currentTextareaValue,
         handleDelete,
-        handleUpdate,
+        handleUpdateComment,
         handleTextareaChange,
         handleCreateComment,
         setEditingCommentId,

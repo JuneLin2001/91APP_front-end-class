@@ -51,7 +51,7 @@ function CommentPage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [issueTitle, setIssueTitle] = useState(
     issueData ? issueData.title : null
-  ); // 初始標題
+  );
 
   const handleEditTitleClick = () => {
     setIssueTitle(issueData.title);

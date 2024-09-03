@@ -34,7 +34,7 @@ const TimelineComment = () => {
     editingCommentId,
     currentTextareaValue,
     handleDelete,
-    handleUpdate,
+    handleUpdateComment,
     handleTextareaChange,
     setEditingCommentId,
     getHeaderColor,
@@ -235,7 +235,10 @@ const TimelineComment = () => {
                         <Button
                           variant="primary"
                           onClick={() =>
-                            handleUpdate(comment.id, currentTextareaValue)
+                            handleUpdateComment(
+                              comment.id,
+                              currentTextareaValue
+                            )
                           }
                         >
                           Update comment
