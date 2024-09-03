@@ -144,7 +144,7 @@ export const IssueContextProvider = ({ children }) => {
   const getInitialData = useCallback(async () => {
     try {
       if (owner && repoName && !window.location.href.includes("comment")) {
-        const response = await api.getInitialData(owner, repoName);
+        const response = await api.getInitialData(owner, repoName, CRUDtoken);
         setLabels(response.labels);
         setAllIssues({
           openCount: response.openCount,
@@ -155,7 +155,7 @@ export const IssueContextProvider = ({ children }) => {
     } catch (error) {
       handleFetchError(error);
     }
-  }, [owner, repoName, handleFetchError]);
+  }, [owner, repoName, CRUDtoken, handleFetchError]);
 
   const fetchDataAndUpdateUrl = useCallback(() => {
     if (!owner || !repoName || !stateOpenOrClosed) {
@@ -199,6 +199,7 @@ export const IssueContextProvider = ({ children }) => {
           const searchResult = searchValue || "";
 
           const response = await api.getFilteredIssues(
+            CRUDtoken,
             owner,
             repoName,
             authorFilter,
@@ -231,6 +232,7 @@ export const IssueContextProvider = ({ children }) => {
     selectedAuthor,
     selectedLabel,
     searchValue,
+    CRUDtoken,
     currentPage,
     handleFetchError,
   ]);
