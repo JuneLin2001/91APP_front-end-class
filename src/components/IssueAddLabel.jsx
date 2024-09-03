@@ -51,6 +51,8 @@ const IssuePageNewIssueAddLabel = ({
         }) => (
           <Button
             ref={buttonRef}
+            alignContent="start"
+            block="true"
             variant="invisible"
             trailingAction={GearIcon}
             aria-labelledby={` ${ariaLabelledBy}`}

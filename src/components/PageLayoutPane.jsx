@@ -4,7 +4,7 @@ import { Text, Box, Link } from "@primer/react";
 import { CommentContext } from "../context/commentContext";
 import styled from "styled-components";
 import IssueLabels from "./IssueLabels";
-import IssuePageNewIssueAddLabel from "./IssuePageNewIssueAddLabel";
+import IssuePageNewIssueAddLabel from "./IssueAddLabel";
 import { IssueContext } from "../context/issueContext";
 import { AuthContext } from "../context/authContext";
 import api from "../utils/api";
