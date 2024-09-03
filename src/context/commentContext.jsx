@@ -19,6 +19,7 @@ export const CommentContext = createContext({
   handleCreateComment: () => {},
   setEditingCommentId: () => {},
   getHeaderColor: () => {},
+  handleIssueState: () => {},
 });
 
 export const CommentContextProvider = ({ children }) => {
@@ -188,6 +189,17 @@ export const CommentContextProvider = ({ children }) => {
     return "var(--control-bgColor-rest)";
   };
 
+  const handleIssueState = async (state, stateReason) => {
+    await api.updateIssueState(
+      owner,
+      repo,
+      issueNumber,
+      state,
+      stateReason,
+      CRUDtoken
+    );
+  };
+
   return (
     <CommentContext.Provider
       value={{
@@ -203,6 +215,7 @@ export const CommentContextProvider = ({ children }) => {
         handleCreateComment,
         setEditingCommentId,
         getHeaderColor,
+        handleIssueState,
       }}
     >
       {children}
