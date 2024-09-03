@@ -43,7 +43,9 @@ const api = {
     try {
       const [issuesResponse, labelsResponse] = await Promise.all([
         fetch(
-          `${this.hostname}/search/issues?q=${encodeURIComponent(queryBase)}`,
+          `${this.hostname}/search/issues?q=${encodeURIComponent(
+            queryBase
+          )}&per_page=100`,
           {
             method: "GET",
             headers: {

@@ -297,6 +297,7 @@ export const IssueContextProvider = ({ children }) => {
           e.preventDefault();
           setSearchValue(newSearchValue);
           fetchDataAndUpdateUrl();
+          setCurrentPage(1);
         },
         handleCheckboxChange,
         handleClearAll: () => {
