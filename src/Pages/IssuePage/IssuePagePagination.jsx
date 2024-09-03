@@ -1,11 +1,28 @@
 import { Pagination } from "@primer/react";
+import { useContext } from "react";
+import { IssueContext } from "../../context/issueContext";
 
 const IssuePagePagination = () => {
+  const { currentPage, setCurrentPage, pageCount } = useContext(IssueContext);
+
+  const handlePageChange = (event, page) => {
+    event.preventDefault();
+    setCurrentPage(page);
+  };
+
   return (
+    // <Pagination
+    //   pageCount={pageCount}
+    //   currentPage={currentPage}
+    //   onPageChange={handlePageChange}
+    //   showPages={{
+    //     narrow: false,
+    //   }}
+    // />
     <Pagination
-      pageCount={15}
-      currentPage={2}
-      onPageChange={(e) => e.preventDefault()}
+      pageCount={pageCount}
+      currentPage={currentPage}
+      onPageChange={handlePageChange}
       showPages={{
         narrow: false,
       }}

@@ -69,7 +69,8 @@ const api = {
     authorFilter,
     labelFilter,
     stateOpenOrClosed,
-    searchResult
+    searchResult,
+    page = 1
   ) {
     const queryBase = `repo:${owner}/${repoName}`;
 
@@ -94,7 +95,7 @@ const api = {
 
       try {
         const response = await fetch(
-          `${this.hostname}/search/issues?q=${encodedQuery}`
+          `${this.hostname}/search/issues?q=${encodedQuery}&per_page=10&page=${page}`
         );
 
         if (!response.ok) {
@@ -103,8 +104,9 @@ const api = {
 
         const data = await response.json();
         const issues = data.items;
+        const totalCount = data.total_count;
 
-        return issues;
+        return { issues, totalCount };
       } catch (error) {
         console.error("Failed to fetch filtered issues:", error);
         throw error;

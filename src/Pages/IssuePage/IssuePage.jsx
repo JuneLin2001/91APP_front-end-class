@@ -79,12 +79,7 @@ const IssuePage = () => {
           handleCheckboxChange={handleCheckboxChange}
           owner={owner}
         />
-        <IssuePagePagination
-        // currentPage={1}
-        // pageCount={1}
-        // totalPages={totalPages}
-        // onPageChange={handlePageChange}
-        />
+        <IssuePagePagination />
       </IssueAllContainer>
     </Center>
   );
