@@ -11,14 +11,6 @@ const IssuePagePagination = () => {
   };
 
   return (
-    // <Pagination
-    //   pageCount={pageCount}
-    //   currentPage={currentPage}
-    //   onPageChange={handlePageChange}
-    //   showPages={{
-    //     narrow: false,
-    //   }}
-    // />
     <Pagination
       pageCount={pageCount}
       currentPage={currentPage}
