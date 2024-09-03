@@ -145,7 +145,7 @@ const api = {
       const response = await fetch(
         `${this.hostname}/repos/${owner}/${repo}/issues/${issueNumber}/labels`,
         {
-          method: "POST",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -166,9 +166,9 @@ const api = {
     }
   },
 
-  async getIssueBody(owner, repo, issueNumber, token) {
+  async getIssueBody(owner, repo, issueNumber, timestamp, token) {
     const response = await fetch(
-      `${this.hostname}/repos/${owner}/${repo}/issues/${issueNumber}`,
+      `${this.hostname}/repos/${owner}/${repo}/issues/${issueNumber}?t=${timestamp}`,
       {
         headers: {
           "X-GitHub-Api-Version": "2022-11-28",

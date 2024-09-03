@@ -38,12 +38,15 @@ const PageLayoutPane = ({ children }) => {
 
   const handleUpdateLabels = async () => {
     const repo = repoName;
+    const chosenLabels = selectedLabels;
+    console.log("選擇的labels", chosenLabels);
     try {
+      console.log("try的labels", chosenLabels);
       const updatedLabels = await api.putLabels(
         owner,
         repo,
         issueNumber, // issue 編號
-        selectedLabels, // 新的 labels 陣列
+        chosenLabels, // 新的 labels 陣列
         token // 從 AuthContext 獲取的認證 token
       );
       console.log("Labels updated:", updatedLabels);
@@ -54,6 +57,7 @@ const PageLayoutPane = ({ children }) => {
   };
 
   const handleSelectedChange = (newLabels) => {
+    console.log("父層label改變", newLabels);
     setSelectedLabels(newLabels);
   };
 
@@ -105,6 +109,7 @@ const PageLayoutPane = ({ children }) => {
         <Box>
           <IssuePageNewIssueAddLabel
             labels={allLabels}
+            selectedLabels={issueLabels.map((label) => label.name)}
             onSelect={handleSelectedChange}
             onClose={handlePaneClose}
           />

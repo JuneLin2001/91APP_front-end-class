@@ -94,6 +94,7 @@ export const CommentContextProvider = ({ children }) => {
           owner,
           repo,
           issueNumber,
+          timestamp,
           CRUDtoken
         );
         const timelineCommentsData = await api.getTimelineComments(
