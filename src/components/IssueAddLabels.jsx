@@ -1,12 +1,21 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { TriangleDownIcon } from "@primer/octicons-react";
 import { SelectPanel, Button } from "@primer/react";
 
-const IssuePageNewIssueAddLabel = ({ labels = [], onSelect }) => {
+const IssuePageNewIssueAddLabel = ({
+  labels = [],
+  issueLabels = [],
+  onSelect,
+}) => {
   const [selected, setSelected] = useState([]);
   const [filter, setFilter] = useState("");
   const [open, setOpen] = useState(false);
   const buttonRef = useRef(null);
+
+  useEffect(() => {
+    const selectedNames = issueLabels.map((label) => label.name);
+    setSelected(selectedNames);
+  }, [issueLabels]);
 
   const filteredItems = labels
     .filter((label) =>

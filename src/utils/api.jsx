@@ -64,7 +64,6 @@ const api = {
   },
 
   async getFilteredIssues(
-    q,
     owner,
     repoName,
     authorFilter,

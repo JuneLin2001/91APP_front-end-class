@@ -4,7 +4,7 @@ import { Text, Box, Link } from "@primer/react";
 import { CommentContext } from "../../context/commentContext";
 import styled from "styled-components";
 import IssueLabels from "../../components/IssueLabels";
-import IssuePageNewIssueAddLabel from "../../Pages/IssuePage/IssuePageNewIssueAddLabel";
+import IssuePageNewIssueAddLabel from "../../components/IssueAddLabels";
 import { IssueContext } from "../../context/issueContext";
 import { AuthContext } from "../../context/authContext";
 import api from "../../utils/api";
@@ -37,15 +37,7 @@ const PageLayoutPane = ({ children }) => {
   const handleUpdateLabels = async (newLabels) => {
     const repo = repoName;
     try {
-      const updatedLabels = await api.putLabels(
-        owner,
-        repo,
-        issueNumber, // issue 編號
-        newLabels, // 新的 labels 陣列
-        token // 從 AuthContext 獲取的認證 token
-      );
-      console.log("Labels updated:", updatedLabels);
-      // 在這裡進行更新界面上的 labels 或其他操作
+      await api.putLabels(owner, repo, issueNumber, newLabels, token);
     } catch (error) {
       console.error("Failed to update labels:", error);
     }
@@ -96,6 +88,7 @@ const PageLayoutPane = ({ children }) => {
           <IssuePageNewIssueAddLabel
             labels={allLabels}
             onSelect={handleUpdateLabels}
+            issueLabels={issueLabels}
           />
           <Text
             sx={{
