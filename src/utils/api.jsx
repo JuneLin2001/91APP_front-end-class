@@ -19,15 +19,48 @@ const api = {
     return data;
   },
 
-  async getInitialData(username, repo) {
+  // async postIssue(owner, repo, title, body, selectedLabels, token) {
+  //   try {
+  //     const response = await fetch(
+  //       `${this.hostname}/repos/${owner}/${repo}/issues`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //         body: JSON.stringify({
+  //           title: title,
+  //           body: body,
+  //           labels: selectedLabels,
+  //         }),
+  //       }
+  //     );
+
+  async getInitialData(username, repo, token) {
     const queryBase = `repo:${username}/${repo} is:issue`;
 
     try {
       const [issuesResponse, labelsResponse] = await Promise.all([
         fetch(
-          `${this.hostname}/search/issues?q=${encodeURIComponent(queryBase)}`
+          `${this.hostname}/search/issues?q=${encodeURIComponent(
+            queryBase
+          )}&per_page=100`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
         ),
-        fetch(`${this.hostname}/repos/${username}/${repo}/labels`),
+        fetch(`${this.hostname}/repos/${username}/${repo}/labels`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }),
       ]);
 
       if (!issuesResponse.ok) {
@@ -64,6 +97,7 @@ const api = {
   },
 
   async getFilteredIssues(
+    token,
     owner,
     repoName,
     authorFilter,
@@ -95,7 +129,14 @@ const api = {
 
       try {
         const response = await fetch(
-          `${this.hostname}/search/issues?q=${encodedQuery}&per_page=10&page=${page}`
+          `${this.hostname}/search/issues?q=${encodedQuery}&per_page=10&page=${page}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         if (!response.ok) {

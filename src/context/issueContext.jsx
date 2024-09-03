@@ -143,8 +143,8 @@ export const IssueContextProvider = ({ children }) => {
 
   const getInitialData = useCallback(async () => {
     try {
-      if (owner && repoName) {
-        const response = await api.getInitialData(owner, repoName);
+      if (owner && repoName && !window.location.href.includes("comment")) {
+        const response = await api.getInitialData(owner, repoName, CRUDtoken);
         setLabels(response.labels);
         setAllIssues({
           openCount: response.openCount,
@@ -155,7 +155,7 @@ export const IssueContextProvider = ({ children }) => {
     } catch (error) {
       handleFetchError(error);
     }
-  }, [owner, repoName, handleFetchError]);
+  }, [owner, repoName, CRUDtoken, handleFetchError]);
 
   const fetchDataAndUpdateUrl = useCallback(() => {
     if (!owner || !repoName || !stateOpenOrClosed) {
@@ -192,29 +192,34 @@ export const IssueContextProvider = ({ children }) => {
     updateUrlParams();
 
     const getFilteredIssues = async () => {
-      try {
-        const authorFilter = selectedAuthor || "all";
-        const labelFilter = selectedLabel || "";
-        const searchResult = searchValue || "";
+      if (owner && repoName && !window.location.href.includes("comment")) {
+        try {
+          const authorFilter = selectedAuthor || "all";
+          const labelFilter = selectedLabel || "";
+          const searchResult = searchValue || "";
 
-        const response = await api.getFilteredIssues(
-          owner,
-          repoName,
-          authorFilter,
-          labelFilter,
-          stateOpenOrClosed,
-          searchResult,
-          currentPage
-        );
+          const response = await api.getFilteredIssues(
+            CRUDtoken,
+            owner,
+            repoName,
+            authorFilter,
+            labelFilter,
+            stateOpenOrClosed,
+            searchResult,
+            currentPage
+          );
 
-        const totalCount = response.totalCount;
-        const issues = response.issues;
-        const totalPages = Math.ceil(totalCount / 10);
+          const totalCount = response.totalCount;
+          const issues = response.issues;
+          const totalPages = Math.ceil(totalCount / 10);
 
-        setApiResult(issues);
-        setPageCount(totalPages);
-      } catch (error) {
-        handleFetchError(error);
+          setApiResult(issues);
+          setPageCount(totalPages);
+        } catch (error) {
+          handleFetchError(error);
+        }
+      } else {
+        console.log("URL contains 'comment' or owner/repoName is not defined");
       }
     };
 
@@ -227,6 +232,7 @@ export const IssueContextProvider = ({ children }) => {
     selectedAuthor,
     selectedLabel,
     searchValue,
+    CRUDtoken,
     currentPage,
     handleFetchError,
   ]);
@@ -291,6 +297,7 @@ export const IssueContextProvider = ({ children }) => {
           e.preventDefault();
           setSearchValue(newSearchValue);
           fetchDataAndUpdateUrl();
+          setCurrentPage(1);
         },
         handleCheckboxChange,
         handleClearAll: () => {
