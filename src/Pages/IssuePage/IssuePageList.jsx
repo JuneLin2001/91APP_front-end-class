@@ -63,7 +63,7 @@ const IssuePageList = ({ issuesToDisplay, repoName, owner }) => {
                   cursor: "default",
                 }}
               />
-              <Text>
+              <Text sx={{ marginRight: "4px" }}>
                 <Link
                   to={`/${owner}/${repoName}/issue/comment/${issue.number}`}
                   style={{
