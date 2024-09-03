@@ -190,10 +190,8 @@ export const IssueContextProvider = ({ children }) => {
         const authorFilter = selectedAuthor || "all";
         const labelFilter = selectedLabel || "";
         const searchResult = searchValue || "";
-        const q = parseUrlParams();
 
         const response = await api.getFilteredIssues(
-          q.searchResult,
           owner,
           repoName,
           authorFilter,
@@ -217,7 +215,6 @@ export const IssueContextProvider = ({ children }) => {
     selectedAuthor,
     selectedLabel,
     stateOpenOrClosed,
-    parseUrlParams,
     handleFetchError,
   ]);
 
