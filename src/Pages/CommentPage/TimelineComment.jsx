@@ -33,7 +33,7 @@ const TimelineComment = () => {
     commentData,
     editingCommentId,
     currentTextareaValue,
-    handleDelete,
+    handleDeleteComment,
     handleUpdateComment,
     handleTextareaChange,
     setEditingCommentId,
@@ -201,7 +201,7 @@ const TimelineComment = () => {
                           <ActionList.Item>Hide</ActionList.Item>
                           <ActionList.Item
                             variant="danger"
-                            onClick={() => handleDelete(comment.id)}
+                            onClick={() => handleDeleteComment(comment.id)}
                           >
                             Delete
                           </ActionList.Item>

@@ -18,8 +18,7 @@ export const CommentContext = createContext({
   currentTextareaValue: "",
   fetchInitData: () => {},
   setComments: () => {},
-  handleDelete: () => {},
-  handleEdit: () => {},
+  handleDeleteComment: () => {},
   handleUpdateComment: () => {},
   handleTextareaChange: () => {},
   handleCreateComment: () => {},
@@ -149,7 +148,7 @@ export const CommentContextProvider = ({ children }) => {
     fetchInitData();
   }, [fetchIssueBody, fetchTimelineComments, owner, navigate]);
 
-  const handleDelete = async (commentId) => {
+  const handleDeleteComment = async (commentId) => {
     try {
       const userConfirmed = confirm("Are you sure you want to delete this?");
       if (userConfirmed) {
@@ -238,7 +237,7 @@ export const CommentContextProvider = ({ children }) => {
         error,
         editingCommentId,
         currentTextareaValue,
-        handleDelete,
+        handleDeleteComment,
         handleUpdateComment,
         handleTextareaChange,
         handleCreateComment,
