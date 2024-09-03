@@ -26,7 +26,7 @@ const Pane = styled.div`
 
 const PageLayoutPane = ({ onLabelsChange }) => {
   const { owner, repoName, issueNumber } = useParams();
-  const { issueData } = useContext(CommentContext);
+  const { issueData, fetchIssueBody } = useContext(CommentContext);
   const issueLabels = issueData.labels || [];
   const { labels } = useContext(IssueContext);
   const allLabels = labels;
@@ -43,6 +43,7 @@ const PageLayoutPane = ({ onLabelsChange }) => {
       try {
         console.log("選擇的 labels", chosenLabels);
         await api.putLabels(owner, repo, issueNumber, chosenLabels, token);
+        fetchIssueBody();
       } catch (error) {
         console.error("Failed to update labels:", error);
       }

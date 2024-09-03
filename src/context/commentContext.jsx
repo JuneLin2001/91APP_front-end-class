@@ -20,6 +20,7 @@ export const CommentContext = createContext({
   setEditingCommentId: () => {},
   getHeaderColor: () => {},
   handleIssueState: () => {},
+  fetchIssueBody: () => {},
 });
 
 export const CommentContextProvider = ({ children }) => {
@@ -140,6 +141,22 @@ export const CommentContextProvider = ({ children }) => {
     }
   };
 
+  const fetchIssueBody = async () => {
+    try {
+      const timestamp = new Date().getTime();
+      const issueBodyData = await api.getIssueBody(
+        owner,
+        repo,
+        issueNumber,
+        timestamp,
+        CRUDtoken
+      );
+      setIssueData(issueBodyData);
+    } catch (e) {
+      setError(e.message);
+    }
+  };
+
   const handleDelete = async (commentId) => {
     try {
       const userConfirmed = confirm("Are you sure you want to delete this?");
@@ -199,6 +216,7 @@ export const CommentContextProvider = ({ children }) => {
       stateReason,
       CRUDtoken
     );
+    fetchIssueBody();
   };
 
   return (
@@ -217,6 +235,7 @@ export const CommentContextProvider = ({ children }) => {
         setEditingCommentId,
         getHeaderColor,
         handleIssueState,
+        fetchIssueBody,
       }}
     >
       {children}
