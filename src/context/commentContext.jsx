@@ -21,6 +21,7 @@ export const CommentContext = createContext({
   getHeaderColor: () => {},
   handleIssueState: () => {},
   fetchIssueBody: () => {},
+  fetchTimelineComments: () => {},
   handleTitleEdit: () => {},
 });
 
@@ -158,6 +159,23 @@ export const CommentContextProvider = ({ children }) => {
     }
   };
 
+  const fetchTimelineComments = async () => {
+    try {
+      const timestamp = new Date().getTime();
+      const timelineCommentsData = await api.getTimelineComments(
+        owner,
+        repo,
+        issueNumber,
+        timestamp,
+        CRUDtoken
+      );
+      setCommentData(timelineCommentsData);
+      console.log("11111拆開的fetch到timeline的資料", timelineCommentsData);
+    } catch (e) {
+      setError(e.message);
+    }
+  };
+
   const handleDelete = async (commentId) => {
     try {
       const userConfirmed = confirm("Are you sure you want to delete this?");
@@ -250,6 +268,7 @@ export const CommentContextProvider = ({ children }) => {
         getHeaderColor,
         handleIssueState,
         fetchIssueBody,
+        fetchTimelineComments,
         handleTitleEdit,
       }}
     >

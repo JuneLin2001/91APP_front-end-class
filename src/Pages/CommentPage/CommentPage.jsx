@@ -19,6 +19,7 @@ import {
   IssueClosedIcon,
   SkipIcon,
   TriangleDownIcon,
+  IssueReopenedIcon,
 } from "@primer/octicons-react";
 import { CommentContext } from "../../context/commentContext";
 import CommentBox from "./CommentBox";
@@ -71,15 +72,23 @@ function CommentPage() {
     {
       id: 0,
       state: "open",
+      stateReason: null,
+      icon: IssueOpenedIcon,
+      labelStatus: "issueOpened",
+    },
+    {
+      id: 1,
+      state: "open",
       stateReason: "reopened",
       label: "Reopen issue",
+      icon: IssueReopenedIcon,
       color: "var(--bgColor-open-emphasis)",
       stateLabel: "issueOpened",
       description: "",
       labelStatus: "issueOpened",
     },
     {
-      id: 1,
+      id: 2,
       state: "closed",
       stateReason: "completed",
       label: "Close as completed",
@@ -90,7 +99,7 @@ function CommentPage() {
       labelStatus: "issueClosed",
     },
     {
-      id: 2,
+      id: 3,
       state: "closed",
       stateReason: "not_planned",
       label: "Close as not planned",
@@ -108,8 +117,9 @@ function CommentPage() {
         return item.state === "closed";
       } else if (issueData.state === "closed") {
         return (
-          item.stateReason !== issueData.state_reason ||
-          item.stateReason === "reopened"
+          item.stateReason === "reopened" ||
+          (item.stateReason !== issueData.state_reason &&
+            item.state === issueData.state)
         );
       }
     }
@@ -123,8 +133,6 @@ function CommentPage() {
         item.state === issueData.state &&
         item.stateReason === issueData.state_reason
     );
-
-  console.log("matchedState", matchedState);
 
   const [selectedIndex, setSelectedIndex] = useState(null);
   useEffect(() => {
@@ -286,11 +294,7 @@ function CommentPage() {
                     }
                     leadingVisual={() => (
                       <Octicon
-                        icon={
-                          selectedType.state === "closed"
-                            ? selectedType.icon
-                            : IssueOpenedIcon
-                        }
+                        icon={selectedType.icon}
                         color={selectedType.color}
                       />
                     )}
@@ -314,14 +318,7 @@ function CommentPage() {
                           onSelect={() => setSelectedIndex(item.id)}
                         >
                           <ActionList.LeadingVisual>
-                            <Octicon
-                              icon={
-                                item.state === "closed"
-                                  ? item.icon
-                                  : IssueOpenedIcon
-                              }
-                              color={item.color}
-                            />
+                            <Octicon icon={item.icon} color={item.color} />
                           </ActionList.LeadingVisual>
                           {item.label}
                           <Text sx={{ color: "fg.muted" }}>
