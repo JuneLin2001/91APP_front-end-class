@@ -43,7 +43,6 @@ const PageLayoutPane = ({ onLabelsChange }) => {
       try {
         console.log("選擇的 labels", chosenLabels);
         await api.putLabels(owner, repo, issueNumber, chosenLabels, token);
-        onLabelsChange(chosenLabels);
       } catch (error) {
         console.error("Failed to update labels:", error);
       }

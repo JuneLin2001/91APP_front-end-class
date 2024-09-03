@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { TriangleDownIcon } from "@primer/octicons-react";
+import { GearIcon } from "@primer/octicons-react";
 import { SelectPanel, Button } from "@primer/react";
 
 const IssuePageNewIssueAddLabel = ({
@@ -52,7 +52,7 @@ const IssuePageNewIssueAddLabel = ({
           <Button
             ref={buttonRef}
             variant="invisible"
-            trailingAction={TriangleDownIcon}
+            trailingAction={GearIcon}
             aria-labelledby={` ${ariaLabelledBy}`}
             {...anchorProps}
           >
