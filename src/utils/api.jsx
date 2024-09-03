@@ -145,7 +145,7 @@ const api = {
       const response = await fetch(
         `${this.hostname}/repos/${owner}/${repo}/issues/${issueNumber}/labels`,
         {
-          method: "PUT",
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,

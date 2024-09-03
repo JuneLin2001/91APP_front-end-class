@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { Text, Box, Link } from "@primer/react";
 import { CommentContext } from "../../context/commentContext";
@@ -34,14 +34,16 @@ const PageLayoutPane = ({ children }) => {
   const { CRUDtoken } = useContext(AuthContext);
   const token = CRUDtoken;
 
-  const handleUpdateLabels = async (newLabels) => {
+  const [selectedLabels, setSelectedLabels] = useState([]);
+
+  const handleUpdateLabels = async () => {
     const repo = repoName;
     try {
       const updatedLabels = await api.putLabels(
         owner,
         repo,
         issueNumber, // issue 編號
-        newLabels, // 新的 labels 陣列
+        selectedLabels, // 新的 labels 陣列
         token // 從 AuthContext 獲取的認證 token
       );
       console.log("Labels updated:", updatedLabels);
@@ -49,6 +51,14 @@ const PageLayoutPane = ({ children }) => {
     } catch (error) {
       console.error("Failed to update labels:", error);
     }
+  };
+
+  const handleSelectedChange = (newLabels) => {
+    setSelectedLabels(newLabels);
+  };
+
+  const handlePaneClose = () => {
+    handleUpdateLabels();
   };
 
   return (
@@ -95,7 +105,8 @@ const PageLayoutPane = ({ children }) => {
         <Box>
           <IssuePageNewIssueAddLabel
             labels={allLabels}
-            onSelect={handleUpdateLabels}
+            onSelect={handleSelectedChange}
+            onClose={handlePaneClose}
           />
           <Text
             sx={{
