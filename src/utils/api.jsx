@@ -268,7 +268,15 @@ const api = {
     }
   },
 
-  async updateIssueState(owner, repo, issueNumber, state, stateReason, token) {
+  async updateIssueState(
+    owner,
+    repo,
+    issueNumber,
+    title,
+    state,
+    stateReason,
+    token
+  ) {
     try {
       const response = await fetch(
         `${this.hostname}/repos/${owner}/${repo}/issues/${issueNumber}`,
@@ -280,6 +288,7 @@ const api = {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
+            title: title,
             state: state,
             state_reason: stateReason,
           }),

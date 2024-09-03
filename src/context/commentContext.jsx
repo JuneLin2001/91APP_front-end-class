@@ -21,6 +21,7 @@ export const CommentContext = createContext({
   getHeaderColor: () => {},
   handleIssueState: () => {},
   fetchIssueBody: () => {},
+  handleTitleEdit: () => {},
 });
 
 export const CommentContextProvider = ({ children }) => {
@@ -207,16 +208,29 @@ export const CommentContextProvider = ({ children }) => {
     return "var(--control-bgColor-rest)";
   };
 
-  const handleIssueState = async (state, stateReason) => {
+  const handleIssueState = async (title, state, stateReason) => {
     await api.updateIssueState(
       owner,
       repo,
       issueNumber,
+      title,
       state,
       stateReason,
       CRUDtoken
     );
     fetchIssueBody();
+  };
+
+  const handleTitleEdit = async (title) => {
+    await api.updateIssueState(
+      owner,
+      repo,
+      issueNumber,
+      title,
+      issueData.state,
+      issueData.state_reason,
+      CRUDtoken
+    );
   };
 
   return (
@@ -236,6 +250,7 @@ export const CommentContextProvider = ({ children }) => {
         getHeaderColor,
         handleIssueState,
         fetchIssueBody,
+        handleTitleEdit,
       }}
     >
       {children}
