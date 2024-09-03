@@ -28,7 +28,7 @@ const SelectPanelAuthor = ({ authors = [], onSelect }) => {
   return (
     <>
       <SelectPanel
-        title="Filter by label"
+        title="Filter by author"
         renderAnchor={({
           "aria-labelledby": ariaLabelledBy,
           ...anchorProps

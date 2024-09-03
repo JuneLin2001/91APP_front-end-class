@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { GearIcon } from "@primer/octicons-react";
+import { GearIcon, PencilIcon } from "@primer/octicons-react";
 import { SelectPanel, Button } from "@primer/react";
 
 const IssuePageNewIssueAddLabel = ({
@@ -44,6 +44,7 @@ const IssuePageNewIssueAddLabel = ({
   return (
     <>
       <SelectPanel
+        title="Apply labels to this issue"
         renderAnchor={({
           //   children,
           "aria-labelledby": ariaLabelledBy,
@@ -74,7 +75,14 @@ const IssuePageNewIssueAddLabel = ({
           height: "medium",
         }}
         footer={
-          <Button size="small" block>
+          <Button
+            size="small"
+            block
+            variant="invisible"
+            leadingVisual={PencilIcon}
+            alignContent="start"
+            sx={{ paddingLeft: 3 }}
+          >
             Edit labels
           </Button>
         }
