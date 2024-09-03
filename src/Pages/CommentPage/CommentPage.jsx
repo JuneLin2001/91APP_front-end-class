@@ -7,18 +7,16 @@ import {
   RelativeTime,
   ButtonGroup,
   Button,
-  IconButton,
   PageHeader,
   StateLabel,
   Box,
   PageLayout,
-  Link,
   Octicon,
+  TextInput,
 } from "@primer/react";
 import {
   IssueOpenedIcon,
   IssueClosedIcon,
-  CopyIcon,
   SkipIcon,
   TriangleDownIcon,
 } from "@primer/octicons-react";
@@ -39,6 +37,7 @@ function CommentPage() {
     handleTextareaChange,
     handleCreateComment,
     handleIssueState,
+    handleTitleEdit,
   } = useContext(CommentContext);
 
   const navigate = useNavigate();
@@ -47,6 +46,27 @@ function CommentPage() {
   const handleNewIssueClick = () => {
     navigate(`/${owner}/${repoName}/issue/new`);
   };
+
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [issueTitle, setIssueTitle] = useState(
+    issueData ? issueData.title : null
+  ); // 初始標題
+
+  const handleEditTitleClick = () => {
+    setIssueTitle(issueData.title);
+    setIsEditingTitle(true);
+  };
+
+  const handleTitleChange = (e) => {
+    setIssueTitle(e.target.value);
+  };
+
+  const handleTitleBlur = () => {
+    setIsEditingTitle(false);
+    handleTitleEdit(issueTitle);
+    // 這裡可以添加保存標題的邏輯
+  };
+
   const issueStateMapping = [
     {
       id: 0,
@@ -104,6 +124,8 @@ function CommentPage() {
         item.stateReason === issueData.state_reason
     );
 
+  console.log("matchedState", matchedState);
+
   const [selectedIndex, setSelectedIndex] = useState(null);
   useEffect(() => {
     if (selectedIndex === null && filteredActions.length > 0) {
@@ -124,7 +146,7 @@ function CommentPage() {
             <PageHeader>
               <PageHeader.TitleArea>
                 <PageHeader.Title as="h1">
-                  {issueData.title} &nbsp;
+                  {/* {issueData.title} &nbsp;
                   <Text
                     sx={{
                       color: "fg.muted",
@@ -132,7 +154,27 @@ function CommentPage() {
                     }}
                   >
                     #{issueData.number}
-                  </Text>
+                  </Text> */}
+                  {isEditingTitle ? (
+                    <TextInput
+                      value={issueTitle}
+                      onChange={handleTitleChange}
+                      onBlur={handleTitleBlur}
+                      autoFocus
+                    />
+                  ) : (
+                    <div>
+                      {issueData.title} &nbsp;
+                      <Text
+                        sx={{
+                          color: "fg.muted",
+                          fontWeight: "light",
+                        }}
+                      >
+                        #{issueData.number}
+                      </Text>
+                    </div>
+                  )}
                 </PageHeader.Title>
               </PageHeader.TitleArea>
               <PageHeader.Actions>
@@ -144,21 +186,31 @@ function CommentPage() {
                     },
                   }}
                 >
-                  <Button
-                    onClick={() => {
-                      alert("The title will go into edit mode");
-                    }}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="primary"
-                    onClick={() => {
-                      handleNewIssueClick();
-                    }}
-                  >
-                    New Issue
-                  </Button>
+                  {isEditingTitle ? (
+                    <>
+                      <Button onClick={handleEditTitleClick}>Save</Button>
+                      <Button
+                        variant="invisible"
+                        sx={{ color: "fg.muted" }}
+                        onClick={handleTitleBlur}
+                      >
+                        Cancel
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      {" "}
+                      <Button onClick={handleEditTitleClick}>Edit</Button>
+                      <Button
+                        variant="primary"
+                        onClick={() => {
+                          handleNewIssueClick();
+                        }}
+                      >
+                        New Issue
+                      </Button>
+                    </>
+                  )}
                 </PageHeader.ContextBar>
               </PageHeader.Actions>
 
@@ -227,6 +279,7 @@ function CommentPage() {
                   <Button
                     onClick={() =>
                       handleIssueState(
+                        issueData.title,
                         selectedType.state,
                         selectedType.stateReason
                       )
