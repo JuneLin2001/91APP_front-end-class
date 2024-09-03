@@ -59,7 +59,9 @@ const PageLayoutPane = ({ onLabelsChange }) => {
   const handleSelectedChange = (newLabels) => {
     console.log("父層 label 改變", newLabels);
     setSelectedLabels(newLabels);
-    onLabelsChange(newLabels);
+    if (!window.location.href.includes("comment")) {
+      onLabelsChange(newLabels);
+    }
   };
 
   const handlePaneClose = () => {
