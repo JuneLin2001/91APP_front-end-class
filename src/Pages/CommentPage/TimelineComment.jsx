@@ -331,31 +331,55 @@ const TimelineComment = () => {
 
                     {comment.labeledLabels?.length > 0 && (
                       <React.Fragment>
-                        {comment.labeledLabels.map((label, index) => (
-                          <React.Fragment key={index}>
-                            <IssueLabels
-                              key={index}
-                              name={label.name}
-                              color={label.color}
-                              description={label.description}
-                            />
-                          </React.Fragment>
-                        ))}
+                        {comment.labeledLabels.map((label, index) => {
+                          const matchingLabel = labels.find(
+                            (labels) => labels.name === label.name
+                          );
+                          const description = matchingLabel
+                            ? matchingLabel.description
+                            : null;
+
+                          return (
+                            <React.Fragment key={index}>
+                              <IssueLabels
+                                key={index}
+                                name={label.name}
+                                color={label.color}
+                                description={description}
+                              />
+                            </React.Fragment>
+                          );
+                        })}
                       </React.Fragment>
                     )}
 
                     {comment.unlabeledLabels?.length > 0 && (
                       <React.Fragment>
-                        {comment.unlabeledLabels.map((label, index) => (
-                          <React.Fragment key={index}>
-                            <IssueLabels
-                              key={index}
-                              name={label.name}
-                              color={label.color}
-                              description={label.description}
-                            />
-                          </React.Fragment>
-                        ))}
+                        <Text>
+                          {" "}
+                          {comment.labeledLabels.length > 0 &&
+                            "and "}removed {""}
+                        </Text>
+
+                        {comment.unlabeledLabels.map((label, index) => {
+                          const matchingLabel = labels.find(
+                            (labels) => labels.name === label.name
+                          );
+                          const description = matchingLabel
+                            ? matchingLabel.description
+                            : null;
+
+                          return (
+                            <React.Fragment key={index}>
+                              <IssueLabels
+                                key={index}
+                                name={label.name}
+                                color={label.color}
+                                description={description}
+                              />
+                            </React.Fragment>
+                          );
+                        })}
                       </React.Fragment>
                     )}
                     <Link href={`#event-${comment.id}`}>

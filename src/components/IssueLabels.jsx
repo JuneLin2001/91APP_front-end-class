@@ -8,19 +8,35 @@ const IssueLabels = ({ name, color, description }) => {
   const borderColor = brightness > 220 ? "border.default" : labelColor;
 
   return (
-    <Tooltip text={description} direction="s">
-      <Label
-        sx={{
-          marginRight: "4px",
-          backgroundColor: labelColor,
-          color: textColor,
-          borderColor: borderColor,
-          cursor: "pointer",
-        }}
-      >
-        {name}
-      </Label>
-    </Tooltip>
+    <>
+      {description ? (
+        <Tooltip text={description} direction="s">
+          <Label
+            sx={{
+              marginRight: "4px",
+              backgroundColor: labelColor,
+              color: textColor,
+              borderColor: borderColor,
+              cursor: "pointer",
+            }}
+          >
+            {name}
+          </Label>
+        </Tooltip>
+      ) : (
+        <Label
+          sx={{
+            marginRight: "4px",
+            backgroundColor: labelColor,
+            color: textColor,
+            borderColor: borderColor,
+            cursor: "pointer",
+          }}
+        >
+          {name}
+        </Label>
+      )}
+    </>
   );
 };
 
