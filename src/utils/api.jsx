@@ -266,6 +266,31 @@ const api = {
       console.error("Error:", e);
     }
   },
+
+  async updateIssueState(owner, repo, issueNumber, state, stateReason, token) {
+    try {
+      const response = await fetch(
+        `${this.hostname}/repos/${owner}/${repo}/issues/${issueNumber}`,
+        {
+          method: "PATCH",
+          headers: {
+            "X-GitHub-Api-Version": "2022-11-28",
+            Accept: "application/vnd.github+json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            state: state,
+            state_reason: stateReason,
+          }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to update issue state");
+      }
+    } catch (e) {
+      console.error("Error:", e);
+    }
+  },
 };
 
 export default api;
