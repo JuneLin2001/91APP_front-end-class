@@ -74,20 +74,15 @@ const IssuePageList = ({ issuesToDisplay, repoName, owner }) => {
                   {issue.title}
                 </Link>
               </Text>
-              {issue.labels.length > 0 && (
-                <React.Fragment>
-                  {issue.labels.map((label) => (
-                    <React.Fragment key={label.id}>
-                      <IssueLabels
-                        key={label.id}
-                        name={label.name}
-                        color={label.color}
-                        description={label.description}
-                      />
-                    </React.Fragment>
-                  ))}
-                </React.Fragment>
-              )}
+              {issue.labels.length > 0 &&
+                issue.labels.map((label) => (
+                  <IssueLabels
+                    key={label.id}
+                    name={label.name}
+                    color={label.color}
+                    description={label.description}
+                  />
+                ))}
               {issue.comments > 0 && (
                 <Box
                   ml={"auto"}
