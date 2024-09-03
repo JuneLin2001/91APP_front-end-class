@@ -9,9 +9,8 @@ import { IssueContext } from "../context/issueContext";
 import { AuthContext } from "../context/authContext";
 import api from "../utils/api";
 
-// const Pane = styled(PageLayout.Pane)
 const Pane = styled.div`
-  overflow: "visible";
+  overflow: visible;
   min-width: 256px;
   max-width: 296px;
   display: flex;
@@ -21,11 +20,11 @@ const Pane = styled.div`
   margin-left: 16px;
 
   @media screen and (min-width: 768px) {
-    overflow: "visible";
+    overflow: visible;
   }
 `;
 
-const PageLayoutPane = ({ children }) => {
+const PageLayoutPane = ({ onLabelsChange }) => {
   const { owner, repoName, issueNumber } = useParams();
   const { issueData } = useContext(CommentContext);
   const issueLabels = issueData.labels || [];
@@ -39,26 +38,26 @@ const PageLayoutPane = ({ children }) => {
   const handleUpdateLabels = async () => {
     const repo = repoName;
     const chosenLabels = selectedLabels;
-    console.log("選擇的labels", chosenLabels);
-    try {
-      console.log("try的labels", chosenLabels);
-      const updatedLabels = await api.putLabels(
-        owner,
-        repo,
-        issueNumber, // issue 編號
-        chosenLabels, // 新的 labels 陣列
-        token // 從 AuthContext 獲取的認證 token
-      );
-      console.log("Labels updated:", updatedLabels);
-      // 在這裡進行更新界面上的 labels 或其他操作
-    } catch (error) {
-      console.error("Failed to update labels:", error);
+
+    if (issueNumber !== undefined) {
+      try {
+        console.log("選擇的 labels", chosenLabels);
+        await api.putLabels(owner, repo, issueNumber, chosenLabels, token);
+        onLabelsChange(chosenLabels);
+      } catch (error) {
+        console.error("Failed to update labels:", error);
+      }
+    } else {
+      console.log("issueNumber is undefined");
+      onLabelsChange(chosenLabels);
+      console.log(chosenLabels);
     }
   };
 
   const handleSelectedChange = (newLabels) => {
-    console.log("父層label改變", newLabels);
+    console.log("父層 label 改變", newLabels);
     setSelectedLabels(newLabels);
+    onLabelsChange(newLabels);
   };
 
   const handlePaneClose = () => {
@@ -125,7 +124,6 @@ const PageLayoutPane = ({ children }) => {
                 {issueLabels.map((label, index) => (
                   <React.Fragment key={index}>
                     <IssueLabels
-                      key={index}
                       name={label.name}
                       color={label.color}
                       description={label.description}

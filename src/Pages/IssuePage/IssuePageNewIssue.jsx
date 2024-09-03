@@ -23,6 +23,8 @@ function IssuePageNewIssue() {
     currentTextareaValue,
     handleTextareaChange,
     handleCreateIssue,
+    selectedLabels,
+    setSelectedLabels,
   } = useContext(IssueContext);
   const { user } = useContext(AuthContext);
 
@@ -72,7 +74,9 @@ function IssuePageNewIssue() {
             >
               <Button
                 variant="primary"
-                onClick={() => handleCreateIssue(title, currentTextareaValue)}
+                onClick={() =>
+                  handleCreateIssue(title, currentTextareaValue, selectedLabels)
+                }
                 disabled={isSubmitDisabled}
               >
                 Submit new issue
@@ -81,7 +85,7 @@ function IssuePageNewIssue() {
             <InfoBox />
           </Box>
         </PageLayout.Content>
-        <PageLayoutPane />
+        <PageLayoutPane onLabelsChange={setSelectedLabels} />
       </PageLayout>
     </ThemeProvider>
   );

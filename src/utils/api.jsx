@@ -113,7 +113,7 @@ const api = {
     }
   },
 
-  async postIssue(owner, repo, title, body, token) {
+  async postIssue(owner, repo, title, body, selectedLabels, token) {
     try {
       const response = await fetch(
         `${this.hostname}/repos/${owner}/${repo}/issues`,
@@ -126,6 +126,7 @@ const api = {
           body: JSON.stringify({
             title: title,
             body: body,
+            labels: selectedLabels,
           }),
         }
       );

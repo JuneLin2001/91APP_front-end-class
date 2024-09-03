@@ -20,6 +20,7 @@ export const IssueContext = createContext({
   stateOpenOrClosed: "open",
   currentTextareaValue: "",
   title: "",
+  selectedLabels: [],
   handleAuthorChange: () => {},
   handleLabelChange: () => {},
   handleSearchClick: () => {},
@@ -31,6 +32,7 @@ export const IssueContext = createContext({
   handleTextareaChange: () => {},
   setTitle: () => {},
   handleCreateIssue: () => {},
+  setSelectedLabels: () => {},
 });
 
 export const IssueContextProvider = ({ children }) => {
@@ -47,6 +49,7 @@ export const IssueContextProvider = ({ children }) => {
   const navigate = useNavigate();
   const [title, setTitle] = useState(""); // 新增 title 狀態
   const [currentTextareaValue, setCurrentTextareaValue] = useState("");
+  const [selectedLabels, setSelectedLabels] = useState([]);
 
   const handleTextareaChange = (value) => {
     setCurrentTextareaValue(value);
@@ -57,13 +60,15 @@ export const IssueContextProvider = ({ children }) => {
       const newIssue = await api.postIssue(
         owner,
         repoName,
-        title, // Issue 的標題
-        currentTextareaValue, // Issue 的內容描述
+        title,
+        currentTextareaValue,
+        selectedLabels,
         CRUDtoken
       );
 
       setTitle("");
       setCurrentTextareaValue("");
+      setSelectedLabels([]);
 
       if (newIssue && newIssue.number) {
         navigate(`/${owner}/${repoName}/issue/comment/${newIssue.number}`);
@@ -257,6 +262,7 @@ export const IssueContextProvider = ({ children }) => {
         handleCreateIssue,
         setSelectedAuthor,
         setSelectedLabel,
+        setSelectedLabels,
         setSearchValue,
         setStateOpenOrClosed,
         handleFilterChange: (type, value) => {
