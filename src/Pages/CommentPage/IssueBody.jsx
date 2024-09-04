@@ -20,7 +20,7 @@ const IssueBody = () => {
     issueData,
     editingCommentId,
     currentTextareaValue,
-    handleUpdateComment,
+    handleIssueBodyEdit,
     handleTextareaChange,
     setEditingCommentId,
     getHeaderColor,
@@ -159,9 +159,7 @@ const IssueBody = () => {
                 </Button>
                 <Button
                   variant="primary"
-                  onClick={() =>
-                    handleUpdateComment(issueData.id, currentTextareaValue)
-                  }
+                  onClick={() => handleIssueBodyEdit(currentTextareaValue)}
                 >
                   Update comment
                 </Button>

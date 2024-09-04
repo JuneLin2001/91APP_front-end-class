@@ -27,6 +27,7 @@ export const CommentContext = createContext({
   fetchIssueBody: () => {},
   fetchTimelineComments: () => {},
   handleTitleEdit: () => {},
+  handleIssueBodyEdit: () => {},
   handleNewIssueClick: () => {},
   handleToIssuePage: () => {},
 });
@@ -105,6 +106,7 @@ export const CommentContextProvider = ({ children }) => {
         CRUDtoken
       );
       setIssueData(issueBodyData);
+      console.log("issueBodyData資料", issueBodyData);
       return issueBodyData;
     } catch (e) {
       setError(e.message);
@@ -201,12 +203,13 @@ export const CommentContextProvider = ({ children }) => {
     return "var(--control-bgColor-rest)";
   };
 
-  const handleIssueState = async (title, state, stateReason) => {
+  const handleIssueState = async (state, stateReason) => {
     await api.updateIssueState(
       owner,
       repo,
       issueNumber,
-      title,
+      issueData.title,
+      issueData.body,
       state,
       stateReason,
       CRUDtoken
@@ -221,12 +224,28 @@ export const CommentContextProvider = ({ children }) => {
       repo,
       issueNumber,
       title,
+      issueData.body,
       issueData.state,
       issueData.state_reason,
       CRUDtoken
     );
     fetchIssueBody();
     fetchTimelineComments();
+  };
+
+  const handleIssueBodyEdit = async (body) => {
+    await api.updateIssueState(
+      owner,
+      repo,
+      issueNumber,
+      issueData.title,
+      body,
+      issueData.state,
+      issueData.state_reason,
+      CRUDtoken
+    );
+    setEditingCommentId(null);
+    fetchIssueBody();
   };
 
   const handleNewIssueClick = () => {
@@ -256,6 +275,7 @@ export const CommentContextProvider = ({ children }) => {
         fetchIssueBody,
         fetchTimelineComments,
         handleTitleEdit,
+        handleIssueBodyEdit,
         handleNewIssueClick,
         handleToIssuePage,
       }}
