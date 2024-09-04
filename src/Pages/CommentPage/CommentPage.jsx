@@ -283,7 +283,6 @@ function CommentPage() {
                   <Button
                     onClick={() =>
                       handleIssueState(
-                        issueData.title,
                         selectedType.state,
                         selectedType.stateReason
                       )

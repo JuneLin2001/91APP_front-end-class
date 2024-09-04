@@ -314,6 +314,7 @@ const api = {
     repo,
     issueNumber,
     title,
+    body,
     state,
     stateReason,
     token
@@ -330,6 +331,7 @@ const api = {
           },
           body: JSON.stringify({
             title: title,
+            body: body,
             state: state,
             state_reason: stateReason,
           }),
