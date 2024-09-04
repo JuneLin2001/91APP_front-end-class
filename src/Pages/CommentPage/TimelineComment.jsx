@@ -331,11 +331,7 @@ const TimelineComment = () => {
 
                     {comment.labeledLabels?.length > 0 && (
                       <React.Fragment>
-                        <Text>
-                          {" "}
-                          added
-                          <br />
-                        </Text>
+                        <Text> added </Text>
                         {comment.labeledLabels.map((label, index) => {
                           const matchingLabel = labels.find(
                             (labels) => labels.name === label.name
