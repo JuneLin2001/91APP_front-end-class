@@ -28,6 +28,7 @@ export const CommentContext = createContext({
   fetchTimelineComments: () => {},
   handleTitleEdit: () => {},
   handleNewIssueClick: () => {},
+  handleToIssuePage: () => {},
 });
 
 export const CommentContextProvider = ({ children }) => {
@@ -232,6 +233,10 @@ export const CommentContextProvider = ({ children }) => {
     navigate(`/${owner}/${repoName}/issue/new`);
   };
 
+  const handleToIssuePage = () => {
+    navigate(`/${owner}/${repoName}/issue`);
+  };
+
   return (
     <CommentContext.Provider
       value={{
@@ -252,6 +257,7 @@ export const CommentContextProvider = ({ children }) => {
         fetchTimelineComments,
         handleTitleEdit,
         handleNewIssueClick,
+        handleToIssuePage,
       }}
     >
       {children}

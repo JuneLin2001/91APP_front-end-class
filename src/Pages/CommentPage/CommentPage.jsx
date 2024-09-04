@@ -13,6 +13,7 @@ import {
   PageLayout,
   Octicon,
   TextInput,
+  Link,
 } from "@primer/react";
 import {
   IssueOpenedIcon,
@@ -20,6 +21,7 @@ import {
   SkipIcon,
   TriangleDownIcon,
   IssueReopenedIcon,
+  ArrowLeftIcon,
 } from "@primer/octicons-react";
 import { CommentContext } from "../../context/commentContext";
 import CommentBox from "./CommentBox";
@@ -39,6 +41,7 @@ function CommentPage() {
     handleIssueState,
     handleTitleEdit,
     handleNewIssueClick,
+    handleToIssuePage,
   } = useContext(CommentContext);
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -147,7 +150,10 @@ function CommentPage() {
       <PageLayout>
         {issueData && (
           <PageLayout.Header>
-            <PageHeader>
+            <Link muted onClick={handleToIssuePage} sx={{ cursor: "pointer" }}>
+              <ArrowLeftIcon /> Previous Page
+            </Link>
+            <PageHeader sx={{ marginTop: "20px" }}>
               <PageHeader.TitleArea>
                 <PageHeader.Title as="h1">
                   {isEditingTitle ? (
