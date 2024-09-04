@@ -26,6 +26,7 @@ import CommentBox from "./CommentBox";
 import TimelineComment from "./TimelineComment";
 import IssueBody from "./IssueBody";
 import PageLayoutPane from "../../components/PageLayoutPane";
+import Loading from "../../components/Loading";
 
 function CommentPage() {
   const {
@@ -138,7 +139,7 @@ function CommentPage() {
   }, [selectedIndex, filteredActions]);
   const selectedType = issueStateMapping[selectedIndex];
 
-  if (loading) return <div>載入中...</div>;
+  if (loading) return <Loading />;
   if (error) return <div>錯誤: {error}</div>;
   if (!commentData) return <div>無數據</div>;
 
