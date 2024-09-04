@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import { useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { Text, Box, Link } from "@primer/react";
 import { CommentContext } from "../context/commentContext";
@@ -28,11 +28,11 @@ const PageLayoutPane = ({ onLabelsChange }) => {
   const { owner, repoName, issueNumber } = useParams();
   const { issueData, fetchIssueBody, fetchTimelineComments } =
     useContext(CommentContext);
-  const issueLabels = issueData.labels || [];
   const { labels } = useContext(IssueContext);
   const allLabels = labels;
   const { CRUDtoken } = useContext(AuthContext);
   const token = CRUDtoken;
+  const issueLabels = issueData.labels || [];
 
   const [selectedLabels, setSelectedLabels] = useState([]);
 
@@ -67,6 +67,11 @@ const PageLayoutPane = ({ onLabelsChange }) => {
   const handlePaneClose = () => {
     handleUpdateLabels();
   };
+
+  const labelsToRender =
+    issueLabels.length > 0
+      ? issueLabels
+      : allLabels.filter((label) => selectedLabels.includes(label.name));
 
   return (
     <Pane>
@@ -123,20 +128,17 @@ const PageLayoutPane = ({ onLabelsChange }) => {
               lineHeight: "condensed",
             }}
           >
-            {issueLabels.length > 0 ? (
-              <>
-                {issueLabels.map((label, index) => (
-                  <React.Fragment key={index}>
-                    <IssueLabels
-                      name={label.name}
-                      color={label.color}
-                      description={label.description}
-                    />
-                  </React.Fragment>
-                ))}
-              </>
+            {labelsToRender.length > 0 ? (
+              labelsToRender.map((label, index) => (
+                <IssueLabels
+                  key={index}
+                  name={label.name}
+                  color={label.color}
+                  description={label.description}
+                />
+              ))
             ) : (
-              <Text>{issueLabels === 0 && "None yet "}</Text>
+              <Text>None yet</Text>
             )}
           </Text>
         </Box>
