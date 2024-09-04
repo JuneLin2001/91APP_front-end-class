@@ -215,6 +215,7 @@ export const IssueContextProvider = ({ children }) => {
 
           setApiResult(issues);
           setPageCount(totalPages);
+          setCurrentPage(1);
         } catch (error) {
           handleFetchError(error);
         }
@@ -305,6 +306,7 @@ export const IssueContextProvider = ({ children }) => {
           setSelectedLabel("all");
           setSearchValue("");
           setStateOpenOrClosed("open");
+          setCurrentPage(1);
           getInitialData();
         },
       }}
