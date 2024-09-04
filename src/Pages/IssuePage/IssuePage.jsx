@@ -25,6 +25,7 @@ const IssuePage = () => {
     handleSearchClick,
     handleCheckboxChange,
     handleClearAll,
+    pageCount,
   } = useContext(IssueContext);
 
   const { owner, repoName } = useParams();
@@ -83,7 +84,7 @@ const IssuePage = () => {
             handleCheckboxChange={handleCheckboxChange}
             owner={owner}
           />
-          <IssuePagePagination />
+          {pageCount > 1 && <IssuePagePagination />}{" "}
         </IssueAllContainer>
       </NoAlignCenter>
     </>
