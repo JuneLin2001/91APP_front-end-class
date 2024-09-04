@@ -53,11 +53,17 @@ const IssuePageNewIssueAddLabel = ({
           <Button
             ref={buttonRef}
             alignContent="start"
-            block="true"
             variant="invisible"
             trailingAction={GearIcon}
             aria-labelledby={` ${ariaLabelledBy}`}
             {...anchorProps}
+            sx={{
+              fontSize: "12px",
+              width: "100%",
+              paddingLeft: "0px",
+              textAlign: "left",
+              color: "#636c76",
+            }}
           >
             {"Label"}
           </Button>

@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { IssueContext } from "../../context/issueContext";
-import { Center } from "../../style/Center.styled";
+import { NoAlignCenter, RemoveMinHeight } from "../../style/Center.styled";
 import IssueSearch from "./IssuePageSearch";
 import IssuePageHeader from "./IssuePageHeader";
 import IssuePageList from "./IssuePageList";
@@ -39,49 +39,54 @@ const IssuePage = () => {
   };
 
   return (
-    <Center>
-      <IssueSearch
-        handleSearchClick={handleSearchClick}
-        labelNum={labels.length}
-        owner={owner}
-        repoName={repoName}
-      />
-      <IssueAllContainer>
-        {!isDefaultState() && (
-          <Button
-            leadingVisual={XCircleFillIcon}
-            variant="invisible"
-            onClick={handleClearAll}
-          >
-            Clear current search query, filters, and sorts
-          </Button>
-        )}
-        <IssuePageHeader
-          openCount={allIssues.openCount}
-          closedCount={allIssues.closedCount}
-          stateOpenOrClosed={stateOpenOrClosed}
-          setStateOpenOrClosed={setStateOpenOrClosed}
-          authors={authors}
-          labels={labels}
-          handleAuthorChange={(author) => handleFilterChange("author", author)}
-          handleLabelChange={(labels) => {
-            const formattedString =
-              labels.length > 0
-                ? labels.map((label) => `label:"${label}"`).join(" ")
-                : "all";
-            handleFilterChange("label", formattedString);
-          }}
-        />
-        <IssuePageList
-          issuesToDisplay={apiResult}
-          stateOpenOrClosed={stateOpenOrClosed}
-          repoName={repoName}
-          handleCheckboxChange={handleCheckboxChange}
+    <>
+      <RemoveMinHeight />
+      <NoAlignCenter>
+        <IssueSearch
+          handleSearchClick={handleSearchClick}
+          labelNum={labels.length}
           owner={owner}
+          repoName={repoName}
         />
-        <IssuePagePagination />
-      </IssueAllContainer>
-    </Center>
+        <IssueAllContainer>
+          {!isDefaultState() && (
+            <Button
+              leadingVisual={XCircleFillIcon}
+              variant="invisible"
+              onClick={handleClearAll}
+            >
+              Clear current search query, filters, and sorts
+            </Button>
+          )}
+          <IssuePageHeader
+            openCount={allIssues.openCount}
+            closedCount={allIssues.closedCount}
+            stateOpenOrClosed={stateOpenOrClosed}
+            setStateOpenOrClosed={setStateOpenOrClosed}
+            authors={authors}
+            labels={labels}
+            handleAuthorChange={(author) =>
+              handleFilterChange("author", author)
+            }
+            handleLabelChange={(labels) => {
+              const formattedString =
+                labels.length > 0
+                  ? labels.map((label) => `label:"${label}"`).join(" ")
+                  : "all";
+              handleFilterChange("label", formattedString);
+            }}
+          />
+          <IssuePageList
+            issuesToDisplay={apiResult}
+            stateOpenOrClosed={stateOpenOrClosed}
+            repoName={repoName}
+            handleCheckboxChange={handleCheckboxChange}
+            owner={owner}
+          />
+          <IssuePagePagination />
+        </IssueAllContainer>
+      </NoAlignCenter>
+    </>
   );
 };
 
