@@ -1,25 +1,9 @@
 import { useState, useEffect } from "react";
 
 import { Box, TabNav, Textarea, Text, Button, ActionBar } from "@primer/react";
-import {
-  CrossReferenceIcon,
-  MarkdownIcon,
-  BoldIcon,
-  ItalicIcon,
-  LinkIcon,
-  ListUnorderedIcon,
-  ListOrderedIcon,
-  QuoteIcon,
-  MentionIcon,
-  CodeIcon,
-  ReplyIcon,
-  HeadingIcon,
-  PaperclipIcon,
-  FileMediaIcon,
-  DiffIgnoredIcon,
-} from "@primer/octicons-react";
+import { MarkdownIcon, FileMediaIcon } from "@primer/octicons-react";
 import PropType from "prop-types";
-
+import actionBarButtons from "../../constants/actionBarButtons";
 const CommentBox = ({ initialValue, onTextareaChange, hasMarkdownBtn }) => {
   const [inputValue, setInputValue] = useState(initialValue || "");
   const [isPreview, setIsPreview] = useState(false);
@@ -37,7 +21,6 @@ const CommentBox = ({ initialValue, onTextareaChange, hasMarkdownBtn }) => {
   // useEffect(() => {
   //   setInputValue(initialValue || "");
   // }, [initialValue]);
-
   return (
     <Box
       borderWidth={1}
@@ -80,71 +63,14 @@ const CommentBox = ({ initialValue, onTextareaChange, hasMarkdownBtn }) => {
 
           <Box sx={{ width: "80%" }}>
             <ActionBar>
-              <ActionBar.IconButton
-                icon={HeadingIcon}
-                variant="invisible"
-                aria-label="Attach files"
-              />
-              <ActionBar.IconButton
-                icon={BoldIcon}
-                variant="invisible"
-                aria-label="Bold"
-              />
-              <ActionBar.IconButton
-                icon={ItalicIcon}
-                variant="invisible"
-                aria-label="Italic"
-              />
-              <ActionBar.IconButton
-                icon={CodeIcon}
-                variant="invisible"
-                aria-label="Code"
-              />
-              <ActionBar.IconButton
-                icon={LinkIcon}
-                variant="invisible"
-                aria-label="Link"
-              />
-              <ActionBar.IconButton
-                icon={ListUnorderedIcon}
-                variant="invisible"
-                aria-label="Unordered list"
-              />
-              <ActionBar.IconButton
-                icon={ListOrderedIcon}
-                variant="invisible"
-                aria-label="Ordered list"
-              />
-              <ActionBar.IconButton
-                icon={QuoteIcon}
-                variant="invisible"
-                aria-label="Quote"
-              />
-              <ActionBar.IconButton
-                icon={PaperclipIcon}
-                variant="invisible"
-                aria-label="Data files attachment"
-              />
-              <ActionBar.IconButton
-                icon={MentionIcon}
-                variant="invisible"
-                aria-label="Mention"
-              />
-              <ActionBar.IconButton
-                icon={CrossReferenceIcon}
-                variant="invisible"
-                aria-label="Mention"
-              />
-              <ActionBar.IconButton
-                icon={ReplyIcon}
-                variant="invisible"
-                aria-label="Mention"
-              />
-              <ActionBar.IconButton
-                icon={DiffIgnoredIcon}
-                variant="invisible"
-                aria-label="Mention"
-              />
+              {actionBarButtons.map((button, index) => (
+                <ActionBar.IconButton
+                  key={index}
+                  icon={button.icon}
+                  variant="invisible"
+                  aria-label={button.ariaLabel}
+                />
+              ))}
             </ActionBar>
           </Box>
         </Box>
