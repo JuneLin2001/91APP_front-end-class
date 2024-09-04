@@ -55,6 +55,7 @@ const IssuePage = () => {
               leadingVisual={XCircleFillIcon}
               variant="invisible"
               onClick={handleClearAll}
+              sx={{ marginBottom: "16px" }}
             >
               Clear current search query, filters, and sorts
             </Button>
@@ -84,7 +85,7 @@ const IssuePage = () => {
             handleCheckboxChange={handleCheckboxChange}
             owner={owner}
           />
-          {pageCount > 1 && <IssuePagePagination />}{" "}
+          {pageCount > 1 && <IssuePagePagination />}
         </IssueAllContainer>
       </NoAlignCenter>
     </>

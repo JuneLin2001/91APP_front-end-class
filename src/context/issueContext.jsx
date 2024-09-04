@@ -251,6 +251,14 @@ export const IssueContextProvider = ({ children }) => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
+      setCurrentPage(1);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [stateOpenOrClosed]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
       fetchDataAndUpdateUrl();
     }, 500);
 
