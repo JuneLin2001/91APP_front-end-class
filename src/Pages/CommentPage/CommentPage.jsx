@@ -156,6 +156,7 @@ function CommentPage() {
                       onChange={handleTitleTextChange}
                       autoFocus
                       mr={2}
+                      width={"1100px"}
                     />
                   ) : (
                     <div>
