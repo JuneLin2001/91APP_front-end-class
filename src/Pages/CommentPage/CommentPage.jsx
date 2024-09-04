@@ -26,7 +26,6 @@ import CommentBox from "./CommentBox";
 import TimelineComment from "./TimelineComment";
 import IssueBody from "./IssueBody";
 import PageLayoutPane from "../../components/PageLayoutPane";
-import { useParams, useNavigate } from "react-router-dom";
 
 function CommentPage() {
   const {
@@ -39,33 +38,30 @@ function CommentPage() {
     handleCreateComment,
     handleIssueState,
     handleTitleEdit,
+    handleNewIssueClick,
   } = useContext(CommentContext);
-
-  const navigate = useNavigate();
-  const { owner, repoName } = useParams();
-
-  const handleNewIssueClick = () => {
-    navigate(`/${owner}/${repoName}/issue/new`);
-  };
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [issueTitle, setIssueTitle] = useState(
     issueData ? issueData.title : null
-  ); // 初始標題
+  );
 
   const handleEditTitleClick = () => {
     setIssueTitle(issueData.title);
     setIsEditingTitle(true);
   };
 
-  const handleTitleChange = (e) => {
+  const handleTitleTextChange = (e) => {
     setIssueTitle(e.target.value);
   };
 
-  const handleTitleBlur = () => {
+  const handleTitleCancel = () => {
+    setIsEditingTitle(false);
+  };
+
+  const handleTitleSave = () => {
     setIsEditingTitle(false);
     handleTitleEdit(issueTitle);
-    // 這裡可以添加保存標題的邏輯
   };
 
   const issueStateMapping = [
@@ -154,21 +150,12 @@ function CommentPage() {
             <PageHeader>
               <PageHeader.TitleArea>
                 <PageHeader.Title as="h1">
-                  {/* {issueData.title} &nbsp;
-                  <Text
-                    sx={{
-                      color: "fg.muted",
-                      fontWeight: "light",
-                    }}
-                  >
-                    #{issueData.number}
-                  </Text> */}
                   {isEditingTitle ? (
                     <TextInput
                       value={issueTitle}
-                      onChange={handleTitleChange}
-                      onBlur={handleTitleBlur}
+                      onChange={handleTitleTextChange}
                       autoFocus
+                      mr={2}
                     />
                   ) : (
                     <div>
@@ -191,16 +178,17 @@ function CommentPage() {
                     gap: "8px",
                     "@media screen and (min-width: 768px)": {
                       display: "visible",
+                      width: "fit-content",
                     },
                   }}
                 >
                   {isEditingTitle ? (
                     <>
-                      <Button onClick={handleEditTitleClick}>Save</Button>
+                      <Button onClick={handleTitleSave}>Save</Button>
                       <Button
                         variant="invisible"
                         sx={{ color: "fg.muted" }}
-                        onClick={handleTitleBlur}
+                        onClick={handleTitleCancel}
                       >
                         Cancel
                       </Button>
