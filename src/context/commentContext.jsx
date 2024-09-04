@@ -17,7 +17,6 @@ export const CommentContext = createContext({
   editingCommentId: null,
   currentTextareaValue: "",
   fetchInitData: () => {},
-  setComments: () => {},
   handleDeleteComment: () => {},
   handleUpdateComment: () => {},
   handleTextareaChange: () => {},
@@ -164,9 +163,9 @@ export const CommentContextProvider = ({ children }) => {
 
   const handleUpdateComment = async (commentId, newContent) => {
     try {
-      console.log("新的內容：", newContent);
       await api.updateComment(owner, repo, commentId, newContent, CRUDtoken);
       setEditingCommentId(null);
+      setCurrentTextareaValue("");
       fetchTimelineComments();
     } catch (e) {
       console.error("修改失敗", e.message);

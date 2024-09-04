@@ -1,14 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-import {
-  Box,
-  TabNav,
-  Textarea,
-  Text,
-  IconButton,
-  Button,
-  ActionBar,
-} from "@primer/react";
+import { Box, TabNav, Textarea, Text, Button, ActionBar } from "@primer/react";
 import {
   CrossReferenceIcon,
   MarkdownIcon,
@@ -41,6 +33,11 @@ const CommentBox = ({ initialValue, onTextareaChange, hasMarkdownBtn }) => {
     setInputValue(newValue);
     onTextareaChange(newValue);
   };
+
+  // useEffect(() => {
+  //   setInputValue(initialValue || "");
+  // }, [initialValue]);
+
   return (
     <Box
       borderWidth={1}
@@ -226,6 +223,7 @@ const CommentBox = ({ initialValue, onTextareaChange, hasMarkdownBtn }) => {
 CommentBox.propTypes = {
   initialValue: PropType.string,
   onTextareaChange: PropType.func,
+  hasMarkdownBtn: PropType.bool,
 };
 
 export default CommentBox;
