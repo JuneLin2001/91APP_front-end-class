@@ -1,8 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { TriangleDownIcon } from "@primer/octicons-react";
 import { SelectPanel, Button } from "@primer/react";
+import PropType from "prop-types";
 
 const LabelSelectPanel = ({ labels = [], onSelect }) => {
+  LabelSelectPanel.propTypes = {
+    labels: PropType.array,
+    onSelect: PropType.func,
+  };
   const [selected, setSelected] = useState([]);
   const [filter, setFilter] = useState("");
   const [open, setOpen] = useState(false);

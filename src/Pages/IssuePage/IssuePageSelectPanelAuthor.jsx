@@ -1,8 +1,13 @@
 import { useState } from "react";
 import { Button, SelectPanel } from "@primer/react";
 import { TriangleDownIcon } from "@primer/octicons-react";
+import PropType from "prop-types";
 
 const SelectPanelAuthor = ({ authors = [], onSelect }) => {
+  SelectPanelAuthor.propTypes = {
+    authors: PropType.array,
+    onSelect: PropType.func,
+  };
   const [selected, setSelected] = useState(authors[0]);
   const [filter, setFilter] = useState("");
   const [open, setOpen] = useState(false);

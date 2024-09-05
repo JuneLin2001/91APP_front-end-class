@@ -20,8 +20,15 @@ import {
 } from "../../style/IssuePage.styled";
 import IssueLabels from "../../components/IssueLabels";
 import { IssueContext } from "../../context/issueContext";
+import PropType from "prop-types";
 
 const IssuePageList = ({ issuesToDisplay, repoName, owner }) => {
+  IssuePageList.propTypes = {
+    issuesToDisplay: PropType.array.isRequired,
+    repoName: PropType.string.isRequired,
+    owner: PropType.string.isRequired,
+  };
+
   const { handleCheckboxChange } = useContext(IssueContext);
 
   return (

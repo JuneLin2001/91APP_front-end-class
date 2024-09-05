@@ -17,8 +17,16 @@ import {
 } from "@primer/octicons-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import PropType from "prop-types";
 
 const IssueSearch = ({ handleSearchClick, labelNum, owner, repoName }) => {
+  IssueSearch.propTypes = {
+    handleSearchClick: PropType.func.isRequired,
+    labelNum: PropType.number.isRequired,
+    owner: PropType.string.isRequired,
+    repoName: PropType.string.isRequired,
+  };
+
   const [searchValue, setSearchValue] = useState("");
   const navigate = useNavigate();
 

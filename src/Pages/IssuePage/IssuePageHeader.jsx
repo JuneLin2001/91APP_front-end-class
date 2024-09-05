@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Box, SegmentedControl, Button, ButtonGroup } from "@primer/react";
 import {
   IssueOpenedIcon,
@@ -13,6 +13,7 @@ import {
 } from "../../style/IssuePage.styled.jsx";
 import SelectPanelLabel from "./IssuePageSelectPanelLebels.jsx";
 import SelectPanelAuthor from "./IssuePageSelectPanelAuthor.jsx";
+import PropType from "prop-types";
 
 const IssuePageHeader = ({
   openCount,
@@ -24,11 +25,21 @@ const IssuePageHeader = ({
   handleAuthorChange,
   handleLabelChange,
 }) => {
-  const { apiResult, handleCheckboxChange } = useContext(IssueContext);
-  const [isAllSelected, setIsAllSelected] = React.useState(false);
+  IssuePageHeader.propTypes = {
+    openCount: PropType.number.isRequired,
+    closedCount: PropType.number.isRequired,
+    stateOpenOrClosed: PropType.string.isRequired,
+    setStateOpenOrClosed: PropType.func.isRequired,
+    authors: PropType.array.isRequired,
+    labels: PropType.array.isRequired,
+    handleAuthorChange: PropType.func.isRequired,
+    handleLabelChange: PropType.func.isRequired,
+  };
 
-  // 更新全選狀態
-  React.useEffect(() => {
+  const { apiResult, handleCheckboxChange } = useContext(IssueContext);
+  const [isAllSelected, setIsAllSelected] = useState(false);
+
+  useEffect(() => {
     setIsAllSelected(
       apiResult.length > 0 && apiResult.every((issue) => issue.isSelected)
     );

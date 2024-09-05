@@ -4,7 +4,6 @@ import { IssueContext } from "../../context/issueContext";
 
 const IssuePagePagination = () => {
   const { currentPage, setCurrentPage, pageCount } = useContext(IssueContext);
-
   const handlePageChange = (event, page) => {
     event.preventDefault();
     setCurrentPage(page);
