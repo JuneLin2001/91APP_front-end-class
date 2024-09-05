@@ -18,7 +18,7 @@ const actionBarButtons = [
   {
     icon: HeadingIcon,
     ariaLabel: "Attach files",
-    action: (text) => `###${text}`,
+    action: (text) => `### ${text}`,
   },
   { icon: BoldIcon, ariaLabel: "Bold", action: (text) => `**${text}**` },
   { icon: ItalicIcon, ariaLabel: "Italic", action: (text) => `_${text}_` },

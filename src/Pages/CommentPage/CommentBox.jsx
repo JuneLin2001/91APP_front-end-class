@@ -1,9 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 
 import { Box, TabNav, Textarea, Text, Button, ActionBar } from "@primer/react";
 import { MarkdownIcon, FileMediaIcon } from "@primer/octicons-react";
 import PropType from "prop-types";
 import actionBarButtons from "../../constants/actionBarButtons";
+import MarkdownPreview from "../../components/MarkdownPreview";
+
 const CommentBox = ({ initialValue, onTextareaChange, hasMarkdownBtn }) => {
   const [inputValue, setInputValue] = useState(initialValue || "");
   const [isPreview, setIsPreview] = useState(false);
@@ -34,7 +36,6 @@ const CommentBox = ({ initialValue, onTextareaChange, hasMarkdownBtn }) => {
     setInputValue(newValue);
     onTextareaChange(newValue);
 
-    // 滑鼠移動到新的位置
     setTimeout(() => {
       textarea.focus();
       textarea.selectionStart = textarea.selectionEnd = start + newText.length;
@@ -152,7 +153,7 @@ const CommentBox = ({ initialValue, onTextareaChange, hasMarkdownBtn }) => {
             borderStyle="solid"
           >
             {inputValue.trim() ? (
-              <Text>{inputValue}</Text>
+              <MarkdownPreview content={inputValue} />
             ) : (
               <Text
                 color="fg.muted"
