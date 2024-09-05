@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import { Box, TabNav, Textarea, Text, Button, ActionBar } from "@primer/react";
 import { MarkdownIcon, FileMediaIcon } from "@primer/octicons-react";
@@ -7,6 +7,7 @@ import actionBarButtons from "../../constants/actionBarButtons";
 const CommentBox = ({ initialValue, onTextareaChange, hasMarkdownBtn }) => {
   const [inputValue, setInputValue] = useState(initialValue || "");
   const [isPreview, setIsPreview] = useState(false);
+  const textareaRef = useRef(null);
 
   const handleTabClick = (tab) => {
     setIsPreview(tab === "Preview");
@@ -21,6 +22,25 @@ const CommentBox = ({ initialValue, onTextareaChange, hasMarkdownBtn }) => {
   // useEffect(() => {
   //   setInputValue(initialValue || "");
   // }, [initialValue]);
+
+  const handleActionClick = (action) => {
+    const textarea = textareaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = inputValue.substring(start, end);
+    const newText = action(selectedText);
+    const newValue =
+      inputValue.substring(0, start) + newText + inputValue.substring(end);
+    setInputValue(newValue);
+    onTextareaChange(newValue);
+
+    // 滑鼠移動到新的位置
+    setTimeout(() => {
+      textarea.focus();
+      textarea.selectionStart = textarea.selectionEnd = start + newText.length;
+    }, 0);
+  };
+
   return (
     <Box
       borderWidth={1}
@@ -69,6 +89,7 @@ const CommentBox = ({ initialValue, onTextareaChange, hasMarkdownBtn }) => {
                   icon={button.icon}
                   variant="invisible"
                   aria-label={button.ariaLabel}
+                  onClick={() => handleActionClick(button.action)}
                 />
               ))}
             </ActionBar>
@@ -79,6 +100,7 @@ const CommentBox = ({ initialValue, onTextareaChange, hasMarkdownBtn }) => {
         {!isPreview ? (
           <>
             <Textarea
+              ref={textareaRef}
               placeholder="Add your comment here..."
               aria-label="Comment"
               value={inputValue}
