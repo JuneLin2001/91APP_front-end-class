@@ -221,8 +221,6 @@ export const IssueContextProvider = ({ children }) => {
         } catch (error) {
           handleFetchError(error);
         }
-      } else {
-        console.log("URL contains 'comment' or owner/repoName is not defined");
       }
     };
 

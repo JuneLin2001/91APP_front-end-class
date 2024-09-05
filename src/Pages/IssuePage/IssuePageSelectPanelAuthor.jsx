@@ -17,15 +17,12 @@ const SelectPanelAuthor = ({ authors = [], onSelect }) => {
     ...authors.map((author) => ({
       key: author,
       text: author,
-      onAction: () => console.log(`Option ${author} selected`),
     })),
   ].filter((item) => item.text.toLowerCase().startsWith(filter.toLowerCase()));
 
   const handleSelectedChange = (selected) => {
     setSelected(selected);
     if (onSelect) {
-      console.log(selected);
-      console.log(selected.text);
       onSelect(selected.text);
     }
   };
