@@ -24,6 +24,9 @@ const MarkdownPreview = ({ content }) => {
             </CodeBlock>
           );
         },
+        img({ src, alt, ...props }) {
+          return <StyledImage src={src} alt={alt} {...props} />;
+        },
       }}
     >
       {content}
@@ -52,4 +55,11 @@ const InlineCode = styled.code`
   font-size: 85%;
   white-space: break-spaces;
   margin: 0;
+`;
+
+const StyledImage = styled.img`
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
 `;

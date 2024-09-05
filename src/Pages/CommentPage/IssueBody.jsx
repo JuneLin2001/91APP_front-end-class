@@ -14,6 +14,7 @@ import {
 import { KebabHorizontalIcon, SmileyIcon } from "@primer/octicons-react";
 import { CommentContext } from "../../context/commentContext";
 import CommentBox from "./CommentBox";
+import MarkdownPreview from "../../components/MarkdownPreview";
 
 const IssueBody = () => {
   const {
@@ -168,7 +169,8 @@ const IssueBody = () => {
           ) : (
             <>
               <Box p={3}>
-                <Text>{issueData.body}</Text>
+                {/* <Text>{issueData.body}</Text> */}
+                <MarkdownPreview content={issueData.body} />
               </Box>
               <Box px={3} pb={3} display="flex" alignItems="center">
                 <Timeline.Badge

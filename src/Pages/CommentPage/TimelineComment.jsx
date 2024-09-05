@@ -27,6 +27,7 @@ import { CommentContext } from "../../context/commentContext";
 import { IssueContext } from "../../context/issueContext";
 import CommentBox from "./CommentBox";
 import IssueLabels from "../../components/IssueLabels";
+import MarkdownPreview from "../../components/MarkdownPreview";
 
 const TimelineComment = () => {
   const {
@@ -248,7 +249,8 @@ const TimelineComment = () => {
                   ) : (
                     <>
                       <Box p={3}>
-                        <Text>{comment.body}</Text>
+                        {/* <Text>{comment.body}</Text> */}
+                        <MarkdownPreview content={comment.body} />
                       </Box>
                       <Box px={3} pb={3} display="flex" alignItems="center">
                         <Timeline.Badge
