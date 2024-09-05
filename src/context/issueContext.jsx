@@ -167,11 +167,18 @@ export const IssueContextProvider = ({ children }) => {
     const updateUrlParams = () => {
       const url = new URL(window.location.href);
       const searchParams = new URLSearchParams();
+      const searchParamsGetQ = url.searchParams.get("q") || "";
+      const isIssue = searchParamsGetQ.includes("is:issue");
 
       const state =
         stateOpenOrClosed === "open"
-          ? "is:issue is:open"
+          ? isIssue
+            ? "is:open"
+            : "is:issue is:open"
+          : isIssue
+          ? `is:${stateOpenOrClosed}`
           : `is:issue is:${stateOpenOrClosed}`;
+
       const author = selectedAuthor !== "all" ? `author:${selectedAuthor}` : "";
       const label = selectedLabel !== "all" ? `${selectedLabel}` : "";
       const searchResult = searchValue || "";
@@ -180,7 +187,10 @@ export const IssueContextProvider = ({ children }) => {
         .filter(Boolean)
         .join(" ");
 
-      if (queryString.trim() !== "is:issue is:open") {
+      if (
+        queryString.trim() !== "is:issue is:open" &&
+        queryString.trim() !== "is:open"
+      ) {
         searchParams.set("q", queryString);
       } else {
         searchParams.delete("q");
