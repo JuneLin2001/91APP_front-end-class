@@ -27,6 +27,13 @@ const MarkdownPreview = ({ content }) => {
         img({ src, alt, ...props }) {
           return <StyledImage src={src} alt={alt} {...props} />;
         },
+        a({ href, children, ...props }) {
+          return (
+            <StyledLink href={href} {...props}>
+              {children}
+            </StyledLink>
+          );
+        },
       }}
     >
       {content}
@@ -62,4 +69,10 @@ const StyledImage = styled.img`
   height: auto;
   display: block;
   margin: 0 auto;
+`;
+
+const StyledLink = styled.a`
+  word-break: break-all; /* Ensures long links break and wrap */
+  color: blue; /* Optional: Customize link color */
+  text-decoration: underline; /* Optional: Customize link decoration */
 `;
