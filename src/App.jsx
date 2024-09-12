@@ -1,35 +1,60 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Routes, Route } from "react-router-dom";
+import IssuePage from "./Pages/IssuePage/IssuePage.jsx";
+import GitHubLogin from "./Pages/GitHubLoginPage.jsx";
+import CommentPage from "./Pages/CommentPage/CommentPage.jsx";
+import ErrorComponent from "./Pages/ErrorPage.jsx";
+import { AuthContextProvider } from "./context/authContext";
+import { CommentContextProvider } from "./context/commentContext.jsx";
+import { IssueContextProvider } from "./context/issueContext";
+import { ThemeProvider, BaseStyles } from "@primer/react";
+import IssuePageNewIssue from "./Pages/IssuePage/IssuePageNewIssue.jsx";
+import PrivateRoute from "./utils/PrivateRoute.jsx";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <ThemeProvider>
+      <BaseStyles>
+        <AuthContextProvider>
+          <Routes>
+            <Route path="/login" element={<GitHubLogin />} />
+            <Route
+              path="/:owner/:repoName/issue"
+              element={
+                <IssueContextProvider>
+                  <PrivateRoute>
+                    <IssuePage />
+                  </PrivateRoute>
+                </IssueContextProvider>
+              }
+            />
+            <Route
+              path="/:owner/:repoName/issue/new"
+              element={
+                <IssueContextProvider>
+                  <PrivateRoute>
+                    <IssuePageNewIssue />
+                  </PrivateRoute>
+                </IssueContextProvider>
+              }
+            />
+            <Route
+              path="/:owner/:repoName/issue/comment/:issueNumber"
+              element={
+                <IssueContextProvider>
+                  <CommentContextProvider>
+                    <PrivateRoute>
+                      <CommentPage />
+                    </PrivateRoute>
+                  </CommentContextProvider>
+                </IssueContextProvider>
+              }
+            />
+            <Route path="/error" element={<ErrorComponent />} />
+          </Routes>
+        </AuthContextProvider>
+      </BaseStyles>
+    </ThemeProvider>
+  );
 }
 
-export default App
+export default App;
